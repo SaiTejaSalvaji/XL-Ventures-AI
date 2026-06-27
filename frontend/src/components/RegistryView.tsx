@@ -62,9 +62,9 @@ export default function RegistryView() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight text-white font-display">Registry Catalog</h1>
-          <p className="text-zinc-400 mt-1">Browse registered agents, capacities, parameters schemas, and active tools.</p>
+          <p className="text-zinc-400">Browse registered agents, capacities, parameters schemas, and active tools.</p>
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-0.5 flex">

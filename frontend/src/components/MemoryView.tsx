@@ -75,9 +75,9 @@ export default function MemoryView() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold tracking-tight text-white font-display">Memory Explorer</h1>
-        <p className="text-zinc-400 mt-1">Audit Working, Short-Term, Long-Term, and Semantic Memory graphs.</p>
+        <p className="text-zinc-400">Audit Working, Short-Term, Long-Term, and Semantic Memory graphs.</p>
       </div>
 
       {/* Visual Lookup Flow */}

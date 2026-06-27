@@ -95,9 +95,9 @@ export default function DashboardView() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold tracking-tight text-white font-display">Dashboard</h1>
-        <p className="text-zinc-400 mt-1">Real-time telemetry and qualification metrics for ProspectPilot AI.</p>
+        <p className="text-zinc-400">Real-time telemetry and qualification metrics for ProspectPilot AI.</p>
       </div>
 
       {/* KPI Grid */}

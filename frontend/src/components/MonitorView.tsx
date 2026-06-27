@@ -142,9 +142,9 @@ export default function MonitorView({ activeExecutionId }: MonitorViewProps) {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight text-white font-display">Execution Monitor</h1>
-          <p className="text-zinc-400 mt-1">Watch agents execute workflow graphs, check memory caches, and verify run metrics.</p>
+          <p className="text-zinc-400">Watch agents execute workflow graphs, check memory caches, and verify run metrics.</p>
         </div>
 
         <div className="flex items-center space-x-3">

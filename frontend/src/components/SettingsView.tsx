@@ -16,9 +16,9 @@ export default function SettingsView() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold tracking-tight text-white font-display">System Settings</h1>
-        <p className="text-zinc-400 mt-1">Manage API Keys, Workspace rules, and Orchestrator presets.</p>
+        <p className="text-zinc-400">Manage API Keys, Workspace rules, and Orchestrator presets.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

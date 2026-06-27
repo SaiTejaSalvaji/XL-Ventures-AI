@@ -113,9 +113,9 @@ export default function QueueView() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold tracking-tight text-white font-display">Human Approval Queue</h1>
-        <p className="text-zinc-400 mt-1">Review, refine, or approve AI-generated sales recommendations.</p>
+        <p className="text-zinc-400">Review, refine, or approve AI-generated sales recommendations.</p>
       </div>
 
       {leads.length === 0 ? (

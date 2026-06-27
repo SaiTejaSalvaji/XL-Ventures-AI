@@ -126,9 +126,9 @@ export default function LeadsView() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight text-white font-display">Qualified Leads</h1>
-          <p className="text-zinc-400 mt-1">Review approved prospects and export accounts for outreach.</p>
+          <p className="text-zinc-400">Review approved prospects and export accounts for outreach.</p>
         </div>
 
         {leads.length > 0 && (

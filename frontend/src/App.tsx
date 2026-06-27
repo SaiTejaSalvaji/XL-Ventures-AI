@@ -134,7 +134,7 @@ export default function App() {
       </aside>
 
       {/* Main Content Pane */}
-      <main className="flex-grow p-8 overflow-y-auto max-w-7xl mx-auto z-10">
+      <main className="flex-grow pt-[23px] px-8 pb-8 overflow-y-auto z-10 w-full">
         {renderActiveView()}
       </main>
 

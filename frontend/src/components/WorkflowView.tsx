@@ -129,9 +129,9 @@ export default function WorkflowView({ onTriggerExecution }: WorkflowViewProps) 
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight text-white font-display">Workflow Builder</h1>
-          <p className="text-zinc-400 mt-1">Configure targeting rules, criteria filters, and agent dependencies.</p>
+          <p className="text-zinc-400">Configure targeting rules, criteria filters, and agent dependencies.</p>
         </div>
         <div className="flex items-center space-x-3">
           <button 
