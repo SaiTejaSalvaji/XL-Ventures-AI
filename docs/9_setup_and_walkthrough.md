@@ -49,9 +49,29 @@ Ensure your local environment has the following software installed:
    ```
    The frontend UI starts on `http://localhost:5173`. Open this URL in your web browser.
 
+### Containerized Docker Setup (Production Profile)
+To run the entire platform inside container networks:
+1. Build and spin up the container services from the root folder:
+   ```bash
+   docker-compose up --build
+   ```
+2. Access the components:
+   *   **Vite React Client (Served via Nginx)**: `http://localhost/` (Port 80)
+   *   **FastAPI API Gateway**: `http://localhost:8000/`
+
 ---
 
-## 3. Step-by-Step System Walkthrough
+## 3. Automated Verification Testing
+We have built an automated integration test suite in `backend/test_platform.py` to test our Planner DAG sorting, the LTM cache database checks, and character bi-gram vector similarities.
+
+Run the suite inside the `backend/` directory:
+```bash
+python test_platform.py
+```
+
+---
+
+## 4. Step-by-Step System Walkthrough
 
 ### Step 1: Criteria Configuration
 - Open the UI and select the **Workflow Builder** tab.

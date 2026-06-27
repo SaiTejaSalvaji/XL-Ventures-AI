@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: prospectpilot-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/prospect_pilot.db:/app/prospect_pilot.db
+      - ./backend/exports:/app/exports
+    environment:
+      - DATABASE_URL=sqlite:///./prospect_pilot.db
+      - PYTHONUNBUFFERED=1
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: prospectpilot-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
