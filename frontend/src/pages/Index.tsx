@@ -4,21 +4,19 @@ import {
   Plus,
   Building2,
   Calendar,
-  DollarSign,
   FileText,
   ArrowRight,
   Search,
   Pencil,
   Loader2,
   AlertCircle,
+  FolderOpen
 } from "lucide-react";
-import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { opportunities, documents } from "@/lib/api";
 import type { Opportunity as APIOpportunity } from "@/lib/api/types";
+import Dashboard from "@/components/Dashboard";
 
 interface OpportunityWithDocs extends APIOpportunity {
   documentsCount: number;
@@ -31,31 +29,21 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch opportunities and their document counts
   useEffect(() => {
     const fetchOpportunities = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        // Fetch all active opportunities
         const opps = await opportunities.getOpportunities(true);
-        
-        // Fetch document count for each opportunity
         const oppsWithDocs = await Promise.all(
           opps.map(async (opp) => {
             try {
               const docs = await documents.getDocuments(opp.id);
-              return {
-                ...opp,
-                documentsCount: docs.length,
-              };
+              return { ...opp, documentsCount: docs.length };
             } catch (err) {
-              console.error(`Error fetching documents for opportunity ${opp.id}:`, err);
-              return {
-                ...opp,
-                documentsCount: 0,
-              };
+              console.error(`Error fetching docs for opp ${opp.id}:`, err);
+              return { ...opp, documentsCount: 0 };
             }
           })
         );
@@ -79,185 +67,159 @@ const Index = () => {
       opp.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getStatusColor = (tags: string[]) => {
-    // Determine status based on tags or other criteria
-    if (tags.includes("completed")) return "bg-green-500";
-    if (tags.includes("reviewing") || tags.includes("in_progress")) return "bg-blue-500";
-    if (tags.includes("active")) return "bg-orange-500";
-    return "bg-gray-500";
-  };
-
-  const getStatusLabel = (tags: string[]) => {
-    if (tags.includes("completed")) return "completed";
-    if (tags.includes("reviewing") || tags.includes("in_progress")) return "reviewing";
-    if (tags.includes("active")) return "active";
-    return "pending";
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="pb-12">
+      {/* Executive Dashboard Section */}
+      <Dashboard />
       
-      <div className="container mx-auto px-4 py-8">
-        {/* Header Section */}
+      {/* Opportunities Section */}
+      <div className="px-2 sm:px-6 mt-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-foreground mb-1">
-              Investment Opportunities
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Manage and analyze your investment opportunities
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-1">
+              Active Opportunities
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Manage and analyze your current investment pipeline
             </p>
           </div>
           <Button
             onClick={() => navigate("/opportunity/new")}
-            className="mt-4 md:mt-0"
+            className="mt-4 md:mt-0 rounded-full px-6 shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/30 transition-all duration-300"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Create New Opportunity
+            New Opportunity
           </Button>
         </div>
 
         {/* Loading State */}
         {loading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            <span className="ml-3 text-muted-foreground">Loading opportunities...</span>
+          <div className="flex items-center justify-center py-16 glass-card rounded-2xl">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 font-medium text-slate-600 dark:text-slate-300">Syncing opportunities...</span>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <Card className="p-6 border-red-200 bg-red-50">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600" />
+          <div className="p-6 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-red-900">Error loading opportunities</h3>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <h3 className="font-semibold text-red-900 dark:text-red-300">Error loading opportunities</h3>
+                <p className="text-sm text-red-700 dark:text-red-400/80 mt-1">{error}</p>
               </div>
             </div>
-          </Card>
+          </div>
         )}
 
-        {/* Content - Only show when not loading */}
+        {/* Content */}
         {!loading && !error && (
           <>
             {/* Search Bar */}
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search opportunities by name or company..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+            <div className="mb-6 relative max-w-md">
+              <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Filter opportunities..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition-all text-sm"
+              />
             </div>
 
             {/* Opportunities List */}
             <div className="space-y-4">
               {filteredOpportunities.length > 0 && (
                 filteredOpportunities.map((opportunity) => (
-                  <Card
+                  <div
                     key={opportunity.id}
-                    className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                    className="glass-panel p-6 rounded-2xl hover:shadow-md transition-all duration-300 cursor-pointer group"
                     onClick={() => navigate(`/analysis?opid=${opportunity.id}`)}
                   >
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                       <div className="flex-1">
-                        <div className="flex items-start gap-4 mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-xl font-semibold text-foreground">
-                                {opportunity.display_name || opportunity.name}
-                              </h3>
+                        <div className="flex items-center gap-3 mb-3">
+                          <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                            {opportunity.display_name || opportunity.name}
+                          </h3>
+                        </div>
+                        <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-2 text-sm leading-relaxed max-w-3xl">
+                          {opportunity.description}
+                        </p>
+                        
+                        <div className="flex flex-wrap items-center gap-3 text-sm">
+                          {opportunity.settings?.company && (
+                            <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/60 px-2.5 py-1 rounded-md text-slate-700 dark:text-slate-300 font-medium">
+                              <Building2 className="h-3.5 w-3.5 text-slate-500" />
+                              {opportunity.settings.company}
                             </div>
-                            <p className="text-muted-foreground mb-3">
-                              {opportunity.description}
-                            </p>
-                            <div className="flex flex-wrap gap-4 text-sm">
-                              {opportunity.settings?.company && (
-                                <div className="flex items-center gap-2">
-                                  <Building2 className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-foreground">
-                                    {opportunity.settings.company}
-                                  </span>
-                                </div>
-                              )}
-                              {opportunity.settings?.stage && (
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary">
-                                    {opportunity.settings.stage}
-                                  </Badge>
-                                </div>
-                              )}
-                              {opportunity.settings?.industry && (
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary">
-                                    {opportunity.settings.industry}
-                                  </Badge>
-                                </div>
-                              )}
-
-                              <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-muted-foreground">
-                                  {new Date(opportunity.created_at).toLocaleDateString()}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <FileText className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-muted-foreground">
-                                  {opportunity.documentsCount} documents
-                                </span>
-                              </div>
-                            </div>
-                            
+                          )}
+                          {opportunity.settings?.stage && (
+                            <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-transparent">
+                              {opportunity.settings.stage}
+                            </Badge>
+                          )}
+                          {opportunity.settings?.industry && (
+                            <Badge variant="secondary" className="bg-violet-500/10 text-violet-600 dark:text-violet-400 hover:bg-violet-500/20 border-transparent">
+                              {opportunity.settings.industry}
+                            </Badge>
+                          )}
+                          <div className="flex items-center gap-1.5 text-slate-500 text-xs ml-auto sm:ml-2">
+                            <Calendar className="h-3.5 w-3.5" />
+                            {new Date(opportunity.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+                            <FileText className="h-3.5 w-3.5" />
+                            {opportunity.documentsCount} doc{opportunity.documentsCount !== 1 ? 's' : ''}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-6 lg:ml-6 mt-4 lg:mt-0">
-                        <div className="flex flex-col gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/opportunity/edit?id=${opportunity.id}`);
-                            }}
-                          >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            View Analysis
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </div>
+                      <div className="flex items-center gap-3 lg:ml-6 shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-lg"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/opportunity/edit?id=${opportunity.id}`);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="secondary" 
+                          size="sm"
+                          className="rounded-full px-5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 shadow-sm"
+                        >
+                          Analyze
+                          <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                        </Button>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))
               )}
             </div>
 
             {/* Empty State */}
             {opportunitiesList.length === 0 && (
-              <Card className="p-12 text-center">
-                <Building2 className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-xl font-semibold mb-2 text-foreground">
-                  No Investment Opportunities
+              <div className="glass-panel rounded-2xl p-16 text-center max-w-2xl mx-auto mt-12">
+                <div className="h-20 w-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <FolderOpen className="h-10 w-10 text-primary/40" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-slate-900 dark:text-white">
+                  No Active Opportunities
                 </h3>
-                <p className="text-muted-foreground mb-6">
-                  Get started by creating your first investment opportunity
+                <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">
+                  Start building your investment pipeline by creating a new opportunity. You'll be able to upload documents and run AI analysis immediately.
                 </p>
-                <Button onClick={() => navigate("/opportunity/new")} size="lg">
+                <Button onClick={() => navigate("/opportunity/new")} size="lg" className="rounded-full shadow-md shadow-primary/20">
                   <Plus className="mr-2 h-5 w-5" />
-                  Create New Opportunity
+                  Create First Opportunity
                 </Button>
-              </Card>
+              </div>
             )}
           </>
         )}

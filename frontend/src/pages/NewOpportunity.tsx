@@ -185,14 +185,14 @@ const NewOpportunity = () => {
             variant: "destructive",
           });
           // Navigate to dashboard even though upload failed
-          navigate("/");
+          navigate("/dashboard");
           setIsCreating(false);
           return;
         }
       }
 
       // Navigate to the opportunity details or dashboard
-      navigate("/");
+      navigate("/dashboard");
       
     } catch (error: any) {
       console.error('Error creating opportunity:', error);
@@ -204,7 +204,7 @@ const NewOpportunity = () => {
           description: "The opportunity was created successfully. You can edit it to add more details or upload documents.",
           variant: "destructive",
         });
-        navigate("/");
+        navigate("/dashboard");
       } else {
         toast({
           title: "Error creating opportunity",
@@ -227,7 +227,7 @@ const NewOpportunity = () => {
           <div className="mb-6">
             <Button
               variant="ghost"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/dashboard")}
               className="mb-3"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -423,7 +423,7 @@ const NewOpportunity = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/dashboard")}
                 >
                   Cancel
                 </Button>
@@ -564,7 +564,7 @@ const NewOpportunity = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/dashboard")}
                     disabled={isCreating}
                   >
                     Cancel

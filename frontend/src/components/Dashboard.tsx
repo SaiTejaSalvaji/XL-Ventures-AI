@@ -1,7 +1,6 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, DollarSign, Target, PieChart } from "lucide-react";
 
 const Dashboard = () => {
   const portfolioData = [
@@ -22,109 +21,126 @@ const Dashboard = () => {
   ];
 
   const metrics = [
-    { title: "Total Return", value: "+32.0%", change: "+2.4%", trend: "up" },
-    { title: "Sharpe Ratio", value: "1.85", change: "+0.12", trend: "up" },
-    { title: "Max Drawdown", value: "-4.2%", change: "-1.1%", trend: "down" },
-    { title: "Alpha", value: "0.08", change: "+0.03", trend: "up" },
+    { title: "Total Portfolio Value", value: "$2.4M", change: "+12.4%", trend: "up", icon: DollarSign },
+    { title: "Active Opportunities", value: "14", change: "+2", trend: "up", icon: Target },
+    { title: "Avg AI Confidence", value: "92%", change: "+4.1%", trend: "up", icon: Activity },
+    { title: "Risk Exposure", value: "Low-Med", change: "-1.2%", trend: "down", icon: PieChart },
   ];
 
   return (
-    <section id="dashboard" className="py-20 bg-slate-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
-            Performance Dashboard
-          </h2>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Real-time portfolio performance and analytics powered by our AI engine.
-          </p>
+    <section id="dashboard" className="py-6 px-2 sm:px-6">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+          Executive Summary
+        </h2>
+        <p className="text-slate-500 dark:text-slate-400">
+          Real-time portfolio intelligence powered by Nexus AI.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {metrics.map((metric, index) => (
+          <div key={index} className="glass-card rounded-xl p-6 transition-transform hover:-translate-y-1 duration-300">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{metric.title}</p>
+                <h3 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">{metric.value}</h3>
+              </div>
+              <div className="bg-primary/10 p-2.5 rounded-lg text-primary">
+                <metric.icon className="h-5 w-5" />
+              </div>
+            </div>
+            
+            <div className="flex items-center mt-2 bg-slate-50 dark:bg-slate-800/50 w-fit px-2.5 py-1 rounded-full">
+              {metric.trend === "up" ? (
+                <TrendingUp className="h-3.5 w-3.5 text-emerald-500 mr-1.5" />
+              ) : (
+                <TrendingDown className="h-3.5 w-3.5 text-emerald-500 mr-1.5" />
+              )}
+              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                {metric.change}
+              </span>
+              <span className="text-xs text-slate-400 ml-1">vs last month</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="glass-card rounded-xl overflow-hidden border border-slate-200/60 dark:border-slate-700/50">
+          <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Performance vs Benchmark</h3>
+          </div>
+          <div className="p-6">
+            <ResponsiveContainer width="100%" height={320}>
+              <AreaChart data={portfolioData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
+                <XAxis dataKey="month" stroke="#94a3b8" tick={{fontSize: 12}} tickLine={false} axisLine={false} />
+                <YAxis stroke="#94a3b8" tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val/1000}k`} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                    border: 'none',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                    color: '#1e293b',
+                    fontWeight: 500
+                  }} 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke="#4f46e5" 
+                  fillOpacity={1}
+                  fill="url(#colorValue)"
+                  strokeWidth={3} 
+                  name="Portfolio"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="benchmark" 
+                  stroke="#94a3b8" 
+                  strokeWidth={2} 
+                  strokeDasharray="4 4"
+                  dot={false}
+                  name="Benchmark"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-          {metrics.map((metric, index) => (
-            <Card key={index} className="bg-white border-slate-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">{metric.title}</p>
-                    <p className="text-2xl font-bold text-slate-900">{metric.value}</p>
-                    <div className="flex items-center mt-2">
-                      {metric.trend === "up" ? (
-                        <TrendingUp className="h-4 w-4 text-emerald-500 mr-1" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-                      )}
-                      <span className={`text-sm ${metric.trend === "up" ? "text-emerald-500" : "text-red-500"}`}>
-                        {metric.change}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="bg-white border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900">Portfolio Performance vs Benchmark</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={portfolioData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="month" stroke="#64748b" />
-                  <YAxis stroke="#64748b" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px' 
-                    }} 
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="value" 
-                    stroke="#3b82f6" 
-                    strokeWidth={3} 
-                    name="Portfolio"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="benchmark" 
-                    stroke="#64748b" 
-                    strokeWidth={2} 
-                    strokeDasharray="5 5"
-                    name="Benchmark"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900">Sector Allocation & Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={sectorData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="sector" stroke="#64748b" />
-                  <YAxis stroke="#64748b" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px' 
-                    }} 
-                  />
-                  <Bar dataKey="allocation" fill="#3b82f6" name="Allocation %" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+        <div className="glass-card rounded-xl overflow-hidden border border-slate-200/60 dark:border-slate-700/50">
+          <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Sector Allocation</h3>
+          </div>
+          <div className="p-6">
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={sectorData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
+                <XAxis dataKey="sector" stroke="#94a3b8" tick={{fontSize: 12}} tickLine={false} axisLine={false} />
+                <YAxis stroke="#94a3b8" tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} />
+                <Tooltip 
+                  cursor={{fill: 'rgba(226, 232, 240, 0.4)'}}
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                    border: 'none',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+                    color: '#1e293b',
+                    fontWeight: 500
+                  }} 
+                />
+                <Bar dataKey="allocation" fill="#4f46e5" radius={[4, 4, 0, 0]} name="Allocation %" barSize={36} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </section>

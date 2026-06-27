@@ -1,56 +1,51 @@
-import { TrendingUp, Home, Upload, Brain, Cog } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Search, Bell, User } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const Header = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-
-  const navItems = [
-    { path: "/", label: "Opportunities", icon: Home },
-    { path: "/process-documents", label: "Process Documents", icon: Cog },
-  ];
+  
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case "/dashboard": return "Dashboard";
+      case "/opportunity/new": return "New Opportunity";
+      case "/upload": return "Upload Documents";
+      case "/process-documents": return "Process Documents";
+      case "/analysis": return "Investment Analysis";
+      default: return "Nexus AI";
+    }
+  };
 
   return (
-    <header className="bg-card/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div 
-            className="flex items-center space-x-2 cursor-pointer" 
-            onClick={() => navigate("/")}
-          >
-            <div className="bg-primary p-2 rounded-lg">
-              <TrendingUp className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">InvestAI</h1>
-              <p className="text-xs text-muted-foreground">Azure AI Foundry and Agent Framework Sample</p>
-            </div>
-          </div>
+    <header className="h-16 border-b border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-slate-950/50 backdrop-blur-xl fixed top-0 right-0 left-0 md:left-64 z-30 transition-all">
+      <div className="flex h-full items-center justify-between px-6">
+        <div className="flex items-center gap-4 flex-1">
+          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 hidden sm:block">
+            {getPageTitle()}
+          </h2>
           
-          <nav className="hidden md:flex items-center space-x-6">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                    isActive 
-                      ? "bg-primary text-primary-foreground" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
+          <div className="relative max-w-md w-full ml-4 hidden md:block">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Search companies, analyses, documents..." 
+              className="w-full h-9 pl-10 pr-4 rounded-full bg-slate-100 dark:bg-slate-900 border-transparent focus:bg-white dark:focus:bg-slate-800 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm outline-none transition-all"
+            />
+          </div>
+        </div>
 
-          <div className="flex items-center space-x-2">
-            <div className="text-sm text-muted-foreground">
-              Investment Team
+        <div className="flex items-center gap-4">
+          <button className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors relative">
+            <Bell className="h-5 w-5" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-white dark:ring-slate-950"></span>
+          </button>
+          
+          <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800">
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Alex Investor</p>
+              <p className="text-xs text-slate-500">Managing Partner</p>
+            </div>
+            <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold border border-primary/20">
+              AI
             </div>
           </div>
         </div>

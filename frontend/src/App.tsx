@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppLayout from "@/components/layout/AppLayout";
+import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import Upload from "./pages/Upload";
 import Analysis from "./pages/Analysis";
@@ -20,14 +22,17 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/analysis" element={<Analysis />} />
-          <Route path="/opportunity/new" element={<NewOpportunity />} />
-          <Route path="/opportunity/edit" element={<EditOpportunity />} />
-          <Route path="/process-documents" element={<ProcessDocuments />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<Landing />} />
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<Index />} />
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/analysis" element={<Analysis />} />
+            <Route path="/opportunity/new" element={<NewOpportunity />} />
+            <Route path="/opportunity/edit" element={<EditOpportunity />} />
+            <Route path="/process-documents" element={<ProcessDocuments />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

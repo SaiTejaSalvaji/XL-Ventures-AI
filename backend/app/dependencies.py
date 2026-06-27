@@ -149,9 +149,8 @@ async def get_chat_client():
 
 def _build_mock_chat_client():
     """Build a simple mock chat client that returns realistic analysis text."""
-    from agent_framework import BaseChatClient
 
-    class MockChatClient(BaseChatClient):
+    class MockChatClient:
         """Offline mock chat client returning realistic investment analysis text."""
 
         async def complete(self, messages, **kwargs):

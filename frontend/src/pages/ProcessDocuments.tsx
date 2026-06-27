@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { FileText, Play, CheckCircle2, Clock, AlertCircle, Building2, ChevronRight } from "lucide-react";
+import { FileText, Play, CheckCircle2, Clock, AlertCircle, Building2, ChevronRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
 import DocumentProcessingWorkflow from "@/components/DocumentProcessingWorkflow";
 import {
   Select,
@@ -16,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
 
 export type ProcessingStatus = "pending" | "processing" | "completed" | "error";
 
@@ -41,6 +40,7 @@ export interface Opportunity {
 
 const ProcessDocuments = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Sample opportunities data
   const [opportunities] = useState<Opportunity[]>([
@@ -331,21 +331,21 @@ const ProcessDocuments = () => {
     switch (status) {
       case "pending":
         return (
-          <Badge variant="outline" className="gap-1">
+          <Badge variant="outline" className="gap-1 bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200">
             <Clock className="h-3 w-3" />
             Pending
           </Badge>
         );
       case "processing":
         return (
-          <Badge variant="default" className="gap-1 bg-blue-500">
+          <Badge variant="default" className="gap-1 bg-blue-500 hover:bg-blue-600">
             <AlertCircle className="h-3 w-3" />
             Processing
           </Badge>
         );
       case "completed":
         return (
-          <Badge variant="default" className="gap-1 bg-green-500">
+          <Badge variant="default" className="gap-1 bg-emerald-500 hover:bg-emerald-600">
             <CheckCircle2 className="h-3 w-3" />
             Completed
           </Badge>
@@ -364,227 +364,256 @@ const ProcessDocuments = () => {
   const completedCount = documents.filter(doc => doc.status === "completed").length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4 -ml-2 text-slate-500 hover:text-slate-900 rounded-full">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+            Process Documents
+          </h1>
+          <p className="text-slate-500">
+            Select an opportunity to view and process its documents with AI-powered agents
+          </p>
+        </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-foreground mb-1">
-              Process Documents
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Select an opportunity to view and process its documents with AI-powered agents
-            </p>
-          </div>
-
-          {/* Opportunity Selection */}
-          {!selectedOpportunity ? (
-            <div className="space-y-4">
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-4 text-foreground">
-                  Select an Opportunity
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {opportunities.map((opp) => (
-                    <Card
-                      key={opp.id}
-                      className="p-4 cursor-pointer hover:border-primary transition-colors"
-                      onClick={() => setSelectedOpportunity(opp.id)}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                          <Building2 className="h-6 w-6 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-foreground mb-1 truncate">
-                            {opp.name}
-                          </h4>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            {opp.company}
-                          </p>
-                          <Badge variant="outline" className="mb-3">
-                            {opp.sector}
-                          </Badge>
-                          <div className="grid grid-cols-3 gap-2 text-xs">
-                            <div>
-                              <div className="text-muted-foreground">Total</div>
-                              <div className="font-semibold">{opp.documentCount}</div>
+        {/* Opportunity Selection */}
+        {!selectedOpportunity ? (
+          <div className="space-y-4 animate-fade-in">
+            <div className="glass-panel p-8 rounded-2xl">
+              <h3 className="text-xl font-bold mb-6 text-slate-900 dark:text-white flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-primary" />
+                Select an Opportunity
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {opportunities.map((opp) => (
+                  <div
+                    key={opp.id}
+                    className="glass-card p-6 cursor-pointer group hover:border-primary/50 transition-all duration-300"
+                    onClick={() => setSelectedOpportunity(opp.id)}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
+                        <Building2 className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-slate-900 dark:text-white mb-1 truncate group-hover:text-primary transition-colors">
+                          {opp.name}
+                        </h4>
+                        <p className="text-sm text-slate-500 mb-3 truncate">
+                          {opp.company}
+                        </p>
+                        <Badge variant="outline" className="mb-4 bg-white/50 dark:bg-slate-900/50">
+                          {opp.sector}
+                        </Badge>
+                        <div className="grid grid-cols-3 gap-2 text-xs pt-4 border-t border-slate-100 dark:border-slate-800">
+                          <div>
+                            <div className="text-slate-500 font-medium mb-1">Total</div>
+                            <div className="font-bold text-slate-900 dark:text-white">{opp.documentCount}</div>
+                          </div>
+                          <div>
+                            <div className="text-slate-500 font-medium mb-1">Pending</div>
+                            <div className="font-bold text-amber-600 dark:text-amber-400">
+                              {opp.pendingCount}
                             </div>
-                            <div>
-                              <div className="text-muted-foreground">Pending</div>
-                              <div className="font-semibold text-yellow-600">
-                                {opp.pendingCount}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-muted-foreground">Done</div>
-                              <div className="font-semibold text-green-600">
-                                {opp.completedCount}
-                              </div>
+                          </div>
+                          <div>
+                            <div className="text-slate-500 font-medium mb-1">Done</div>
+                            <div className="font-bold text-emerald-600 dark:text-emerald-400">
+                              {opp.completedCount}
                             </div>
                           </div>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                       </div>
-                    </Card>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="animate-fade-in space-y-6">
+            {/* Selected Opportunity Header */}
+            <div className="glass-panel p-6 rounded-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-primary/10 rounded-xl">
+                    <Building2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Current Opportunity</div>
+                    <div className="text-xl font-bold text-slate-900 dark:text-white">
+                      {selectedOpportunityData?.name}
+                    </div>
+                    <div className="text-sm text-slate-500 mt-1 flex items-center gap-2">
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{selectedOpportunityData?.company}</span>
+                      <span className="text-slate-300 dark:text-slate-600">•</span> 
+                      <span>{selectedOpportunityData?.sector}</span>
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedOpportunity(null);
+                    setSelectedDocuments(new Set());
+                  }}
+                  className="rounded-full px-6"
+                >
+                  Change Opportunity
+                </Button>
+              </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="glass-panel p-6 rounded-2xl flex items-center gap-4">
+                <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full">
+                  <FileText className="h-6 w-6 text-slate-600 dark:text-slate-300" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-slate-500 mb-1 uppercase tracking-wider">Total Documents</div>
+                  <div className="text-3xl font-bold text-slate-900 dark:text-white">{documents.length}</div>
+                </div>
+              </div>
+              <div className="glass-panel p-6 rounded-2xl flex items-center gap-4 border border-amber-100 dark:border-amber-900/30 bg-amber-50/30 dark:bg-amber-900/10">
+                <div className="p-4 bg-amber-100 dark:bg-amber-900/40 rounded-full">
+                  <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-amber-600/80 uppercase tracking-wider mb-1">Pending</div>
+                  <div className="text-3xl font-bold text-amber-600 dark:text-amber-400">{pendingCount}</div>
+                </div>
+              </div>
+              <div className="glass-panel p-6 rounded-2xl flex items-center gap-4 border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/30 dark:bg-emerald-900/10">
+                <div className="p-4 bg-emerald-100 dark:bg-emerald-900/40 rounded-full">
+                  <CheckCircle2 className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-emerald-600/80 uppercase tracking-wider mb-1">Completed</div>
+                  <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{completedCount}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Bar */}
+            <div className="glass-panel p-4 rounded-2xl flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={selectAll}
+                  disabled={pendingCount === 0}
+                  className="rounded-full"
+                >
+                  Select All Pending
+                </Button>
+                <Button variant="outline" size="sm" onClick={deselectAll} className="rounded-full">
+                  Deselect All
+                </Button>
+                <span className="text-sm font-medium text-slate-500 bg-white dark:bg-slate-900 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-800">
+                  <span className="text-primary font-bold">{selectedDocuments.size}</span> selected
+                </span>
+              </div>
+              <Button
+                onClick={handleProcessDocuments}
+                disabled={selectedDocuments.size === 0}
+                className="gap-2 rounded-full px-6 shadow-sm shadow-primary/20"
+              >
+                <Play className="h-4 w-4" />
+                Process Selected ({selectedDocuments.size})
+              </Button>
+            </div>
+
+            {/* Documents List */}
+            <div className="glass-panel p-8 rounded-2xl">
+              <h3 className="text-xl font-bold mb-6 text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <FileText className="h-5 w-5 text-primary" />
+                Documents
+              </h3>
+              {documents.length === 0 ? (
+                <div className="text-center py-12 text-slate-500 flex flex-col items-center">
+                  <FileText className="h-12 w-12 text-slate-300 mb-4" />
+                  <p>No documents found for this opportunity</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {documents.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 ${
+                        selectedDocuments.has(doc.id)
+                          ? "border-primary bg-primary/5 shadow-sm shadow-primary/5"
+                          : "border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-primary/30"
+                      }`}
+                    >
+                      <Checkbox
+                        checked={selectedDocuments.has(doc.id)}
+                        onCheckedChange={() => toggleDocumentSelection(doc.id)}
+                        disabled={doc.status !== "pending"}
+                        className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-slate-300"
+                      />
+                      
+                      <div className={`p-2 rounded-lg ${doc.status === 'completed' ? 'bg-emerald-50 text-emerald-500' : 'bg-primary/10 text-primary'}`}>
+                        <FileText className="h-6 w-6" />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-slate-900 dark:text-white truncate">
+                          {doc.name}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          {doc.size} • Uploaded {doc.uploadDate}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        {doc.status === "processing" && doc.progress !== undefined && (
+                          <div className="w-32 flex items-center gap-3">
+                            <Progress value={doc.progress} className="h-2 flex-1" />
+                            <span className="text-xs font-medium text-slate-500">{doc.progress}%</span>
+                          </div>
+                        )}
+                        {getStatusBadge(doc.status)}
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </Card>
+              )}
             </div>
-          ) : (
-            <>
-              {/* Selected Opportunity Header */}
-              <Card className="p-4 mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <Building2 className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-foreground">
-                        {selectedOpportunityData?.name}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {selectedOpportunityData?.company} • {selectedOpportunityData?.sector}
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedOpportunity(null);
-                      setSelectedDocuments(new Set());
-                    }}
-                  >
-                    Change Opportunity
-                  </Button>
-                </div>
-              </Card>
-
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card className="p-4">
-                  <div className="text-sm text-muted-foreground mb-1">Total Documents</div>
-                  <div className="text-2xl font-bold">{documents.length}</div>
-                </Card>
-                <Card className="p-4">
-                  <div className="text-sm text-muted-foreground mb-1">Pending</div>
-                  <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
-                </Card>
-                <Card className="p-4">
-                  <div className="text-sm text-muted-foreground mb-1">Completed</div>
-                  <div className="text-2xl font-bold text-green-600">{completedCount}</div>
-                </Card>
-              </div>
-
-              {/* Action Bar */}
-              <Card className="p-4 mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={selectAll}
-                      disabled={pendingCount === 0}
-                    >
-                      Select All Pending
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={deselectAll}>
-                      Deselect All
-                    </Button>
-                    <span className="text-sm text-muted-foreground">
-                      {selectedDocuments.size} selected
-                    </span>
-                  </div>
-                  <Button
-                    onClick={handleProcessDocuments}
-                    disabled={selectedDocuments.size === 0}
-                    className="gap-2"
-                  >
-                    <Play className="h-4 w-4" />
-                    Process Selected ({selectedDocuments.size})
-                  </Button>
-                </div>
-              </Card>
-
-              {/* Documents List */}
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-4 text-foreground">
-                  Documents
-                </h3>
-                {documents.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No documents found for this opportunity
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {documents.map((doc) => (
-                      <div
-                        key={doc.id}
-                        className={`flex items-center gap-4 p-4 rounded-lg border transition-colors ${
-                          selectedDocuments.has(doc.id)
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50"
-                        }`}
-                      >
-                        <Checkbox
-                          checked={selectedDocuments.has(doc.id)}
-                          onCheckedChange={() => toggleDocumentSelection(doc.id)}
-                          disabled={doc.status !== "pending"}
-                        />
-                        
-                        <FileText className="h-8 w-8 text-primary flex-shrink-0" />
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium text-foreground truncate">
-                            {doc.name}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {doc.size} • Uploaded {doc.uploadDate}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          {doc.status === "processing" && doc.progress !== undefined && (
-                            <div className="w-32">
-                              <Progress value={doc.progress} className="h-2" />
-                            </div>
-                          )}
-                          {getStatusBadge(doc.status)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </Card>
-            </>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Processing Dialog with ReactFlow */}
       <Dialog open={isProcessingDialogOpen} onOpenChange={setIsProcessingDialogOpen}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden">
-          <DialogHeader>
-            <DialogTitle>Processing Documents</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden rounded-2xl">
+          <DialogHeader className="pb-4 border-b border-slate-100 dark:border-slate-800">
+            <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+              <Play className="h-5 w-5 text-primary" />
+              Processing Documents
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 mt-1">
               AI agents are processing your documents through multiple stages
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <div className="space-y-6 py-4">
             {/* Current Document Info */}
             {currentProcessingDoc && (
-              <Card className="p-4 bg-primary/5 border-primary">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-8 w-8 text-primary" />
+              <div className="p-5 bg-primary/5 border border-primary/20 rounded-xl">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white dark:bg-slate-900 rounded-lg shadow-sm">
+                    <FileText className="h-8 w-8 text-primary" />
+                  </div>
                   <div className="flex-1">
-                    <div className="font-medium text-foreground">
+                    <div className="font-semibold text-slate-900 dark:text-white mb-1">
                       {currentProcessingDoc.name}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm font-medium text-primary">
                       Processing: {currentProcessingDoc.progress || 0}% complete
                     </div>
                   </div>
@@ -592,18 +621,23 @@ const ProcessDocuments = () => {
                 </div>
                 <Progress
                   value={currentProcessingDoc.progress || 0}
-                  className="mt-3"
+                  className="mt-4 h-2"
                 />
-              </Card>
+              </div>
             )}
 
             {/* Processing Progress */}
-            <div className="text-sm text-muted-foreground">
-              Processing {Array.from(selectedDocuments).findIndex(id => id === currentProcessingDoc?.id) + 1} of {selectedDocuments.size} selected documents
+            <div className="flex items-center justify-between px-2">
+              <div className="text-sm font-medium text-slate-500">
+                Processing <span className="text-slate-900 dark:text-white font-bold">{Array.from(selectedDocuments).findIndex(id => id === currentProcessingDoc?.id) + 1}</span> of <span className="text-slate-900 dark:text-white font-bold">{selectedDocuments.size}</span> selected documents
+              </div>
+              <div className="text-sm font-medium text-slate-500">
+                Please don't close this window
+              </div>
             </div>
 
             {/* ReactFlow Workflow Diagram */}
-            <div className="border rounded-lg overflow-hidden" style={{ height: '500px' }}>
+            <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-900/50 shadow-inner" style={{ height: '500px' }}>
               <DocumentProcessingWorkflow
                 currentStage={
                   currentProcessingDoc?.progress

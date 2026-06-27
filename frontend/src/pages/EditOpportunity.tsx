@@ -93,7 +93,7 @@ const EditOpportunity = () => {
   useEffect(() => {
     const loadOpportunityData = async () => {
       if (!opportunityId) {
-        navigate("/");
+        navigate("/dashboard");
         return;
       }
 
@@ -139,7 +139,7 @@ const EditOpportunity = () => {
           description: error.message || "The requested opportunity could not be loaded",
           variant: "destructive",
         });
-        navigate("/");
+        navigate("/dashboard");
       }
     };
 
@@ -506,7 +506,7 @@ const EditOpportunity = () => {
           <div className="mb-6">
             <Button
               variant="ghost"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/dashboard")}
               className="mb-3"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -974,7 +974,7 @@ const EditOpportunity = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/dashboard")}
               >
                 Back to Dashboard
               </Button>
