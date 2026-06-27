@@ -1,34 +1,29 @@
-# Stage 1: Build Dependencies
-FROM python:3.12-slim AS builder
+# syntax=docker/dockerfile:1
+FROM python:3.13-slim
 
-WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
+
+WORKDIR /api-app
+
+# System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+    build-essential curl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+COPY api-app/requirements.txt ./requirements.txt
 
-# Stage 2: Final Runtime
-FROM python:3.12-slim AS runner
+# Install deps
+RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app
+# Copy app
+COPY api-app/app ./app
+COPY api-app/main.py ./main.py
 
-# Copy installed packages from builder
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
+# Default port
+ENV PORT=8090
+EXPOSE 8090
 
-# Copy backend source
-COPY app/ ./app/
-COPY run.py .
-COPY requirements.txt .
-
-# Create volume/directories for SQL persistence and CSV downloads
-RUN mkdir -p ./exports && chmod 777 ./exports
-
-EXPOSE 8000
-
-ENV PYTHONUNBUFFERED=1
-
-CMD ["python", "run.py"]
+# Run
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8090"]
