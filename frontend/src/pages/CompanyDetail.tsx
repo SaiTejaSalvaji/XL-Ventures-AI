@@ -82,7 +82,7 @@ const ScoreRingLarge: React.FC<ScoreRingProps> = ({ score, color, size = 120, st
         gap: '2px',
       }}>
         <span style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Sora', sans-serif",
           fontWeight: 800,
           fontSize: '2rem',
           color,
@@ -136,7 +136,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
             <h1 style={{
               fontSize: '2rem',
               margin: 0,
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               fontWeight: 800,
             }}>
               {company.name}
@@ -166,7 +166,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
           {/* ── Score Breakdown ── */}
           <div className="card">
             <h3 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               fontSize: '0.8rem',
               fontWeight: 700,
               textTransform: 'uppercase',
@@ -212,7 +212,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
           {/* ── Founders ── */}
           <div className="card">
             <h3 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               fontSize: '0.8rem',
               fontWeight: 700,
               textTransform: 'uppercase',
@@ -249,7 +249,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
           <div className="grid-2">
             <div className="card">
               <h3 style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 fontSize: '0.8rem',
                 fontWeight: 700,
                 textTransform: 'uppercase',
@@ -272,7 +272,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
 
             <div className="card">
               <h3 style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 fontSize: '0.8rem',
                 fontWeight: 700,
                 textTransform: 'uppercase',
@@ -314,7 +314,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
           {/* ── Market Opportunities ── */}
           <div className="card">
             <h3 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               fontSize: '0.8rem',
               fontWeight: 700,
               textTransform: 'uppercase',
@@ -371,7 +371,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
           <div className="card" style={{ minHeight: '500px' }}>
             <div className="flex justify-between items-center mb-4">
               <h3 style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 fontSize: '0.8rem',
                 fontWeight: 700,
                 textTransform: 'uppercase',

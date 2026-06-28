@@ -33,7 +33,7 @@ export const HITLPanel: React.FC<HITLPanelProps> = ({ company, onDecisionSubmitt
     <div className="card card-glass flex flex-col gap-6">
       <div>
         <h3 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Sora', sans-serif",
           fontSize: '0.8rem',
           fontWeight: 700,
           textTransform: 'uppercase',
