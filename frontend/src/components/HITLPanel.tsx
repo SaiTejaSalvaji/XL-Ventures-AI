@@ -19,7 +19,7 @@ export const HITLPanel: React.FC<HITLPanelProps> = ({ company, onDecisionSubmitt
     setErrorMsg('');
     try {
       await approveCompany(company.id, decision, notes);
-      setSuccessMsg(`Decision "${decision.toUpperCase()}" recorded successfully!`);
+      setSuccessMsg(`✓ Decision "${decision.toUpperCase()}" recorded successfully!`);
       setNotes('');
       onDecisionSubmitted();
     } catch (err: any) {
@@ -30,16 +30,20 @@ export const HITLPanel: React.FC<HITLPanelProps> = ({ company, onDecisionSubmitt
   };
 
   return (
-    <div className="card card-glass flex flex-col gap-4">
-      <h3 className="text-sm font-bold uppercase text-secondary tracking-wider">Human-In-The-Loop Action</h3>
+    <div className="card card-glass flex flex-col gap-6">
+      <div>
+        <h3 className="text-sm font-bold uppercase text-secondary tracking-wider" style={{ letterSpacing: '0.08em' }}>
+          👤 Human-In-The-Loop Action
+        </h3>
+      </div>
       
       {successMsg && (
-        <div className="alert alert-success text-xs">
+        <div className="alert alert-success" style={{ animation: 'slideInUp 0.3s ease-out' }}>
           <span>✓</span> {successMsg}
         </div>
       )}
       {errorMsg && (
-        <div className="alert alert-error text-xs">
+        <div className="alert alert-error" style={{ animation: 'slideInUp 0.3s ease-out' }}>
           <span>⚠</span> {errorMsg}
         </div>
       )}
@@ -49,35 +53,64 @@ export const HITLPanel: React.FC<HITLPanelProps> = ({ company, onDecisionSubmitt
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Enter investment rationale notes, feedback for the pipeline, or action items..."
+          placeholder="Enter investment rationale, feedback for the pipeline, or action items..."
           className="form-input"
-          style={{ minHeight: '80px', resize: 'vertical', fontFamily: 'inherit' }}
+          style={{
+            minHeight: '100px',
+            resize: 'vertical',
+            fontFamily: 'inherit',
+            opacity: isSubmitting ? 0.6 : 1,
+            cursor: isSubmitting ? 'not-allowed' : 'text',
+          }}
           disabled={isSubmitting}
         />
       </div>
 
-      <div className="flex gap-3 mt-1">
+      <div className="flex flex-col gap-3">
         <button
           onClick={() => handleDecision('approve')}
           disabled={isSubmitting}
-          className="btn btn-success flex-1 justify-center btn-sm font-bold"
+          className="btn btn-success flex-1 justify-center"
+          style={{
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            padding: '12px 20px',
+            opacity: isSubmitting ? 0.7 : 1,
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+          }}
         >
-          Approve Pipeline
+          {isSubmitting ? '⏳ Processing...' : '✓ Approve Pipeline'}
         </button>
-        <button
-          onClick={() => handleDecision('more_info')}
-          disabled={isSubmitting}
-          className="btn btn-warning flex-1 justify-center btn-sm font-bold"
-        >
-          Request Info
-        </button>
-        <button
-          onClick={() => handleDecision('reject')}
-          disabled={isSubmitting}
-          className="btn btn-danger flex-1 justify-center btn-sm font-bold"
-        >
-          Reject Opportunity
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => handleDecision('more_info')}
+            disabled={isSubmitting}
+            className="btn btn-warning flex-1 justify-center"
+            style={{
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              padding: '12px 20px',
+              opacity: isSubmitting ? 0.7 : 1,
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            }}
+          >
+            ❓ Request Info
+          </button>
+          <button
+            onClick={() => handleDecision('reject')}
+            disabled={isSubmitting}
+            className="btn btn-danger flex-1 justify-center"
+            style={{
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              padding: '12px 20px',
+              opacity: isSubmitting ? 0.7 : 1,
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            }}
+          >
+            ✕ Reject
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -80,16 +80,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
   };
 
   return (
-    <div className="page flex flex-col gap-6 fade-in">
+    <div className="page flex flex-col gap-8 fade-in">
       <div className="flex flex-col gap-2">
-        <h1 className="flex items-center gap-2">
-          VenturePilot AI <span>AgentOS</span>
+        <h1 style={{ fontSize: '2.2rem', letterSpacing: '-0.02em' }}>
+          VenturePilot <span style={{ color: 'var(--accent-primary)' }}>AI</span>
         </h1>
-        <p>Enterprise B2B Innovation Research & Autonomous Diligence Platform</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+          Enterprise B2B Innovation Research & Autonomous Diligence Platform
+        </p>
       </div>
 
       {errorMsg && (
-        <div className="alert alert-error">
+        <div className="alert alert-error" style={{ animation: 'slideInUp 0.3s ease-out' }}>
           <span>⚠</span> {errorMsg}
         </div>
       )}
@@ -100,27 +102,45 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
         {jobStatus ? (
           <AgentProgress status={jobStatus.status} currentStep={jobStatus.current_step} />
         ) : (
-          <div className="card card-glass flex flex-col justify-between" style={{ minHeight: '340px' }}>
-            <h3 className="text-sm font-bold uppercase text-secondary tracking-wider">AgentOS Status</h3>
-            <div className="flex-col gap-2 my-auto" style={{ textAlign: 'center' }}>
-              <span style={{ fontSize: '3rem' }}>💤</span>
-              <p className="mt-2 text-sm">System is idle. Submit an ICP form to launch the multi-agent pipeline.</p>
+          <div className="card card-glass flex flex-col justify-between" style={{ minHeight: '440px' }}>
+            <div>
+              <h3 className="text-sm font-bold uppercase text-secondary tracking-wider" style={{ letterSpacing: '0.08em' }}>
+                🤖 AgentOS Status
+              </h3>
             </div>
-            <div className="divider" style={{ margin: '12px 0' }} />
-            <div className="flex justify-between items-center text-xs text-muted">
-              <span>Database Status: Connected</span>
-              <span>Available Agents: 11/11</span>
+            <div className="flex-col gap-3 my-auto" style={{ textAlign: 'center' }}>
+              <span style={{ fontSize: '4rem' }}>💤</span>
+              <p style={{ marginTop: '16px', color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>
+                System is idle. Submit an ICP form to launch the multi-agent pipeline.
+              </p>
+            </div>
+            <div className="divider" style={{ margin: '16px 0' }} />
+            <div className="flex justify-between items-center text-xs" style={{ color: 'var(--text-secondary)' }}>
+              <span>📊 Database: Connected</span>
+              <span>✨ Agents: 11/11</span>
+              <span>⚡ Ready</span>
             </div>
           </div>
         )}
       </div>
 
-      <div className="flex flex-col gap-3 mt-4">
+      <div className="flex flex-col gap-4 mt-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-secondary font-bold uppercase tracking-wider text-sm" style={{ fontSize: '0.85rem' }}>
-            Discovered Opportunities Pipeline
+          <h2 className="text-secondary font-bold uppercase tracking-wider" style={{ fontSize: '0.9rem', letterSpacing: '0.08em' }}>
+            📊 Discovered Opportunities Pipeline
           </h2>
-          <span className="badge badge-info">{companies.length} Total</span>
+          {companies.length > 0 && (
+            <div style={{
+              fontSize: '1.3rem',
+              fontWeight: 800,
+              background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
+              {companies.length} Total
+            </div>
+          )}
         </div>
         <CompanyTable companies={companies} onSelectCompany={onSelectCompany} />
       </div>
