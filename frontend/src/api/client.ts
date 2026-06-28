@@ -1,9 +1,17 @@
+import axios from 'axios';
 import type { ICP, JobStatus, Company, Decision } from '../types';
 
-// Standalone Mock Memory Store for Serverless Frontend
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
+
+const api = axios.create({
+  baseURL: BASE_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// Standalone Mock Memory Store for Serverless Frontend Fallback
 let mockCompanies: Company[] = [];
-let mockDecisions: Record<string, { decision: Decision; notes: string }> = {};
-let activeJobs: Record<string, {
+const mockDecisions: Record<string, { decision: Decision; notes: string }> = {};
+const activeJobs: Record<string, {
   status: 'queued' | 'running' | 'done' | 'error';
   currentStep: string | null;
   companies: Company[];
@@ -288,45 +296,56 @@ const AGENT_STEPS = [
 ];
 
 export const startAnalysis = async (icp: ICP): Promise<{ job_id: string; status: string }> => {
+  try {
+    const { data } = await api.post('/analyze', icp);
+    return data;
+  } catch (err) {
+    console.warn('Backend startAnalysis failed, falling back to mock:', err);
+  }
+
+  // Fallback Mock Pipeline
   const jobId = 'mock-job-' + Math.random().toString(36).substring(2, 9);
-  
-  // Decide which list to load based on ICP industry
   const targetCompanies = (icp.industry.toLowerCase().includes('health') || icp.industry.toLowerCase().includes('med'))
     ? MOCK_COMPANY_LIST
     : MOCK_GENERIC_COMPANY_LIST;
 
   activeJobs[jobId] = {
-    status: 'queued',
+    status: 'running',
     currentStep: 'Initializing AgentOS Pipeline',
     companies: targetCompanies,
     progressIndex: -1,
   };
 
-  // Simulate serverless pipeline run in the background
   const runSteps = () => {
     const job = activeJobs[jobId];
     if (!job) return;
 
     job.progressIndex++;
-    job.status = 'running';
 
     if (job.progressIndex < AGENT_STEPS.length) {
       job.currentStep = AGENT_STEPS[job.progressIndex];
-      setTimeout(runSteps, 1800); // 1.8s per step
+      setTimeout(runSteps, 1800);
     } else {
       job.status = 'done';
       job.currentStep = null;
-      // Add companies to the main memory store
       mockCompanies = [...job.companies];
     }
   };
 
   setTimeout(runSteps, 1000);
-
-  return { job_id: jobId, status: 'queued' };
+  return { job_id: jobId, status: 'running' };
 };
 
 export const getResults = async (jobId: string): Promise<JobStatus> => {
+  if (!jobId.startsWith('mock-job-')) {
+    try {
+      const { data } = await api.get(`/results/${jobId}`);
+      return data;
+    } catch (err) {
+      console.warn('Backend getResults failed, falling back to mock:', err);
+    }
+  }
+
   const job = activeJobs[jobId];
   if (!job) {
     throw new Error('Job not found');
@@ -341,7 +360,13 @@ export const getResults = async (jobId: string): Promise<JobStatus> => {
 };
 
 export const getAllCompanies = async (): Promise<{ companies: Company[]; total: number }> => {
-  // Sort in-memory companies by score descending
+  try {
+    const { data } = await api.get('/companies');
+    return data;
+  } catch (err) {
+    console.warn('Backend getAllCompanies failed, falling back to mock:', err);
+  }
+
   const sorted = [...mockCompanies].sort((a, b) => b.score - a.score);
   return { companies: sorted, total: sorted.length };
 };
@@ -351,18 +376,33 @@ export const approveCompany = async (
   decision: Decision,
   notes: string = ''
 ): Promise<{ status: string }> => {
+  if (!['niramai-health-1', 'tricog-health-2', 'sigtuple-3', 'zetacorp-1'].includes(companyId)) {
+    try {
+      const { data } = await api.post(`/approve/${companyId}`, { decision, notes });
+      return data;
+    } catch (err) {
+      console.warn('Backend approveCompany failed, falling back to mock:', err);
+    }
+  }
+
   mockDecisions[companyId] = { decision, notes };
-  
-  // Persist decision into the company object
   const company = mockCompanies.find(c => c.id === companyId);
   if (company) {
     company.validated = (decision === 'approve');
   }
-  
   return { status: 'recorded' };
 };
 
 export const getReport = async (companyId: string): Promise<{ report: string }> => {
+  if (!['niramai-health-1', 'tricog-health-2', 'sigtuple-3', 'zetacorp-1'].includes(companyId)) {
+    try {
+      const { data } = await api.get(`/company/${companyId}/report`);
+      return data;
+    } catch (err) {
+      console.warn('Backend getReport failed, falling back to mock:', err);
+    }
+  }
+
   const company = mockCompanies.find(c => c.id === companyId) || 
                   MOCK_COMPANY_LIST.find(c => c.id === companyId) ||
                   MOCK_GENERIC_COMPANY_LIST.find(c => c.id === companyId);
@@ -371,6 +411,10 @@ export const getReport = async (companyId: string): Promise<{ report: string }> 
 };
 
 export const checkHealth = async (): Promise<boolean> => {
-  // Standalone frontend is always healthy!
-  return true;
+  try {
+    await api.get('/health');
+    return true;
+  } catch {
+    return false;
+  }
 };
