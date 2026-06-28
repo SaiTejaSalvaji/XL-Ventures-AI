@@ -34,8 +34,8 @@ export const App: React.FC = () => {
         <div className="navbar-tag">Prototype</div>
         
         <div className="navbar-status">
-          <span className="status-dot" style={{ background: isBackendLive ? 'var(--green)' : 'var(--red)' }} />
-          <span style={{ color: isBackendLive ? 'var(--text-secondary)' : 'var(--red)', fontSize: '0.75rem', fontWeight: 600 }}>
+          <span className={`status-dot ${isBackendLive ? '' : 'offline'}`} />
+          <span style={{ color: isBackendLive ? 'var(--text-secondary)' : 'var(--error-color)', fontSize: '0.75rem', fontWeight: 600 }}>
             {isBackendLive ? 'AgentOS Backend: Live' : 'AgentOS Backend: Offline'}
           </span>
         </div>
