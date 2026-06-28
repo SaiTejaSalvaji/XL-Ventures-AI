@@ -4,140 +4,13 @@ import { startAnalysis, getResults, getAllCompanies } from '../api/client';
 import { ICPForm } from '../components/ICPForm';
 import { AgentProgress } from '../components/AgentProgress';
 import { CompanyTable } from '../components/CompanyTable';
+import MagicRings from '../components/MagicRings';
 
 interface DashboardProps {
   onSelectCompany: (company: Company) => void;
 }
 
-// ── Constellation Canvas Component ──────────────────────────────
-const ConstellationCanvas: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animFrameRef = useRef<number>(0);
-  const activeNodeRef = useRef<number>(0);
-  const tickRef = useRef<number>(0);
 
-  const AGENTS = [
-    'Discovery', 'Validation', 'Company\nProfile', 'Contact\nFinder',
-    'Founder\nIntel', 'GitHub\nMetrics', 'Market\nAnalysis',
-    'News &\nSentiment', 'Enrichment', 'Scoring\nEngine', 'Due\nDiligence',
-  ];
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const W = canvas.offsetWidth;
-    const H = canvas.offsetHeight;
-    canvas.width = W;
-    canvas.height = H;
-
-    const cx = W / 2;
-    const cy = H / 2;
-    const R = Math.min(W, H) * 0.35;
-    const N = AGENTS.length;
-
-    // Floating offsets
-    const floats = Array.from({ length: N }, (_, i) => ({
-      ox: 0, oy: 0,
-      phase: (Math.PI * 2 * i) / N,
-      amp: 3 + Math.random() * 3,
-      speed: 0.4 + Math.random() * 0.4,
-    }));
-
-    const getPos = (i: number, t: number) => {
-      const angle = (Math.PI * 2 * i) / N - Math.PI / 2;
-      const f = floats[i];
-      return {
-        x: cx + R * Math.cos(angle) + f.amp * Math.sin(f.phase + t * f.speed),
-        y: cy + R * Math.sin(angle) + f.amp * Math.cos(f.phase + t * f.speed * 0.7),
-      };
-    };
-
-    let t = 0;
-    const draw = () => {
-      t += 0.016;
-      tickRef.current += 1;
-
-      // Cycle active node every ~2s (120 frames)
-      if (tickRef.current % 120 === 0) {
-        activeNodeRef.current = (activeNodeRef.current + 1) % N;
-      }
-
-      ctx.clearRect(0, 0, W, H);
-
-      const positions = Array.from({ length: N }, (_, i) => getPos(i, t));
-
-      // Draw edges
-      for (let i = 0; i < N; i++) {
-        for (let j = i + 1; j < N; j++) {
-          const dx = positions[i].x - positions[j].x;
-          const dy = positions[i].y - positions[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const maxDist = R * 1.2;
-          if (dist < maxDist) {
-            const opacity = (1 - dist / maxDist) * 0.3;
-            ctx.beginPath();
-            ctx.moveTo(positions[i].x, positions[i].y);
-            ctx.lineTo(positions[j].x, positions[j].y);
-            ctx.strokeStyle = `rgba(108, 63, 232, ${opacity})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Draw nodes
-      positions.forEach((pos, i) => {
-        const isActive = i === activeNodeRef.current;
-        const r = isActive ? 10 : 6;
-
-        // Glow
-        const grad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, r * 3);
-        if (isActive) {
-          grad.addColorStop(0, 'rgba(245, 166, 35, 0.6)');
-          grad.addColorStop(1, 'rgba(245, 166, 35, 0)');
-        } else {
-          grad.addColorStop(0, 'rgba(108, 63, 232, 0.4)');
-          grad.addColorStop(1, 'rgba(108, 63, 232, 0)');
-        }
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, r * 3, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        // Core dot
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = isActive ? '#F5A623' : '#6C3FE8';
-        ctx.fill();
-
-        // Label
-        const label = AGENTS[i];
-        const lines = label.split('\n');
-        ctx.font = '9px "DM Sans", sans-serif';
-        ctx.fillStyle = isActive ? '#FFBE4F' : '#8B5CF6';
-        ctx.textAlign = 'center';
-        lines.forEach((line, li) => {
-          ctx.fillText(line, pos.x, pos.y + r + 12 + li * 11);
-        });
-      });
-
-      animFrameRef.current = requestAnimationFrame(draw);
-    };
-
-    draw();
-    return () => cancelAnimationFrame(animFrameRef.current);
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ width: '100%', height: '100%', display: 'block' }}
-    />
-  );
-};
 
 // ── Agent Data ───────────────────────────────────────────────────
 const LANDING_AGENTS = [
@@ -167,6 +40,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [showLanding, setShowLanding] = useState(true);
+  const [isIntroActive, setIsIntroActive] = useState(true);
 
   const pollIntervalRef = useRef<number | null>(null);
 
@@ -238,6 +112,110 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
 
   // ── Landing Page ─────────────────────────────────────────────
   if (showLanding) {
+    if (isIntroActive) {
+      return (
+        <div 
+          onClick={() => setIsIntroActive(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: '#0A0F1E',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            cursor: 'pointer',
+            overflow: 'hidden',
+          }}
+          className="fade-in"
+        >
+          {/* Full-screen MagicRings background */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 1,
+            opacity: 0.85,
+          }}>
+            <MagicRings
+              color="#00D4FF"
+              colorTwo="#7B2FBE"
+              ringCount={8}
+              speed={1.2}
+              attenuation={8}
+              lineThickness={2}
+              baseRadius={0.25}
+              radiusStep={0.08}
+              scaleRate={0.08}
+              opacity={1}
+              blur={0}
+              noiseAmount={0.05}
+              followMouse={true}
+              mouseInfluence={0.15}
+              clickBurst={true}
+            />
+          </div>
+
+          {/* Content Container */}
+          <div style={{
+            position: 'relative',
+            zIndex: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '24px',
+            textAlign: 'center',
+            pointerEvents: 'none',
+          }}>
+            {/* Glowing Animated Logo */}
+            <h1 style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 800,
+              fontSize: '4.5rem',
+              letterSpacing: '-0.04em',
+              margin: 0,
+              color: '#fff',
+              textShadow: '0 0 40px rgba(0, 212, 255, 0.4)',
+            }}>
+              VenturePilot{' '}
+              <span style={{
+                background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                textShadow: 'none',
+              }}>AI</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '1.1rem',
+              color: '#8892A4',
+              maxWidth: '500px',
+              lineHeight: 1.6,
+              margin: 0,
+            }}>
+              Autonomous Multi-Agent Opportunity Discovery Platform
+            </p>
+
+            {/* Pulsating enter prompt */}
+            <div style={{
+              marginTop: '16px',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              color: '#00D4FF',
+              textTransform: 'uppercase',
+              letterSpacing: '0.2em',
+              animation: 'pulse-dot 2s ease-in-out infinite',
+            }}>
+              ✦ Click anywhere to enter ✦
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="page flex flex-col gap-8 fade-in" style={{ maxWidth: 1440, margin: '0 auto' }}>
 
@@ -427,7 +405,29 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
               }}>ACTIVE</span>
             </div>
 
-            <ConstellationCanvas />
+            <MagicRings
+              color="#fc42ff"
+              colorTwo="#42fcff"
+              ringCount={6}
+              speed={1.0}
+              attenuation={10}
+              lineThickness={2}
+              baseRadius={0.35}
+              radiusStep={0.1}
+              scaleRate={0.1}
+              opacity={1}
+              blur={0}
+              noiseAmount={0.1}
+              rotation={0}
+              ringGap={1.5}
+              fadeIn={0.7}
+              fadeOut={0.5}
+              followMouse={true}
+              mouseInfluence={0.2}
+              hoverScale={1.2}
+              parallax={0.05}
+              clickBurst={true}
+            />
           </div>
         </div>
 
