@@ -1,114 +1,92 @@
 # 🚀 VenturePilot AI
 
-> Multi-agent AI platform for B2B opportunity discovery — powered by **Google Gemini** (free).
+> **Autonomous Multi-Agent VC Analyst & due-diligence pipeline** powered by Groq and Google Gemini.
 
-A VC analyst types an ICP ("AI Healthcare, Seed, India") → the system runs 8 agents → returns scored companies with AI-written due-diligence reports.
+VenturePilot AI is an enterprise-grade prototype designed for Venture Capital analysts to automate B2B startup discovery, profile enrichment, technical analysis, news sentiment monitoring, scoring, and investment memo generation.
 
----
-
-## 🏗️ Architecture (Prototype)
-
-```
-User (ICP) → FastAPI → Sequential Runner
-                           ├─ DiscoveryAgent    (Google CSE / mock)
-                           ├─ ValidationAgent   (HTTP check)
-                           ├─ CompanyProfile    (scrape + Gemini)
-                           ├─ GitHubAgent       (GitHub API)
-                           ├─ NewsAgent         (NewsAPI)
-                           ├─ MarketAnalysis    (Gemini)
-                           ├─ ScoringAgent      (rubric + Gemini)
-                           └─ ReportAgent       (Gemini full report)
-                                  ↓
-                           In-Memory Store → React UI
-```
+Submit an Ideal Customer Profile (ICP) (e.g., *“AI Healthcare, Seed stage, India”*) and watch a sequential multi-agent pipeline identify, validate, enrich, score, and write a professional investment report for target companies in seconds.
 
 ---
 
-## 🛠️ Tech Stack
+## 📸 Platform Interface
 
-| Layer | Tech | Cost |
-|-------|------|------|
-| LLM | Google Gemini 1.5 Flash | ✅ Free |
-| Backend | FastAPI + Uvicorn | ✅ Free |
-| Frontend | React + TypeScript (Vite) | ✅ Free |
-| Storage | In-memory Python dict | ✅ Free |
-| Company Data | Google CSE + mock fallback | ✅ Free |
-| GitHub Stats | GitHub REST API | ✅ Free |
-| News | NewsAPI.org | ✅ Free |
+Below is a screenshot of the main VenturePilot AI dashboard showing the **Opportunities Pipeline** and live workflow tracking:
+
+![VenturePilot AI Interface](docs/images/ui_screenshot.png)
+
+---
+
+## 📖 Documentation Index
+
+Every aspect of the VenturePilot AI system is documented in detail inside the [`docs/`](docs/) directory. Use the index below to explore each area:
+
+| Section | Link | Description |
+|---------|------|-------------|
+| 🏗️ **Architecture Overview** | [docs/architecture.md](docs/architecture.md) | High-level 3-tier architecture, system data flow, and core design decisions. |
+| 🧩 **Components & Modules** | [docs/components.md](docs/components.md) | Detailed documentation on all 11 specialized AI Agents and core services. |
+| 🔄 **Sequence & Flow Diagrams** | [docs/sequence_flows.md](docs/sequence_flows.md) | Mermaid sequence diagrams, LLM failover flowcharts, and scoring rubrics. |
+| 📊 **Data Model & ERD** | [docs/data_model.md](docs/data_model.md) | In-memory schema layouts, ERD, and TypeScript interface definitions. |
+| 🔌 **API Reference** | [docs/api_reference.md](docs/api_reference.md) | FastAPI endpoint documentation, path parameters, request bodies, and responses. |
+| ⚙️ **Setup & Deployment** | [docs/setup_deployment.md](docs/setup_deployment.md) | Step-by-step instructions for running the backend, frontend, and tests locally. |
+| 🛠️ **Tech Stack Summary** | [docs/tech_stack.md](docs/tech_stack.md) | Complete inventory of all languages, packages, web frameworks, and third-party APIs. |
+| 🧪 **Testing Strategy** | [docs/testing.md](docs/testing.md) | Pytest configuration, coverage report, and instructions for verifying stubs. |
+| 🔍 **Troubleshooting** | [docs/troubleshooting.md](docs/troubleshooting.md) | Solutions to rate limits (429), port conflicts, CORS blocks, and environment issues. |
+| 📝 **Changelog** | [docs/CHANGELOG.md](docs/CHANGELOG.md) | Track historical changes, fixes, refactors, and planned unreleased features. |
+| 👥 **Contribution Guide** | [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Code quality standards, pull request processes, and commit guidelines. |
+| 📄 **License** | [docs/LICENSE.md](docs/LICENSE.md) | MIT License terms and conditions. |
+
+---
+
+## 🏗️ System Visualizations
+
+### 1. High-Level Architecture
+This diagram outlines the frontend, backend, agent pipeline, and external API service layers:
+
+![Architecture Diagram](docs/images/architecture.svg)
+
+### 2. Multi-Agent Timeline Sequence
+This timeline demonstrates how the React UI polls FastAPI while the background thread processes agents sequentially:
+
+![Sequence Diagram](docs/images/sequence.svg)
+
+### 3. Provider Failover Mechanism (llm.py)
+We run all agent calls through a unified gateway that automatically routes requests through **Groq (Llama 3.3)** primary first, then **Gemini (2.0)**, and finally **Smart Mocks**:
+
+![LLM Failover Flowchart](docs/images/flowchart.svg)
 
 ---
 
 ## ⚡ Quickstart
 
-### 1. Clone & install
+### 1. Clone and Install
 ```bash
-git clone <repo-url>
+git clone https://github.com/SaiTejaSalvaji/XL-Ventures-AI.git
 cd XL-Ventures-AI
 pip install -r requirements.txt
 ```
 
-### 2. Configure API keys
+### 2. Configure Environment Keys
 ```bash
 cp .env.example .env
-# Fill in GEMINI_API_KEY (required) and optionally GITHUB_TOKEN, NEWSAPI_KEY
+# Open .env and configure GROQ_API_KEY (Recommended) or GEMINI_API_KEY
 ```
 
-### 3. Run backend
+### 3. Start Backend & Frontend
 ```bash
-uvicorn src.main:app --reload
-# → http://localhost:8000
-# → http://localhost:8000/docs  (auto-generated API docs)
-```
+# Terminal 1: Run Backend FastAPI
+python -m uvicorn src.main:app --reload
 
-### 4. Run frontend
-```bash
+# Terminal 2: Run Frontend React
 cd frontend
 npm install
 npm run dev
-# → http://localhost:5173
 ```
 
-### 5. Run tests
+### 4. Verify Coverage & Tests
 ```bash
-pytest tests/ -v
+python -m pytest tests/ -v
 ```
 
 ---
 
-## 🔑 API Keys (all free)
-
-| Key | Get it at | Free limit |
-|-----|-----------|-----------|
-| `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | 15 RPM, 1M tokens/day |
-| `GITHUB_TOKEN` | [github.com/settings/tokens](https://github.com/settings/tokens) | 5000 req/hr |
-| `NEWSAPI_KEY` | [newsapi.org/register](https://newsapi.org/register) | 100 req/day |
-| `GOOGLE_CSE_API_KEY` | [console.cloud.google.com](https://console.cloud.google.com) | 100 req/day |
-
-> **Demo works without all keys** — agents fall back to curated mock data.
-
----
-
-## 📁 Structure
-```
-src/
-├── llm.py              # Gemini helper (ask, ask_json)
-├── main.py             # FastAPI app
-├── agents/             # 11 agent modules
-├── memory/store.py     # In-memory company store
-└── workflow/runner.py  # Sequential agent runner
-
-frontend/src/
-├── pages/Dashboard.tsx
-├── pages/CompanyDetail.tsx
-└── components/         # ICPForm, CompanyTable, ScoreBadge...
-
-tests/                  # pytest suite
-docs/                   # Architecture, codebase notes
-```
-
----
-
-## 📖 Docs
-- [Architecture](docs/architecture.md)
-- [Codebase Notes](docs/codebase_notes.md)
-- [Implementation Plan](IMPLEMENTATION_PLAN.md)
+*VenturePilot AI is maintained under the MIT License by Sai Teja Salvaji / XL Ventures.*

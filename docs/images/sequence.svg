@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+
+    <!-- Lifeline Line Style -->
+    <style>
+      .lifeline { stroke: #475569; stroke-width: 1.5; stroke-dasharray: 4,4; }
+      .actor-box { fill: #1e293b; stroke: #64748b; stroke-width: 1.5; }
+      .actor-text { font-family: Segoe UI, Inter, sans-serif; font-size: 13; fill: #ffffff; text-anchor: middle; font-weight: 600; }
+      .msg-line { stroke: #94a3b8; stroke-width: 1.5; }
+      .msg-text { font-family: Segoe UI, Inter, sans-serif; font-size: 11; fill: #cbd5e1; }
+      .return-line { stroke: #64748b; stroke-width: 1.2; stroke-dasharray: 3,3; }
+      .box-label { font-family: Segoe UI, Inter, sans-serif; font-size: 14; font-weight: bold; fill: #38bdf8; }
+    </style>
+
+    <!-- Arrow Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="650" rx="15" fill="url(#bgGrad)"/>
+  <rect width="996" height="646" x="2" y="2" rx="13" fill="none" stroke="#312e81" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="50" y="50" font-family="Segoe UI, Inter, sans-serif" font-size="24" font-weight="bold" fill="#ffffff" letter-spacing="1">VENTUREPILOT AI — SEQUENCE DIAGRAM</text>
+  <text x="50" y="75" font-family="Segoe UI, Inter, sans-serif" font-size="14" fill="#94a3b8">Sequential Agent Workflow Execution Timeline</text>
+
+  <!-- Columns Positions:
+       User: 120
+       UI: 300
+       API: 480
+       Runner: 660
+       Store: 840
+  -->
+
+  <!-- Lifelines -->
+  <line x1="120" y1="120" x2="120" y2="580" class="lifeline"/>
+  <line x1="300" y1="120" x2="300" y2="580" class="lifeline"/>
+  <line x1="480" y1="120" x2="480" y2="580" class="lifeline"/>
+  <line x1="660" y1="120" x2="660" y2="580" class="lifeline"/>
+  <line x1="840" y1="120" x2="840" y2="580" class="lifeline"/>
+
+  <!-- Actor Boxes (Top) -->
+  <rect x="50" y="100" width="140" height="40" rx="5" class="actor-box"/>
+  <text x="120" y="125" class="actor-text">VC Analyst</text>
+
+  <rect x="230" y="100" width="140" height="40" rx="5" class="actor-box" stroke="#0284c7"/>
+  <text x="300" y="125" class="actor-text">Dashboard (React)</text>
+
+  <rect x="410" y="100" width="140" height="40" rx="5" class="actor-box" stroke="#4f46e5"/>
+  <text x="480" y="125" class="actor-text">FastAPI Backend</text>
+
+  <rect x="590" y="100" width="140" height="40" rx="5" class="actor-box" stroke="#0d9488"/>
+  <text x="660" y="125" class="actor-text">Workflow Runner</text>
+
+  <rect x="770" y="100" width="140" height="40" rx="5" class="actor-box" stroke="#94a3b8"/>
+  <text x="840" y="125" class="actor-text">In-Memory Store</text>
+
+  <!-- Execution Timeline Boxes (Active states) -->
+  <rect x="295" y="160" width="10" height="400" fill="#38bdf8" rx="2"/>
+  <rect x="475" y="180" width="10" height="380" fill="#818cf8" rx="2"/>
+  <rect x="655" y="240" width="10" height="260" fill="#2dd4bf" rx="2"/>
+
+  <!-- Messages -->
+  <!-- 1. Submit ICP -->
+  <line x1="120" y1="170" x2="295" y2="170" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="135" y="164" class="msg-text">1. Fill &amp; Submit ICP</text>
+
+  <!-- 2. POST /analyze -->
+  <line x1="305" y1="190" x2="475" y2="190" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="320" y="184" class="msg-text">2. POST /analyze {icp}</text>
+
+  <!-- 3. Clear store -->
+  <line x1="485" y1="210" x2="840" y2="210" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="500" y="204" class="msg-text">3. store.clear_all()</text>
+
+  <!-- 4. Create job -->
+  <line x1="485" y1="230" x2="840" y2="230" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="500" y="224" class="msg-text">4. store.create_job()</text>
+
+  <!-- 5. Start thread -->
+  <line x1="485" y1="250" x2="655" y2="250" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="500" y="244" class="msg-text" fill="#2dd4bf">5. start_workflow_async() (Background)</text>
+
+  <!-- 6. Return response to UI -->
+  <line x1="475" y1="270" x2="305" y2="270" class="return-line" marker-end="url(#arrow)"/>
+  <text x="320" y="264" class="msg-text">6. Return {job_id, status: "running"}</text>
+
+  <!-- 7. Loop polling -->
+  <path d="M 305 300 L 350 300 L 350 340 L 305 340" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2" marker-end="url(#arrow)"/>
+  <text x="355" y="325" class="msg-text" fill="#38bdf8">Poll /results/{job_id}<br/>every 2 seconds</text>
+
+  <!-- 8. Discovery / validation -->
+  <line x1="665" y1="290" x2="820" y2="290" class="msg-line" stroke="#2dd4bf" marker-end="url(#arrow)"/>
+  <text x="675" y="284" class="msg-text" fill="#ccfbf1">8. Discovery &amp; validation agents</text>
+
+  <!-- 9. Iterate & enrich -->
+  <path d="M 665 320 L 710 320 L 710 370 L 665 370" fill="none" stroke="#2dd4bf" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="715" y="348" class="msg-text" fill="#ccfbf1">9. Sequential agent loop<br/>(Profile, Founders, GH, Market, News...)</text>
+
+  <!-- 10. Save company -->
+  <line x1="665" y1="390" x2="840" y2="390" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="675" y="384" class="msg-text">10. store.save_company(enriched)</text>
+
+  <!-- 11. Workflow completed -->
+  <line x1="665" y1="430" x2="840" y2="430" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="675" y="424" class="msg-text">11. store.update_job(status="done")</text>
+
+  <!-- 12. Final fetch results -->
+  <line x1="305" y1="480" x2="475" y2="480" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="320" y="474" class="msg-text">12. GET /companies (Final pipeline reload)</text>
+
+  <line x1="480" y1="500" x2="840" y2="500" class="msg-line" marker-end="url(#arrow)"/>
+  <text x="500" y="494" class="msg-text">13. store.get_all_companies()</text>
+
+  <line x1="475" y1="520" x2="305" y2="520" class="return-line" marker-end="url(#arrow)"/>
+  <text x="320" y="514" class="msg-text">14. Return sorted pipeline list</text>
+
+  <!-- Actor Boxes (Bottom) -->
+  <rect x="50" y="590" width="140" height="40" rx="5" class="actor-box"/>
+  <text x="120" y="615" class="actor-text">VC Analyst</text>
+
+  <rect x="230" y="590" width="140" height="40" rx="5" class="actor-box" stroke="#0284c7"/>
+  <text x="300" y="615" class="actor-text">Dashboard (React)</text>
+
+  <rect x="410" y="590" width="140" height="40" rx="5" class="actor-box" stroke="#4f46e5"/>
+  <text x="480" y="615" class="actor-text">FastAPI Backend</text>
+
+  <rect x="590" y="590" width="140" height="40" rx="5" class="actor-box" stroke="#0d9488"/>
+  <text x="660" y="615" class="actor-text">Workflow Runner</text>
+
+  <rect x="770" y="590" width="140" height="40" rx="5" class="actor-box" stroke="#94a3b8"/>
+  <text x="840" y="615" class="actor-text">In-Memory Store</text>
+
+</svg>

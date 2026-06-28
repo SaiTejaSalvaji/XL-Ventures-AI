@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+
+    <!-- Box Styles -->
+    <style>
+      .step-box { fill: #1e293b; stroke: #64748b; stroke-width: 1.5; }
+      .dec-box { fill: #1e1b4b; stroke: #818cf8; stroke-width: 1.5; }
+      .text-title { font-family: Segoe UI, Inter, sans-serif; font-size: 14; font-weight: bold; fill: #ffffff; text-anchor: middle; }
+      .text-desc { font-family: Segoe UI, Inter, sans-serif; font-size: 11; fill: #94a3b8; text-anchor: middle; }
+      .arrow-line { stroke: #64748b; stroke-width: 2; }
+      .yes-text { font-family: Segoe UI, Inter, sans-serif; font-size: 11; font-weight: bold; fill: #22c55e; }
+      .no-text { font-family: Segoe UI, Inter, sans-serif; font-size: 11; font-weight: bold; fill: #ef4444; }
+    </style>
+
+    <!-- Arrow Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="650" rx="15" fill="url(#bgGrad)"/>
+  <rect width="996" height="646" x="2" y="2" rx="13" fill="none" stroke="#312e81" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="50" y="50" font-family="Segoe UI, Inter, sans-serif" font-size="24" font-weight="bold" fill="#ffffff" letter-spacing="1">VENTUREPILOT AI — LLM PROVIDER FAILOVER FLOW</text>
+  <text x="50" y="75" font-family="Segoe UI, Inter, sans-serif" font-size="14" fill="#94a3b8">3-Tier Failover Chain &amp; Smart Fallback Architecture</text>
+
+  <!-- Start Node -->
+  <rect x="425" y="110" width="150" height="50" rx="25" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+  <text x="500" y="140" class="text-title" fill="#38bdf8">LLM Call Triggered</text>
+
+  <!-- Arrow Start -> Dec 1 -->
+  <line x1="500" y1="160" x2="500" y2="210" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- Decision 1: GROQ_API_KEY Configured? -->
+  <polygon points="500,210 620,250 500,290 380,250" class="dec-box"/>
+  <text x="500" y="247" class="text-title" font-size="11">GROQ_API_KEY</text>
+  <text x="500" y="262" class="text-title" font-size="11">Configured?</text>
+
+  <!-- Arrow Dec 1 -> Groq API (Yes, Down) -->
+  <line x1="500" y1="290" x2="500" y2="340" class="arrow-line" marker-end="url(#arrow)"/>
+  <text x="510" y="315" class="yes-text">YES</text>
+
+  <!-- Groq API Call -->
+  <rect x="400" y="340" width="200" height="60" rx="5" class="step-box" stroke="#0d9488"/>
+  <text x="500" y="365" class="text-title" fill="#ccfbf1">Call Groq API</text>
+  <text x="500" y="385" class="text-desc" fill="#a5f3fc">(llama-3.3-70b-versatile)</text>
+
+  <!-- Arrow Groq API -> Dec 2 -->
+  <line x1="500" y1="400" x2="500" y2="440" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- Decision 2: Groq Success? -->
+  <polygon points="500,440 600,475 500,510 400,475" class="dec-box"/>
+  <text x="500" y="472" class="text-title" font-size="11">Response OK?</text>
+  <text x="500" y="487" class="text-title" font-size="11">(No 429/Error)</text>
+
+  <!-- Arrow Dec 2 -> Success (Yes, Down) -->
+  <line x1="500" y1="510" x2="500" y2="550" class="arrow-line" marker-end="url(#arrow)"/>
+  <text x="510" y="530" class="yes-text">YES</text>
+
+  <!-- Success End Node -->
+  <rect x="400" y="550" width="200" height="50" rx="10" fill="#022c22" stroke="#10b981" stroke-width="2"/>
+  <text x="500" y="580" class="text-title" fill="#a7f3d0">Return LLM Response</text>
+
+  <!-- Connection from Dec 1 to Gemini Check (No, Left) -->
+  <path d="M 380 250 L 220 250 L 220 340" fill="none" class="arrow-line" marker-end="url(#arrow)"/>
+  <text x="290" y="242" class="no-text">NO (Skip Groq)</text>
+
+  <!-- Connection from Dec 2 to Gemini Call (No, Left-Down) -->
+  <path d="M 400 475 L 260 475 L 260 380 L 260 380" fill="none" class="arrow-line"/>
+  <path d="M 260 380 L 220 380 L 220 380" fill="none" class="arrow-line"/>
+  <line x1="260" y1="475" x2="220" y2="475" class="arrow-line"/>
+  <path d="M 220 475 L 220 370" fill="none" class="arrow-line"/>
+  <!-- Just simpler path from Dec 2 to Gemini: -->
+  <!-- We'll route directly from Dec 2 left to Gemini endpoint -->
+  <path d="M 400 475 L 220 475 L 220 400" fill="none" class="arrow-line" marker-end="url(#arrow)"/>
+  <text x="270" y="468" class="no-text">NO (Failover)</text>
+
+  <!-- Gemini Call Node -->
+  <rect x="120" y="340" width="200" height="60" rx="5" class="step-box" stroke="#3b82f6"/>
+  <text x="220" y="365" class="text-title" fill="#dbeafe">Call Gemini API</text>
+  <text x="220" y="385" class="text-desc" fill="#93c5fd">(gemini-2.0-flash)</text>
+
+  <!-- Arrow Gemini -> Dec 3 -->
+  <line x1="220" y1="400" x2="220" y2="440" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- Decision 3: Gemini Success? -->
+  <polygon points="220,440 320,475 220,510 120,475" class="dec-box"/>
+  <text x="220" y="472" class="text-title" font-size="11">Response OK?</text>
+
+  <!-- Connection Dec 3 -> Success (Yes, Right-Down) -->
+  <path d="M 220 510 L 220 575 L 400 575" fill="none" class="arrow-line" marker-end="url(#arrow)"/>
+  <text x="230" y="535" class="yes-text">YES</text>
+
+  <!-- Connection Dec 3 -> Smart Mock (No, Left) -->
+  <path d="M 120 475 L 50 475 L 50 550 L 120 550 L 120 550" fill="none" class="arrow-line"/>
+  <path d="M 120 475 L 60 475 L 60 550 Q 60 560 70 560 L 120 560" fill="none" class="arrow-line"/>
+  <path d="M 120 475 L 70 475 L 70 550 L 150 550" fill="none" class="arrow-line" marker-end="url(#arrow)"/>
+  <text x="80" y="468" class="no-text">NO (Failover)</text>
+
+  <!-- Smart Mock Fallback Node -->
+  <rect x="150" y="525" width="200" height="50" rx="5" class="step-box" stroke="#f59e0b"/>
+  <text x="250" y="555" class="text-title" fill="#fef3c7">Smart Mock Fallback</text>
+
+  <!-- Arrow Mock -> Return -->
+  <path d="M 350 550 L 400 550" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+</svg>

@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    
+    <!-- Box Gradients -->
+    <linearGradient id="frontGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+    <linearGradient id="backGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#3730a3"/>
+    </linearGradient>
+    <linearGradient id="agentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="extGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="2" dy="6" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Arrow Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="650" rx="15" fill="url(#bgGrad)"/>
+  <rect width="996" height="646" x="2" y="2" rx="13" fill="none" stroke="#312e81" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="50" y="50" font-family="Segoe UI, Inter, sans-serif" font-size="24" font-weight="bold" fill="#ffffff" letter-spacing="1">VENTUREPILOT AI — SYSTEM ARCHITECTURE</text>
+  <text x="50" y="75" font-family="Segoe UI, Inter, sans-serif" font-size="14" fill="#94a3b8">Multi-Agent B2B Startup Discovery &amp; Due-Diligence Platform</text>
+
+  <!-- ==================== FRONTEND TIER ==================== -->
+  <g filter="url(#shadow)">
+    <rect x="50" y="120" width="220" height="450" rx="10" fill="url(#frontGrad)" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="160" y="150" font-family="Segoe UI, Inter, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">Frontend (React + Vite)</text>
+    
+    <!-- React Component Blocks -->
+    <rect x="70" y="180" width="180" height="50" rx="5" fill="#082f49" stroke="#0284c7" stroke-width="1"/>
+    <text x="160" y="210" font-family="Segoe UI, Inter, sans-serif" font-size="12" fill="#e0f2fe" text-anchor="middle">Dashboard UI (Dashboard.tsx)</text>
+
+    <rect x="70" y="250" width="180" height="50" rx="5" fill="#082f49" stroke="#0284c7" stroke-width="1"/>
+    <text x="160" y="280" font-family="Segoe UI, Inter, sans-serif" font-size="12" fill="#e0f2fe" text-anchor="middle">ICP Input Form (ICPForm.tsx)</text>
+
+    <rect x="70" y="320" width="180" height="50" rx="5" fill="#082f49" stroke="#0284c7" stroke-width="1"/>
+    <text x="160" y="350" font-family="Segoe UI, Inter, sans-serif" font-size="12" fill="#e0f2fe" text-anchor="middle">Company Table (CompanyTable.tsx)</text>
+
+    <rect x="70" y="390" width="180" height="50" rx="5" fill="#082f49" stroke="#0284c7" stroke-width="1"/>
+    <text x="160" y="420" font-family="Segoe UI, Inter, sans-serif" font-size="12" fill="#e0f2fe" text-anchor="middle">Company Details (CompanyDetail.tsx)</text>
+
+    <rect x="70" y="460" width="180" height="50" rx="5" fill="#082f49" stroke="#0284c7" stroke-width="1"/>
+    <text x="160" y="490" font-family="Segoe UI, Inter, sans-serif" font-size="12" fill="#e0f2fe" text-anchor="middle">HITL Panel (HITLPanel.tsx)</text>
+
+    <rect x="70" y="530" width="180" height="30" rx="5" fill="#082f49" stroke="#0284c7" stroke-width="1"/>
+    <text x="160" y="549" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#e0f2fe" text-anchor="middle">API Client (Axios)</text>
+  </g>
+
+  <!-- ==================== BACKEND TIER ==================== -->
+  <g filter="url(#shadow)">
+    <rect x="350" y="120" width="260" height="450" rx="10" fill="url(#backGrad)" stroke="#818cf8" stroke-width="1.5"/>
+    <text x="480" y="150" font-family="Segoe UI, Inter, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">Backend (FastAPI + Uvicorn)</text>
+    
+    <!-- API Router -->
+    <rect x="375" y="180" width="210" height="50" rx="5" fill="#1e1b4b" stroke="#4f46e5" stroke-width="1"/>
+    <text x="480" y="210" font-family="Segoe UI, Inter, sans-serif" font-size="13" font-weight="bold" fill="#e0e7ff" text-anchor="middle">FastAPI Router (main.py)</text>
+
+    <!-- Workflow Runner -->
+    <rect x="375" y="260" width="210" height="150" rx="5" fill="#1e1b4b" stroke="#4f46e5" stroke-width="1"/>
+    <text x="480" y="285" font-family="Segoe UI, Inter, sans-serif" font-size="13" font-weight="bold" fill="#e0e7ff" text-anchor="middle">Workflow Runner</text>
+    <text x="480" y="305" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#a5b4fc" text-anchor="middle">(runner.py - Threaded)</text>
+    <line x1="395" y1="315" x2="565" y2="315" stroke="#4338ca" stroke-width="1"/>
+    <text x="400" y="335" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#c7d2fe">1. Run Discovery &amp; Valid</text>
+    <text x="400" y="355" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#c7d2fe">2. Sequential Agent loop</text>
+    <text x="400" y="375" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#c7d2fe">3. Save enriched records</text>
+    <text x="400" y="395" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#c7d2fe">4. Update job statuses</text>
+
+    <!-- In-Memory Database -->
+    <rect x="375" y="440" width="210" height="110" rx="5" fill="#1e1b4b" stroke="#818cf8" stroke-dasharray="4,4" stroke-width="1.5"/>
+    <text x="480" y="465" font-family="Segoe UI, Inter, sans-serif" font-size="13" font-weight="bold" fill="#e0e7ff" text-anchor="middle">In-Memory DB (store.py)</text>
+    <text x="395" y="490" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#a5b4fc">• _store["companies"]</text>
+    <text x="395" y="510" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#a5b4fc">• _store["reports"]</text>
+    <text x="395" y="530" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#a5b4fc">• _store["jobs"]</text>
+  </g>
+
+  <!-- ==================== AGENT ORCHESTRATION ==================== -->
+  <g filter="url(#shadow)">
+    <rect x="690" y="120" width="260" height="340" rx="10" fill="url(#agentGrad)" stroke="#2dd4bf" stroke-width="1.5"/>
+    <text x="820" y="150" font-family="Segoe UI, Inter, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">AI Agent Pipeline</text>
+
+    <!-- Agents Grid -->
+    <g transform="translate(705, 170)">
+      <!-- Row 1 -->
+      <rect x="0" y="0" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="55" y="24" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">Planner</text>
+      
+      <rect x="120" y="0" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="175" y="24" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">Discovery</text>
+      
+      <!-- Row 2 -->
+      <rect x="0" y="50" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="55" y="74" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">Validation</text>
+
+      <rect x="120" y="50" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="175" y="74" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">CompanyProfile</text>
+
+      <!-- Row 3 -->
+      <rect x="0" y="100" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="55" y="124" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">FounderProfile</text>
+
+      <rect x="120" y="100" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="175" y="124" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">GitHubAgent</text>
+
+      <!-- Row 4 -->
+      <rect x="0" y="150" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="55" y="174" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">NewsAgent</text>
+
+      <rect x="120" y="150" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="175" y="174" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">MarketAnalysis</text>
+
+      <!-- Row 5 -->
+      <rect x="0" y="200" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="55" y="224" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">ScoringAgent</text>
+
+      <rect x="120" y="200" width="110" height="40" rx="4" fill="#042f2e" stroke="#0d9488"/>
+      <text x="175" y="224" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#ccfbf1" text-anchor="middle" font-weight="bold">ReportAgent</text>
+
+      <!-- Center Connected Row -->
+      <rect x="60" y="250" width="110" height="30" rx="4" fill="#115e59" stroke="#14b8a6"/>
+      <text x="115" y="269" font-family="Segoe UI, Inter, sans-serif" font-size="10" fill="#e6fffa" text-anchor="middle">ContactAgent</text>
+    </g>
+  </g>
+
+  <!-- ==================== GATEWAY (llm.py) ==================== -->
+  <g filter="url(#shadow)">
+    <rect x="690" y="480" width="260" height="90" rx="10" fill="url(#extGrad)" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="820" y="505" font-family="Segoe UI, Inter, sans-serif" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">LLM Client Gateway (llm.py)</text>
+    <text x="820" y="525" font-family="Segoe UI, Inter, sans-serif" font-size="11" fill="#cbd5e1" text-anchor="middle">Groq (Llama 3.3) ──► Gemini 2.0</text>
+    <text x="820" y="542" font-family="Segoe UI, Inter, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">Includes 3-tier failover &amp; smart mocks</text>
+  </g>
+
+  <!-- ==================== ARROWS / CONNECTORS ==================== -->
+  <!-- Frontend to Backend REST calls -->
+  <path d="M 270 205 L 350 205" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 350 220 L 270 220" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+  <text x="310" y="195" font-family="Segoe UI, Inter, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">POST /analyze</text>
+  <text x="310" y="240" font-family="Segoe UI, Inter, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">Job Status / Done</text>
+
+  <!-- Runner to Store reads/writes -->
+  <path d="M 480 410 L 480 440" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- Router reading from Store -->
+  <path d="M 530 440 L 530 230" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+
+  <!-- Workflow Runner executing Agent modules -->
+  <path d="M 585 285 L 690 285" stroke="#2dd4bf" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- Agents utilizing the LLM Gateway -->
+  <path d="M 820 460 L 820 480" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+</svg>

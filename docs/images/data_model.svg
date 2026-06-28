@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+
+    <!-- Table Header Gradients -->
+    <linearGradient id="primaryHeader" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#172554"/>
+    </linearGradient>
+
+    <style>
+      .table-card { fill: #1e293b; stroke: #475569; stroke-width: 1.5; }
+      .table-title { font-family: Segoe UI, Inter, sans-serif; font-size: 13; font-weight: bold; fill: #ffffff; }
+      .field-text { font-family: Consolas, Monaco, monospace; font-size: 11; fill: #cbd5e1; }
+      .type-text { font-family: Segoe UI, Inter, sans-serif; font-size: 11; fill: #64748b; }
+      .pk-text { font-family: Segoe UI, Inter, sans-serif; font-size: 10; fill: #f59e0b; font-weight: bold; }
+      .relation-line { stroke: #475569; stroke-width: 1.5; stroke-dasharray: 2,2; fill: none; }
+    </style>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="650" rx="15" fill="url(#bgGrad)"/>
+  <rect width="996" height="646" x="2" y="2" rx="13" fill="none" stroke="#312e81" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="50" y="50" font-family="Segoe UI, Inter, sans-serif" font-size="24" font-weight="bold" fill="#ffffff" letter-spacing="1">VENTUREPILOT AI — ENTITY-RELATIONSHIP DIAGRAM</text>
+  <text x="50" y="75" font-family="Segoe UI, Inter, sans-serif" font-size="14" fill="#94a3b8">Logical In-Memory Datastore Schemas &amp; Associations</text>
+
+  <!-- ==================== TABLE: JOB ==================== -->
+  <g filter="url(#shadow)" transform="translate(50, 120)">
+    <rect width="250" height="170" rx="6" class="table-card"/>
+    <rect width="250" height="30" rx="6" fill="url(#primaryHeader)"/>
+    <!-- Overlap to make top corners rounded but bottom straight for header -->
+    <rect width="250" height="10" y="20" fill="#172554"/>
+    <text x="15" y="20" class="table-title">JOB</text>
+    
+    <!-- Fields -->
+    <text x="15" y="50" class="field-text">job_id</text>
+    <text x="130" y="50" class="type-text">string (UUID)</text>
+    <text x="215" y="50" class="pk-text">PK</text>
+
+    <text x="15" y="70" class="field-text">status</text>
+    <text x="130" y="70" class="type-text">string</text>
+
+    <text x="15" y="90" class="field-text">icp</text>
+    <text x="130" y="90" class="type-text">dict</text>
+
+    <text x="15" y="110" class="field-text">result</text>
+    <text x="130" y="110" class="type-text">list[str]</text>
+
+    <text x="15" y="130" class="field-text">current_step</text>
+    <text x="130" y="130" class="type-text">string | null</text>
+
+    <text x="15" y="150" class="field-text">created_at</text>
+    <text x="130" y="150" class="type-text">string (ISO)</text>
+  </g>
+
+  <!-- ==================== TABLE: COMPANY ==================== -->
+  <g filter="url(#shadow)" transform="translate(370, 120)">
+    <rect width="260" height="430" rx="6" class="table-card"/>
+    <rect width="260" height="30" rx="6" fill="url(#primaryHeader)"/>
+    <rect width="260" height="10" y="20" fill="#172554"/>
+    <text x="15" y="20" class="table-title">COMPANY</text>
+    
+    <!-- Fields -->
+    <text x="15" y="50" class="field-text">id</text>
+    <text x="135" y="50" class="type-text">string (UUID)</text>
+    <text x="225" y="50" class="pk-text">PK</text>
+
+    <text x="15" y="70" class="field-text">name</text>
+    <text x="135" y="70" class="type-text">string</text>
+    <text x="225" y="70" class="pk-text" fill="#10b981">UK</text>
+
+    <text x="15" y="90" class="field-text">url</text>
+    <text x="135" y="90" class="type-text">string</text>
+
+    <text x="15" y="110" class="field-text">industry</text>
+    <text x="135" y="110" class="type-text">string</text>
+
+    <text x="15" y="130" class="field-text">stage</text>
+    <text x="135" y="130" class="type-text">string</text>
+
+    <text x="15" y="150" class="field-text">location</text>
+    <text x="135" y="150" class="type-text">string</text>
+
+    <text x="15" y="170" class="field-text">description</text>
+    <text x="135" y="170" class="type-text">string</text>
+
+    <text x="15" y="190" class="field-text">tagline</text>
+    <text x="135" y="190" class="type-text">string | null</text>
+
+    <text x="15" y="210" class="field-text">product</text>
+    <text x="135" y="210" class="type-text">string | null</text>
+
+    <text x="15" y="230" class="field-text">target_customers</text>
+    <text x="135" y="230" class="type-text">string | null</text>
+
+    <text x="15" y="250" class="field-text">tech_stack</text>
+    <text x="135" y="250" class="type-text">list[str]</text>
+
+    <text x="15" y="270" class="field-text">employee_estimate</text>
+    <text x="135" y="270" class="type-text">string | null</text>
+
+    <text x="15" y="290" class="field-text">business_model</text>
+    <text x="135" y="290" class="type-text">string | null</text>
+
+    <text x="15" y="310" class="field-text">validated</text>
+    <text x="135" y="310" class="type-text">boolean</text>
+
+    <text x="15" y="330" class="field-text">score</text>
+    <text x="135" y="330" class="type-text">int (0-100)</text>
+
+    <text x="15" y="350" class="field-text">tier</text>
+    <text x="135" y="350" class="type-text">string</text>
+
+    <text x="15" y="370" class="field-text">rationale</text>
+    <text x="135" y="370" class="type-text">string</text>
+
+    <text x="15" y="390" class="field-text">report</text>
+    <text x="135" y="390" class="type-text">string (MD)</text>
+
+    <text x="15" y="410" class="field-text">created_at</text>
+    <text x="135" y="410" class="type-text">string (ISO)</text>
+  </g>
+
+  <!-- ==================== TABLE: FOUNDERS ==================== -->
+  <g filter="url(#shadow)" transform="translate(710, 120)">
+    <rect width="240" height="170" rx="6" class="table-card"/>
+    <rect width="240" height="30" rx="6" fill="url(#primaryHeader)"/>
+    <rect width="240" height="10" y="20" fill="#172554"/>
+    <text x="15" y="20" class="table-title">FOUNDERS (Sub-Object Array)</text>
+    
+    <!-- Fields -->
+    <text x="15" y="50" class="field-text">name</text>
+    <text x="110" y="50" class="type-text">string</text>
+
+    <text x="15" y="70" class="field-text">title</text>
+    <text x="110" y="70" class="type-text">string</text>
+
+    <text x="15" y="90" class="field-text">background</text>
+    <text x="110" y="90" class="type-text">string</text>
+
+    <text x="15" y="110" class="field-text">education</text>
+    <text x="110" y="110" class="type-text">string</text>
+
+    <text x="15" y="130" class="field-text">linkedin_url</text>
+    <text x="110" y="130" class="type-text">string</text>
+
+    <text x="15" y="150" class="field-text">past_companies</text>
+    <text x="110" y="150" class="type-text">list[str]</text>
+  </g>
+
+  <!-- ==================== TABLE: DECISION ==================== -->
+  <g filter="url(#shadow)" transform="translate(710, 340)">
+    <rect width="240" height="130" rx="6" class="table-card"/>
+    <rect width="240" height="30" rx="6" fill="url(#primaryHeader)"/>
+    <rect width="240" height="10" y="20" fill="#172554"/>
+    <text x="15" y="20" class="table-title">DECISION</text>
+    
+    <!-- Fields -->
+    <text x="15" y="50" class="field-text">company_id</text>
+    <text x="110" y="50" class="type-text">string (UUID)</text>
+    <text x="200" y="50" class="pk-text" fill="#a855f7">FK</text>
+
+    <text x="15" y="70" class="field-text">decision</text>
+    <text x="110" y="70" class="type-text">string</text>
+
+    <text x="15" y="90" class="field-text">notes</text>
+    <text x="110" y="90" class="type-text">string</text>
+
+    <text x="15" y="110" class="field-text">recorded_at</text>
+    <text x="110" y="110" class="type-text">string (ISO)</text>
+  </g>
+
+  <!-- ==================== TABLE: GITHUB_DATA ==================== -->
+  <g filter="url(#shadow)" transform="translate(50, 340)">
+    <rect width="250" height="170" rx="6" class="table-card"/>
+    <rect width="250" height="30" rx="6" fill="url(#primaryHeader)"/>
+    <rect width="250" height="10" y="20" fill="#172554"/>
+    <text x="15" y="20" class="table-title">GITHUB_DATA (Sub-Object)</text>
+    
+    <!-- Fields -->
+    <text x="15" y="50" class="field-text">repo_count</text>
+    <text x="130" y="50" class="type-text">int</text>
+
+    <text x="15" y="70" class="field-text">total_stars</text>
+    <text x="130" y="70" class="type-text">int</text>
+
+    <text x="15" y="90" class="field-text">total_forks</text>
+    <text x="130" y="90" class="type-text">int</text>
+
+    <text x="15" y="110" class="field-text">last_commit_date</text>
+    <text x="130" y="110" class="type-text">string | null</text>
+
+    <text x="15" y="130" class="field-text">primary_languages</text>
+    <text x="130" y="130" class="type-text">list[str]</text>
+
+    <text x="15" y="150" class="field-text">github_org_url</text>
+    <text x="130" y="150" class="type-text">string | null</text>
+  </g>
+
+  <!-- Associations / Lines -->
+  <!-- JOB -> produces -> COMPANY -->
+  <path d="M 300 205 L 370 205" class="relation-line"/>
+  <circle cx="305" cy="205" r="3" fill="#475569"/>
+  <path d="M 360 200 L 370 205 L 360 210 Z" fill="#475569"/>
+
+  <!-- COMPANY -> has -> FOUNDERS -->
+  <path d="M 630 205 L 710 205" class="relation-line"/>
+  <circle cx="635" cy="205" r="3" fill="#475569"/>
+  <path d="M 700 200 L 710 205 L 700 210 Z" fill="#475569"/>
+
+  <!-- COMPANY -> receives -> DECISION -->
+  <path d="M 630 405 L 710 405" class="relation-line"/>
+  <circle cx="635" cy="405" r="3" fill="#475569"/>
+  <path d="M 700 400 L 710 405 L 700 411 Z" fill="#475569"/>
+
+  <!-- COMPANY -> has -> GITHUB_DATA -->
+  <path d="M 370 425 L 300 425" class="relation-line"/>
+  <circle cx="365" cy="425" r="3" fill="#475569"/>
+  <path d="M 310 420 L 300 425 L 310 430 Z" fill="#475569"/>
+
+</svg>
