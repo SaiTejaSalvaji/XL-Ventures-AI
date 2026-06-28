@@ -2,7 +2,7 @@ import requests
 import time
 
 def test_pipeline():
-    url_analyze = 'http://127.0.0.1:8000/analyze'
+    url_analyze = 'http://127.0.0.1:8001/analyze'
     payload = {
         'industry': 'AI FinTech',
         'stage': 'Seed',
@@ -18,7 +18,7 @@ def test_pipeline():
 
     print('\n2. Polling for results...')
     while True:
-        res_resp = requests.get(f'http://127.0.0.1:8000/results/{job_id}')
+        res_resp = requests.get(f'http://127.0.0.1:8001/{job_id}' if 'results/' in url_analyze else f'http://127.0.0.1:8001/results/{job_id}')
         res_data = res_resp.json()
         status = res_data.get('status')
         step = res_data.get('current_step')

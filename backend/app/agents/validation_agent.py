@@ -34,6 +34,10 @@ class ValidationAgent(BaseAgent):
     def _is_reachable(self, url: str) -> bool:
         if not url or not url.startswith("http"):
             return False
+        # Instantly fail mock domains to prevent slow socket timeouts during fallback runs
+        url_lower = url.lower()
+        if "alpha-" in url_lower or "beta-" in url_lower or "example.com" in url_lower or "companydomain.com" in url_lower:
+            return False
         try:
             resp = requests.head(url, timeout=5, allow_redirects=True)
             return resp.status_code < 500

@@ -224,19 +224,20 @@ def _mock_llm_ask_json(prompt: str, fallback: dict) -> dict:
         stage = "Seed"
         loc = "India"
         if "industry: " in prompt_lower:
-            match = re.search(r"industry: ([^\n]+)", prompt_lower)
-            if match: ind = match.group(1).strip()
+            match = re.search(r"industry: ([^\n\r]+)", prompt_lower)
+            if match: ind = match.group(1).strip().replace('\r', '')
         if "stage: " in prompt_lower:
-            match = re.search(r"stage: ([^\n]+)", prompt_lower)
-            if match: stage = match.group(1).strip()
+            match = re.search(r"stage: ([^\n\r]+)", prompt_lower)
+            if match: stage = match.group(1).strip().replace('\r', '')
         if "geography: " in prompt_lower:
-            match = re.search(r"geography: ([^\n]+)", prompt_lower)
-            if match: loc = match.group(1).strip()
+            match = re.search(r"geography: ([^\n\r]+)", prompt_lower)
+            if match: loc = match.group(1).strip().replace('\r', '')
             
+        url_ind = re.sub(r'[^a-zA-Z0-9]', '', ind.lower())
         return [
             {
                 "name": f"Alpha {ind} Corp",
-                "url": f"https://alpha-{ind.lower().replace(' ', '')}.com",
+                "url": f"https://alpha-{url_ind}.com",
                 "description": f"Next-generation B2B solutions in the {ind} sector.",
                 "industry": ind,
                 "location": loc,
@@ -245,7 +246,7 @@ def _mock_llm_ask_json(prompt: str, fallback: dict) -> dict:
             },
             {
                 "name": f"Beta {ind} Labs",
-                "url": f"https://beta-{ind.lower().replace(' ', '')}.com",
+                "url": f"https://beta-{url_ind}.com",
                 "description": f"Innovative technology platforms for B2B {ind} optimization.",
                 "industry": ind,
                 "location": loc,
