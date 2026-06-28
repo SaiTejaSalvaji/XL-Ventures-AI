@@ -6,9 +6,9 @@ Falls back to curated mock data so the demo always works.
 """
 
 import os
-import requests
 from .base_agent import BaseAgent
 from ..llm import ask_json
+from ..tools.search_tool import google_cse_search
 
 # Curated mock companies for demo fallback
 MOCK_COMPANIES = [
@@ -146,37 +146,23 @@ Make sure the URLs are plausible and formatted correctly. Return ONLY valid raw 
     def _google_cse_search(self, icp: dict) -> list[dict]:
         api_key = os.getenv("GOOGLE_CSE_API_KEY", "")
         cse_id = os.getenv("GOOGLE_CSE_ID", "")
-        if not api_key or not cse_id:
-            return []
-
         industry = icp.get("industry", "AI")
         location = icp.get("location", "")
         stage = icp.get("stage", "startup")
         query = f"{industry} startup {location} {stage} 2024"
-
-        try:
-            resp = requests.get(
-                "https://www.googleapis.com/customsearch/v1",
-                params={"key": api_key, "cx": cse_id, "q": query, "num": 10},
-                timeout=10,
-            )
-            items = resp.json().get("items", [])
-            return [
-                {
-                    "name": item.get("title", "").split(" - ")[0].strip(),
-                    "url": item.get("link", ""),
-                    "description": item.get("snippet", ""),
-                    "industry": icp.get("industry", ""),
-                    "location": icp.get("location", ""),
-                    "stage": icp.get("stage", ""),
-                    "source": "google_cse",
-                }
-                for item in items
-                if item.get("link", "").startswith("http")
-            ]
-        except Exception as e:
-            self.logger.warning(f"Google CSE failed: {e}")
-            return []
+        results = google_cse_search(query, api_key, cse_id)
+        return [
+            {
+                "name": r["title"],
+                "url": r["url"],
+                "description": r["snippet"],
+                "industry": icp.get("industry", ""),
+                "location": icp.get("location", ""),
+                "stage": icp.get("stage", ""),
+                "source": "google_cse",
+            }
+            for r in results
+        ]
 
     def _filtered_mock(self, icp: dict) -> list[dict]:
         """Return mock companies filtered by ICP industry keyword."""

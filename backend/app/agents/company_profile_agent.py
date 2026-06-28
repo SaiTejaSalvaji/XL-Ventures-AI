@@ -3,10 +3,9 @@ company_profile_agent.py — Company Profile Agent
 Scrapes company homepage and uses Gemini to extract structured profile info.
 """
 
-import requests
-from bs4 import BeautifulSoup
 from .base_agent import BaseAgent
 from ..llm import ask_json
+from ..tools.scraping_tool import scrape_website
 
 
 class CompanyProfileAgent(BaseAgent):
@@ -25,19 +24,7 @@ class CompanyProfileAgent(BaseAgent):
         return company
 
     def _scrape(self, url: str) -> str:
-        if not url:
-            return ""
-        try:
-            resp = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
-            soup = BeautifulSoup(resp.text, "html.parser")
-            # Extract meta description + first 500 chars of body text
-            meta = soup.find("meta", attrs={"name": "description"})
-            meta_text = meta["content"] if meta and meta.get("content") else ""
-            body_text = " ".join(soup.get_text().split())[:800]
-            return f"{meta_text}\n{body_text}"
-        except Exception as e:
-            self.logger.warning(f"Scrape failed for {url}: {e}")
-            return ""
+        return scrape_website(url)
 
     def _gemini_extract(self, company: dict, raw_text: str) -> dict:
         name = company.get("name", "")
