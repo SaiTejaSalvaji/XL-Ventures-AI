@@ -21,8 +21,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -55,6 +55,7 @@ async def analyze(icp: ICPRequest):
     Trigger the full agent workflow for a given ICP.
     Returns a job_id immediately; poll /results/{job_id} for updates.
     """
+    store.clear_all()
     icp_dict = icp.model_dump()
     job_id = store.create_job(icp_dict)
     start_workflow_async(job_id, icp_dict)
@@ -73,7 +74,11 @@ async def get_results(job_id: str):
 
     companies = []
     if job["status"] == "done":
-        companies = store.get_all_companies()
+        companies = [
+            store.get_company(name)
+            for name in job.get("result", [])
+            if store.get_company(name) is not None
+        ]
 
     return {
         "job_id": job_id,

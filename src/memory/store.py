@@ -47,6 +47,13 @@ def clear_companies() -> None:
     _store["companies"].clear()
 
 
+def clear_all() -> None:
+    _store["companies"].clear()
+    _store["reports"].clear()
+    _store["decisions"].clear()
+    _store["jobs"].clear()
+
+
 # ── Reports ───────────────────────────────────────────────────────────────────
 
 def save_report(company_name: str, report: str) -> None:
