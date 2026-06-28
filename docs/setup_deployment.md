@@ -26,6 +26,7 @@ cd XL-Ventures-AI
 ### Install Python Dependencies
 
 ```bash
+cd backend
 pip install -r requirements.txt
 ```
 
@@ -54,7 +55,7 @@ GOOGLE_CSE_ID=...                             # https://programmablesearchengine
 ### Start the Backend Server
 
 ```bash
-python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Verify it's running:
@@ -68,7 +69,7 @@ Auto-generated API docs: [http://localhost:8000/docs](http://localhost:8000/docs
 ## 3. Frontend Setup
 
 ```bash
-cd frontend
+cd ../frontend
 npm install
 npm run dev
 ```
@@ -86,7 +87,8 @@ VITE_API_BASE_URL=http://localhost:8000
 ## 4. Run Tests
 
 ```bash
-# From the project root
+# From the backend directory
+cd ../backend
 python -m pytest tests/ -v
 ```
 
@@ -139,27 +141,35 @@ The production bundle will be in `frontend/dist/`.
 
 ```
 XL-Ventures-AI/
-├── src/                          # Python backend
-│   ├── __init__.py
-│   ├── main.py                   # FastAPI application
-│   ├── llm.py                    # LLM helper (Groq + Gemini + Mocks)
-│   ├── agents/                   # 11 specialized AI agents
-│   │   ├── base_agent.py         # Abstract base class
-│   │   ├── planner_agent.py
-│   │   ├── discovery_agent.py
-│   │   ├── validation_agent.py
-│   │   ├── company_profile_agent.py
-│   │   ├── founder_profile_agent.py
-│   │   ├── github_agent.py
-│   │   ├── news_agent.py
-│   │   ├── market_analysis_agent.py
-│   │   ├── scoring_agent.py
-│   │   ├── report_agent.py
-│   │   └── contact_agent.py
-│   ├── memory/
-│   │   └── store.py              # In-memory data store
-│   └── workflow/
-│       └── runner.py             # Sequential agent orchestrator
+├── backend/                      # Python backend directory
+│   ├── app/                      # Python application package (formerly src)
+│   │   ├── __init__.py
+│   │   ├── main.py               # FastAPI application
+│   │   ├── llm.py                # LLM helper (Groq + Gemini + Mocks)
+│   │   ├── agents/               # 11 specialized AI agents
+│   │   │   ├── base_agent.py     # Abstract base class
+│   │   │   ├── planner_agent.py
+│   │   │   ├── discovery_agent.py
+│   │   │   ├── validation_agent.py
+│   │   │   ├── company_profile_agent.py
+│   │   │   ├── founder_profile_agent.py
+│   │   │   ├── github_agent.py
+│   │   │   ├── news_agent.py
+│   │   │   ├── market_analysis_agent.py
+│   │   │   ├── scoring_agent.py
+│   │   │   ├── report_agent.py
+│   │   │   └── contact_agent.py
+│   │   ├── memory/
+│   │   │   └── store.py          # In-memory data store
+│   │   └── workflow/
+│   │       └── runner.py         # Sequential agent orchestrator
+│   ├── tests/                    # pytest test suite
+│   │   ├── __init__.py
+│   │   └── test_stubs.py
+│   ├── .env.example              # Environment variable template
+│   ├── pyproject.toml            # Project metadata & tool config
+│   ├── pyrightconfig.json        # Pyright typing configurations
+│   └── requirements.txt          # Python dependencies
 ├── frontend/                     # React + TypeScript frontend
 │   ├── src/
 │   │   ├── App.tsx               # Root component
@@ -171,13 +181,7 @@ XL-Ventures-AI/
 │   │   └── types/index.ts        # TypeScript interfaces
 │   ├── package.json
 │   └── vite.config.ts
-├── tests/                        # pytest test suite
-│   ├── __init__.py
-│   └── test_stubs.py
-├── docs/                         # Documentation
-├── .env.example                  # Environment variable template
-├── requirements.txt              # Python dependencies
-├── pyproject.toml                # Project metadata & tool config
+├── docs/                         # System Documentation
 └── README.md
 ```
 

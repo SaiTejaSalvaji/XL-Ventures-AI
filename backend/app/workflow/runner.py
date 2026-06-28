@@ -10,17 +10,17 @@ Flow:
 
 import logging
 import threading
-from src import memory as store_module
-from src.memory import store
-from src.agents.discovery_agent import DiscoveryAgent
-from src.agents.validation_agent import ValidationAgent
-from src.agents.company_profile_agent import CompanyProfileAgent
-from src.agents.founder_profile_agent import FounderProfileAgent
-from src.agents.github_agent import GitHubAgent
-from src.agents.news_agent import NewsAgent
-from src.agents.market_analysis_agent import MarketAnalysisAgent
-from src.agents.scoring_agent import ScoringAgent
-from src.agents.report_agent import ReportAgent
+from app import memory as store_module
+from app.memory import store
+from app.agents.discovery_agent import DiscoveryAgent
+from app.agents.validation_agent import ValidationAgent
+from app.agents.company_profile_agent import CompanyProfileAgent
+from app.agents.founder_profile_agent import FounderProfileAgent
+from app.agents.github_agent import GitHubAgent
+from app.agents.news_agent import NewsAgent
+from app.agents.market_analysis_agent import MarketAnalysisAgent
+from app.agents.scoring_agent import ScoringAgent
+from app.agents.report_agent import ReportAgent
 
 logger = logging.getLogger(__name__)
 

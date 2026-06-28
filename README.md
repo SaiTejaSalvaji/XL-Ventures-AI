@@ -62,19 +62,22 @@ We run all agent calls through a unified gateway that automatically routes reque
 ```bash
 git clone https://github.com/SaiTejaSalvaji/XL-Ventures-AI.git
 cd XL-Ventures-AI
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ### 2. Configure Environment Keys
 ```bash
+cd backend
 cp .env.example .env
 # Open .env and configure GROQ_API_KEY (Recommended) or GEMINI_API_KEY
+cd ..
 ```
 
 ### 3. Start Backend & Frontend
 ```bash
 # Terminal 1: Run Backend FastAPI
-python -m uvicorn src.main:app --reload
+cd backend
+python -m uvicorn app.main:app --reload
 
 # Terminal 2: Run Frontend React
 cd frontend
@@ -84,6 +87,7 @@ npm run dev
 
 ### 4. Verify Coverage & Tests
 ```bash
+cd backend
 python -m pytest tests/ -v
 ```
 

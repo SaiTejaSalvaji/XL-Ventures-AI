@@ -13,7 +13,7 @@ VenturePilot AI is organized into four major layers: **Agents**, **Core Services
 
 ## Agent Pipeline
 
-All agents inherit from [`BaseAgent`](../src/agents/base_agent.py) which enforces:
+All agents inherit from [`BaseAgent`](../backend/app/agents/base_agent.py) which enforces:
 - A unique `name` string identifier
 - A `description` for logging and UI display
 - A `run(**kwargs)` method as the execution entry point
@@ -22,7 +22,7 @@ All agents inherit from [`BaseAgent`](../src/agents/base_agent.py) which enforce
 ### 1. PlannerAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/planner_agent.py` |
+| **File** | `backend/app/agents/planner_agent.py` |
 | **Name** | `planner` |
 | **Input** | `icp: dict` |
 | **Output** | `list[str]` — ordered agent names |
@@ -33,7 +33,7 @@ Generates a dynamic execution plan based on the ICP. Falls back to a hardcoded d
 ### 2. DiscoveryAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/discovery_agent.py` |
+| **File** | `backend/app/agents/discovery_agent.py` |
 | **Name** | `discovery` |
 | **Input** | `icp: dict` |
 | **Output** | `list[dict]` — discovered companies |
@@ -48,7 +48,7 @@ Three-tier discovery strategy:
 ### 3. ValidationAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/validation_agent.py` |
+| **File** | `backend/app/agents/validation_agent.py` |
 | **Name** | `validation` |
 | **Input** | `companies: list[dict]` |
 | **Output** | `list[dict]` — validated companies |
@@ -59,7 +59,7 @@ Performs HTTP HEAD requests to check if company URLs are reachable. Filters out 
 ### 4. CompanyProfileAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/company_profile_agent.py` |
+| **File** | `backend/app/agents/company_profile_agent.py` |
 | **Name** | `company_profile` |
 | **Input** | `company: dict` |
 | **Output** | `dict` — enriched company profile |
@@ -70,7 +70,7 @@ Scrapes the company homepage with BeautifulSoup, then uses the LLM to extract st
 ### 5. FounderProfileAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/founder_profile_agent.py` |
+| **File** | `backend/app/agents/founder_profile_agent.py` |
 | **Name** | `founder_profile` |
 | **Input** | `company: dict` |
 | **Output** | `list[dict]` — founder profiles |
@@ -81,7 +81,7 @@ Uses the LLM to generate 1–3 realistic founder profiles with name, title, back
 ### 6. GitHubAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/github_agent.py` |
+| **File** | `backend/app/agents/github_agent.py` |
 | **Name** | `github` |
 | **Input** | `company: dict` |
 | **Output** | `dict` — GitHub metrics |
@@ -93,7 +93,7 @@ Fetches real GitHub organization stats: repo count, total stars, forks, last com
 ### 7. NewsAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/news_agent.py` |
+| **File** | `backend/app/agents/news_agent.py` |
 | **Name** | `news` |
 | **Input** | `company: dict` |
 | **Output** | `dict` — news data with sentiment |
@@ -105,7 +105,7 @@ Fetches recent news articles via NewsAPI, then uses the LLM for sentiment classi
 ### 8. MarketAnalysisAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/market_analysis_agent.py` |
+| **File** | `backend/app/agents/market_analysis_agent.py` |
 | **Name** | `market_analysis` |
 | **Input** | `company: dict` |
 | **Output** | `dict` — market landscape |
@@ -116,7 +116,7 @@ Uses the LLM to generate competitive landscape data: competitors, TAM estimate, 
 ### 9. ScoringAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/scoring_agent.py` |
+| **File** | `backend/app/agents/scoring_agent.py` |
 | **Name** | `scoring` |
 | **Input** | `profile: dict` |
 | **Output** | `dict` — score, tier, breakdown, rationale |
@@ -133,7 +133,7 @@ Tiers: High (≥75), Medium (≥50), Low (<50). Uses the LLM to generate a 2–3
 ### 10. ReportAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/report_agent.py` |
+| **File** | `backend/app/agents/report_agent.py` |
 | **Name** | `report` |
 | **Input** | `profile: dict` |
 | **Output** | `str` — Markdown report |
@@ -144,7 +144,7 @@ Generates a full Markdown due-diligence report with sections: Executive Summary,
 ### 11. ContactAgent
 | Property | Value |
 |----------|-------|
-| **File** | `src/agents/contact_agent.py` |
+| **File** | `backend/app/agents/contact_agent.py` |
 | **Name** | `contact` |
 | **Input** | `founder: dict, domain: str` |
 | **Output** | `dict` — contact info |
@@ -156,7 +156,7 @@ Generates plausible professional email addresses from founder names and company 
 
 ## Core Services
 
-### LLM Helper (`src/llm.py`)
+### LLM Helper (`backend/app/llm.py`)
 The unified LLM gateway. Routes all agent LLM calls through a 3-tier failover chain:
 1. **Groq** (Llama-3.3-70b-versatile) — primary, fast, 14,400 RPD
 2. **Gemini** (gemini-2.0-flash) — fallback
@@ -166,14 +166,14 @@ Exposes two functions:
 - `ask(prompt, fallback)` → `str`
 - `ask_json(prompt, fallback)` → `dict`
 
-### In-Memory Store (`src/memory/store.py`)
+### In-Memory Store (`backend/app/memory/store.py`)
 Dict-based storage for the prototype. Stores:
 - **Companies** — keyed by name
 - **Reports** — keyed by company name
 - **Decisions** — HITL approval/rejection records
 - **Jobs** — workflow status tracking (queued → running → done/error)
 
-### Workflow Runner (`src/workflow/runner.py`)
+### Workflow Runner (`backend/app/workflow/runner.py`)
 Sequential orchestrator that chains all agents. Runs in a background `threading.Thread`. Updates job status at each step so the frontend can poll progress.
 
 ---
@@ -182,13 +182,13 @@ Sequential orchestrator that chains all agents. Runs in a background `threading.
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| **App** | `frontend/src/App.tsx` | Root component, navbar, routing, health check |
-| **Dashboard** | `frontend/src/pages/Dashboard.tsx` | ICP form, agent progress, company pipeline table |
-| **CompanyDetail** | `frontend/src/pages/CompanyDetail.tsx` | Full company profile, founders, scores, report |
-| **ICPForm** | `frontend/src/components/ICPForm.tsx` | ICP input form (industry, stage, location, keywords) |
-| **AgentProgress** | `frontend/src/components/AgentProgress.tsx` | Real-time agent execution status display |
-| **CompanyTable** | `frontend/src/components/CompanyTable.tsx` | Sortable company results table |
-| **HITLPanel** | `frontend/src/components/HITLPanel.tsx` | Human-in-the-Loop approval/rejection panel |
-| **ScoreBadge** | `frontend/src/components/ScoreBadge.tsx` | Color-coded score tier badge |
-| **API Client** | `frontend/src/api/client.ts` | Axios-based API client for all backend calls |
-| **Types** | `frontend/src/types/index.ts` | TypeScript interfaces (Company, ICP, JobStatus, etc.) |
+| **App** | `frontend/backend/app/App.tsx` | Root component, navbar, routing, health check |
+| **Dashboard** | `frontend/backend/app/pages/Dashboard.tsx` | ICP form, agent progress, company pipeline table |
+| **CompanyDetail** | `frontend/backend/app/pages/CompanyDetail.tsx` | Full company profile, founders, scores, report |
+| **ICPForm** | `frontend/backend/app/components/ICPForm.tsx` | ICP input form (industry, stage, location, keywords) |
+| **AgentProgress** | `frontend/backend/app/components/AgentProgress.tsx` | Real-time agent execution status display |
+| **CompanyTable** | `frontend/backend/app/components/CompanyTable.tsx` | Sortable company results table |
+| **HITLPanel** | `frontend/backend/app/components/HITLPanel.tsx` | Human-in-the-Loop approval/rejection panel |
+| **ScoreBadge** | `frontend/backend/app/components/ScoreBadge.tsx` | Color-coded score tier badge |
+| **API Client** | `frontend/backend/app/api/client.ts` | Axios-based API client for all backend calls |
+| **Types** | `frontend/backend/app/types/index.ts` | TypeScript interfaces (Company, ICP, JobStatus, etc.) |

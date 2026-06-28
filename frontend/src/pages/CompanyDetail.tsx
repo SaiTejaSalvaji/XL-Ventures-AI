@@ -145,7 +145,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
             </h3>
             <div className="flex flex-col gap-4">
               {company.founders?.map((f, i) => (
-                <div key={i} className="flex-col gap-2" style={{ paddingBottom: i < company.founders.length - 1 ? '12px', borderBottom: i < company.founders.length - 1 ? '1px solid var(--border-color)' : 'none' }}>
+                <div key={i} className="flex-col gap-2" style={{ paddingBottom: i < company.founders.length - 1 ? '12px' : '0px', borderBottom: i < company.founders.length - 1 ? '1px solid var(--border-color)' : 'none' }}>
                   <div className="flex justify-between items-center">
                     <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{f.name}</strong>
                     <span className="badge badge-info" style={{ fontSize: '0.65rem' }}>{f.title}</span>

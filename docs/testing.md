@@ -84,14 +84,14 @@ Current coverage (18 tests passing):
 
 | Module | Coverage |
 |--------|----------|
-| `src/agents/base_agent.py` | 85% |
-| `src/agents/planner_agent.py` | 100% |
-| `src/agents/scoring_agent.py` | 97% |
-| `src/agents/report_agent.py` | 100% |
-| `src/agents/validation_agent.py` | 75% |
-| `src/memory/store.py` | 70% |
-| `src/llm.py` | 36% |
-| `src/main.py` | 62% |
+| `backend/app/agents/base_agent.py` | 85% |
+| `backend/app/agents/planner_agent.py` | 100% |
+| `backend/app/agents/scoring_agent.py` | 97% |
+| `backend/app/agents/report_agent.py` | 100% |
+| `backend/app/agents/validation_agent.py` | 75% |
+| `backend/app/memory/store.py` | 70% |
+| `backend/app/llm.py` | 36% |
+| `backend/app/main.py` | 62% |
 | **TOTAL** | **~53%** |
 
 ## Testing Principles

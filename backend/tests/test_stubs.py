@@ -8,50 +8,50 @@ import pytest
 
 class TestImports:
     def test_llm_module(self):
-        from src.llm import ask, ask_json
+        from app.llm import ask, ask_json
         assert callable(ask) and callable(ask_json)
 
     def test_store_module(self):
-        from src.memory import store
+        from app.memory import store
         assert callable(store.save_company)
         assert callable(store.get_all_companies)
         assert callable(store.create_job)
 
     def test_all_agents_importable(self):
-        from src.agents.planner_agent import PlannerAgent
-        from src.agents.discovery_agent import DiscoveryAgent
-        from src.agents.validation_agent import ValidationAgent
-        from src.agents.company_profile_agent import CompanyProfileAgent
-        from src.agents.founder_profile_agent import FounderProfileAgent
-        from src.agents.github_agent import GitHubAgent
-        from src.agents.market_analysis_agent import MarketAnalysisAgent
-        from src.agents.news_agent import NewsAgent
-        from src.agents.contact_agent import ContactAgent
-        from src.agents.scoring_agent import ScoringAgent
-        from src.agents.report_agent import ReportAgent
+        from app.agents.planner_agent import PlannerAgent
+        from app.agents.discovery_agent import DiscoveryAgent
+        from app.agents.validation_agent import ValidationAgent
+        from app.agents.company_profile_agent import CompanyProfileAgent
+        from app.agents.founder_profile_agent import FounderProfileAgent
+        from app.agents.github_agent import GitHubAgent
+        from app.agents.market_analysis_agent import MarketAnalysisAgent
+        from app.agents.news_agent import NewsAgent
+        from app.agents.contact_agent import ContactAgent
+        from app.agents.scoring_agent import ScoringAgent
+        from app.agents.report_agent import ReportAgent
         assert all([PlannerAgent, DiscoveryAgent, ValidationAgent,
                     CompanyProfileAgent, FounderProfileAgent, GitHubAgent,
                     MarketAnalysisAgent, NewsAgent, ContactAgent,
                     ScoringAgent, ReportAgent])
 
     def test_fastapi_app(self):
-        from src.main import app
+        from app.main import app
         assert app.title == "VenturePilot AI"
 
 
 class TestBaseAgentContract:
     def _agents(self):
-        from src.agents.planner_agent import PlannerAgent
-        from src.agents.discovery_agent import DiscoveryAgent
-        from src.agents.validation_agent import ValidationAgent
-        from src.agents.company_profile_agent import CompanyProfileAgent
-        from src.agents.founder_profile_agent import FounderProfileAgent
-        from src.agents.github_agent import GitHubAgent
-        from src.agents.market_analysis_agent import MarketAnalysisAgent
-        from src.agents.news_agent import NewsAgent
-        from src.agents.contact_agent import ContactAgent
-        from src.agents.scoring_agent import ScoringAgent
-        from src.agents.report_agent import ReportAgent
+        from app.agents.planner_agent import PlannerAgent
+        from app.agents.discovery_agent import DiscoveryAgent
+        from app.agents.validation_agent import ValidationAgent
+        from app.agents.company_profile_agent import CompanyProfileAgent
+        from app.agents.founder_profile_agent import FounderProfileAgent
+        from app.agents.github_agent import GitHubAgent
+        from app.agents.market_analysis_agent import MarketAnalysisAgent
+        from app.agents.news_agent import NewsAgent
+        from app.agents.contact_agent import ContactAgent
+        from app.agents.scoring_agent import ScoringAgent
+        from app.agents.report_agent import ReportAgent
         return [PlannerAgent(), DiscoveryAgent(), ValidationAgent(),
                 CompanyProfileAgent(), FounderProfileAgent(), GitHubAgent(),
                 MarketAnalysisAgent(), NewsAgent(), ContactAgent(),
@@ -84,21 +84,21 @@ class TestAgentOutputTypes:
     }
 
     def test_planner_returns_list_of_strings(self):
-        from src.agents.planner_agent import PlannerAgent
+        from app.agents.planner_agent import PlannerAgent
         result = PlannerAgent().run(icp={"industry": "AI"})
         assert isinstance(result, list)
         assert all(isinstance(s, str) for s in result)
         assert len(result) > 0
 
     def test_discovery_returns_list(self):
-        from src.agents.discovery_agent import DiscoveryAgent
+        from app.agents.discovery_agent import DiscoveryAgent
         result = DiscoveryAgent().run(icp={"industry": "AI Healthcare", "location": "India"})
         assert isinstance(result, list)
         assert len(result) > 0  # mock data always returns results
         assert "name" in result[0]
 
     def test_validation_keeps_companies(self):
-        from src.agents.validation_agent import ValidationAgent
+        from app.agents.validation_agent import ValidationAgent
         companies = [self.SAMPLE_COMPANY.copy()]
         result = ValidationAgent().run(companies=companies)
         assert isinstance(result, list)
@@ -106,7 +106,7 @@ class TestAgentOutputTypes:
         assert len(result) >= 1
 
     def test_scoring_returns_score_dict(self):
-        from src.agents.scoring_agent import ScoringAgent
+        from app.agents.scoring_agent import ScoringAgent
         profile = {**self.SAMPLE_COMPANY,
                    "founders": [{"name": "Test Founder"}],
                    "github": {"total_stars": 500, "repo_count": 5},
@@ -120,13 +120,13 @@ class TestAgentOutputTypes:
         assert result["tier"] in ("High", "Medium", "Low")
 
     def test_report_returns_string(self):
-        from src.agents.report_agent import ReportAgent
+        from app.agents.report_agent import ReportAgent
         result = ReportAgent().run(profile=self.SAMPLE_COMPANY)
         assert isinstance(result, str)
         assert len(result) > 50  # Has actual content
 
     def test_github_returns_dict_with_required_keys(self):
-        from src.agents.github_agent import GitHubAgent
+        from app.agents.github_agent import GitHubAgent
         result = GitHubAgent().run(company=self.SAMPLE_COMPANY)
         assert "total_stars" in result
         assert "repo_count" in result
@@ -134,11 +134,11 @@ class TestAgentOutputTypes:
 
 class TestStore:
     def setup_method(self):
-        from src.memory.store import clear_companies
+        from app.memory.store import clear_companies
         clear_companies()
 
     def test_save_and_retrieve_company(self):
-        from src.memory import store
+        from app.memory import store
         company = {"name": "TestCo", "score": 82, "tier": "High"}
         store.save_company(company)
         result = store.get_company("TestCo")
@@ -146,7 +146,7 @@ class TestStore:
         assert result["score"] == 82
 
     def test_create_and_update_job(self):
-        from src.memory import store
+        from app.memory import store
         job_id = store.create_job({"industry": "AI"})
         assert store.get_job(job_id)["status"] == "queued"
         store.update_job(job_id, status="done")
@@ -156,7 +156,7 @@ class TestStore:
 class TestFastAPIEndpoints:
     def test_health(self):
         from fastapi.testclient import TestClient
-        from src.main import app
+        from app.main import app
         client = TestClient(app)
         resp = client.get("/health")
         assert resp.status_code == 200
@@ -164,8 +164,8 @@ class TestFastAPIEndpoints:
 
     def test_companies_empty(self):
         from fastapi.testclient import TestClient
-        from src.main import app
-        from src.memory.store import clear_companies
+        from app.main import app
+        from app.memory.store import clear_companies
         clear_companies()
         client = TestClient(app)
         resp = client.get("/companies")
