@@ -54,7 +54,7 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
               lineHeight: 1,
             }}>◈</span>
             <h3 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               fontSize: '0.8rem',
               fontWeight: 700,
               textTransform: 'uppercase',
@@ -213,7 +213,7 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
           padding: '14px 24px',
           fontSize: '0.95rem',
           fontWeight: 700,
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "'Sora', sans-serif",
           position: 'relative',
           background: isLoading
             ? 'rgba(108, 63, 232, 0.5)'

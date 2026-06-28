@@ -167,11 +167,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [showLanding, setShowLanding] = useState(true);
+  const [isFetching, setIsFetching] = useState(true);
 
   const pollIntervalRef = useRef<number | null>(null);
 
   // Fetch already analyzed companies on mount
   const fetchExistingCompanies = async () => {
+    setIsFetching(true);
     try {
       const data = await getAllCompanies();
       setCompanies(data.companies);
@@ -181,6 +183,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
       }
     } catch (err) {
       console.error('Failed to load existing companies', err);
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -242,9 +246,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
       <div className="page flex flex-col gap-8 fade-in" style={{ maxWidth: 1440, margin: '0 auto' }}>
 
         {/* ── SECTION A: Hero ──────────────────────────── */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+        <div className="hero-grid" style={{
           gap: '48px',
           alignItems: 'center',
           minHeight: '520px',
@@ -283,7 +285,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
 
             {/* H1 */}
             <h1 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               fontWeight: 800,
               fontSize: '3rem',
               lineHeight: 1.15,
@@ -324,7 +326,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
               ].map(stat => (
                 <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Sora', sans-serif",
                     fontWeight: 800,
                     fontSize: '1.8rem',
                     background: 'linear-gradient(135deg, var(--violet-bright), var(--gold))',
@@ -353,7 +355,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
                   padding: '14px 32px',
                   fontSize: '1rem',
                   fontWeight: 700,
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "'Sora', sans-serif",
                   letterSpacing: '-0.01em',
                 }}
               >
@@ -432,10 +434,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
         </div>
 
         {/* ── SECTION B: Agent Cards ───────────────────── */}
-        <div id="agents" style={{ scrollMarginTop: '80px' }}>
+        <div id="agents" style={{ scrollMarginTop: '80px', marginTop: '48px' }}>
           <div style={{ marginBottom: '28px' }}>
             <h2 style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               fontWeight: 700,
               fontSize: '1.5rem',
               color: 'var(--text-0)',
@@ -492,7 +494,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
 
                   {/* Name */}
                   <div style={{
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "'Sora', sans-serif",
                     fontWeight: 700,
                     fontSize: '0.95rem',
                     color: 'var(--text-0)',
@@ -521,6 +523,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
         <div style={{
           borderRadius: '20px',
           padding: '48px',
+          marginTop: '48px',
           background: 'linear-gradient(135deg, rgba(108,63,232,0.08), rgba(245,166,35,0.08))',
           border: '1px solid rgba(108, 63, 232, 0.2)',
           display: 'flex',
@@ -530,7 +533,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
           gap: '20px',
         }}>
           <h3 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "'Sora', sans-serif",
             fontWeight: 800,
             fontSize: '1.8rem',
             color: 'var(--text-0)',
@@ -556,7 +559,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
               padding: '16px 40px',
               fontSize: '1rem',
               fontWeight: 700,
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               letterSpacing: '-0.01em',
               marginTop: '8px',
             }}
@@ -572,18 +575,35 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
   return (
     <div className="page flex flex-col gap-8 fade-in">
       <div className="flex flex-col gap-2">
-        <h1 style={{ fontSize: '2.2rem', letterSpacing: '-0.02em', fontFamily: "'Syne', sans-serif" }}>
-          VenturePilot{' '}
-          <span style={{
-            background: 'linear-gradient(135deg, var(--violet), var(--gold))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>AI</span>
-        </h1>
-        <p style={{ color: 'var(--text-1)', fontSize: '1rem' }}>
-          Enterprise B2B Innovation Research &amp; Autonomous Diligence Platform
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h1 style={{ fontSize: '2.2rem', letterSpacing: '-0.02em', fontFamily: "'Sora', sans-serif", margin: 0 }}>
+              VenturePilot{' '}
+              <span style={{
+                background: 'linear-gradient(135deg, var(--violet), var(--gold))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>AI</span>
+            </h1>
+            <p style={{ color: 'var(--text-1)', fontSize: '1rem', margin: '4px 0 24px' }}>
+              Enterprise B2B Innovation Research &amp; Autonomous Diligence Platform
+            </p>
+          </div>
+          <button
+            className="btn btn-ghost"
+            onClick={() => {
+              setShowLanding(true);
+              setErrorMsg('');
+              setJobStatus(null);
+              setIsAnalyzing(false);
+              setIsFetching(false);
+            }}
+            style={{ fontSize: '0.8rem', padding: '8px 16px' }}
+          >
+            ← Landing
+          </button>
+        </div>
       </div>
 
       {errorMsg && (
@@ -629,7 +649,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
             <div style={{
               fontSize: '1.3rem',
               fontWeight: 800,
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               background: 'linear-gradient(135deg, var(--violet), var(--gold))',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -639,7 +659,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
             </div>
           )}
         </div>
-        <CompanyTable companies={companies} onSelectCompany={onSelectCompany} />
+        <CompanyTable companies={companies} onSelectCompany={onSelectCompany} isLoading={isFetching} />
       </div>
     </div>
   );
