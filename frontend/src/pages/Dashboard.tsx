@@ -5,6 +5,8 @@ import { ICPForm } from '../components/ICPForm';
 import { AgentProgress } from '../components/AgentProgress';
 import { CompanyTable } from '../components/CompanyTable';
 import MagicRings from '../components/MagicRings';
+import ScrollReveal from '../components/ScrollReveal';
+import ScrollStack, { ScrollStackItem } from '../components/ScrollStack';
 
 interface DashboardProps {
   onSelectCompany: (company: Company) => void;
@@ -12,26 +14,7 @@ interface DashboardProps {
 
 
 
-// ── Agent Data ───────────────────────────────────────────────────
-const LANDING_AGENTS = [
-  { num: '01', icon: '🔍', name: 'Discovery', desc: 'Finds startups matching your ICP across the web' },
-  { num: '02', icon: '✓', name: 'Validation', desc: 'Verifies company legitimacy and data accuracy' },
-  { num: '03', icon: '🏢', name: 'Company Profile', desc: 'Builds deep company profile with business model analysis' },
-  { num: '04', icon: '👤', name: 'Contact Finder', desc: 'Identifies key decision-makers and contact info' },
-  { num: '05', icon: '👨‍💼', name: 'Founder Intel', desc: 'Profiles founders: education, experience, past ventures' },
-  { num: '06', icon: '🐙', name: 'GitHub Metrics', desc: 'Analyzes open-source activity and code velocity' },
-  { num: '07', icon: '📈', name: 'Market Analysis', desc: 'Estimates TAM, CAGR, competitive landscape and trends' },
-  { num: '08', icon: '📰', name: 'News & Sentiment', desc: 'Scans recent press and funding announcements' },
-  { num: '09', icon: '📊', name: 'Enrichment', desc: 'Aggregates signals into unified intelligence record' },
-  { num: '10', icon: '⭐', name: 'Scoring Engine', desc: 'Scores team, tech, traction and market fit 0–100' },
-  { num: '11', icon: '📄', name: 'Due Diligence', desc: 'Generates a full AI-powered DD report for review' },
-];
 
-const TILE_COLORS = [
-  { bg: 'rgba(108, 63, 232, 0.18)', border: 'rgba(108, 63, 232, 0.35)', text: 'var(--violet-bright)' },
-  { bg: 'rgba(245, 166, 35, 0.15)', border: 'rgba(245, 166, 35, 0.3)',  text: 'var(--gold)' },
-  { bg: 'rgba(16, 217, 140, 0.15)', border: 'rgba(16, 217, 140, 0.3)',  text: 'var(--success)' },
-];
 
 // ── Dashboard ────────────────────────────────────────────────────
 export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
@@ -40,7 +23,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
   const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [showLanding, setShowLanding] = useState(true);
-  const [isIntroActive, setIsIntroActive] = useState(true);
   const [isFetching, setIsFetching] = useState(true);
 
   const pollIntervalRef = useRef<number | null>(null);
@@ -116,455 +98,112 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
 
   // ── Landing Page ─────────────────────────────────────────────
   if (showLanding) {
-    if (isIntroActive) {
-      return (
-        <div 
-          onClick={() => setIsIntroActive(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: '#0A0F1E',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            cursor: 'pointer',
-            overflow: 'hidden',
-          }}
-          className="fade-in"
-        >
-          {/* Full-screen MagicRings background */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 1,
-            opacity: 0.85,
-          }}>
+    return (
+      <div className="landing-page-wrap" style={{ background: '#0A0F1E', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
+        {/* Section 1: Full-Screen Magic Rings Header */}
+        <div style={{ position: 'relative', height: '100vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
             <MagicRings
               color="#00D4FF"
               colorTwo="#7B2FBE"
               ringCount={8}
-              speed={1.2}
+              speed={1.0}
               attenuation={8}
               lineThickness={2}
               baseRadius={0.25}
               radiusStep={0.08}
               scaleRate={0.08}
               opacity={1}
-              blur={0}
-              noiseAmount={0.05}
               followMouse={true}
               mouseInfluence={0.15}
               clickBurst={true}
             />
           </div>
-
-          {/* Content Container */}
-          <div style={{
-            position: 'relative',
-            zIndex: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '24px',
-            textAlign: 'center',
-            pointerEvents: 'none',
-          }}>
-            {/* Glowing Animated Logo */}
-            <h1 style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 800,
-              fontSize: '4.5rem',
-              letterSpacing: '-0.04em',
-              margin: 0,
-              color: '#fff',
-              textShadow: '0 0 40px rgba(0, 212, 255, 0.4)',
-            }}>
-              VenturePilot{' '}
-              <span style={{
-                background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                textShadow: 'none',
-              }}>AI</span>
+          <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', textAlign: 'center', pointerEvents: 'none' }}>
+            <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '5rem', letterSpacing: '-0.04em', margin: 0, color: '#fff', textShadow: '0 0 40px rgba(0, 212, 255, 0.4)' }}>
+              VenturePilot <span style={{ background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', textShadow: 'none' }}>AI</span>
             </h1>
-
-            {/* Subtitle */}
-            <p style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '1.1rem',
-              color: '#8892A4',
-              maxWidth: '500px',
-              lineHeight: 1.6,
-              margin: 0,
-            }}>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '1.2rem', color: '#8892A4', maxWidth: '600px', lineHeight: 1.6, margin: 0 }}>
               Autonomous Multi-Agent Opportunity Discovery Platform
             </p>
-
-            {/* Pulsating enter prompt */}
-            <div style={{
-              marginTop: '16px',
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              color: '#00D4FF',
-              textTransform: 'uppercase',
-              letterSpacing: '0.2em',
-              animation: 'pulse-dot 2s ease-in-out infinite',
-            }}>
-              ✦ Click anywhere to enter ✦
+            <div style={{ marginTop: '48px', fontSize: '0.85rem', fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', letterSpacing: '0.25em', animation: 'pulse-dot 2s ease-in-out infinite' }}>
+              ↓ Scroll down to explore ↓
             </div>
           </div>
         </div>
-      );
-    }
 
-    return (
-      <div className="page flex flex-col gap-8 fade-in" style={{ maxWidth: 1440, margin: '0 auto' }}>
-
-        {/* ── SECTION A: Hero ──────────────────────────── */}
-        <div className="hero-grid" style={{
-          gap: '48px',
-          alignItems: 'center',
-          minHeight: '520px',
-          padding: '24px 0',
-        }}>
-          {/* Left Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-            {/* Pill badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 16px',
-                background: 'rgba(108, 63, 232, 0.1)',
-                border: '1px solid rgba(108, 63, 232, 0.3)',
-                borderRadius: '100px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                color: 'var(--violet-bright)',
-                fontFamily: "'JetBrains Mono', monospace",
-              }}>
-                {/* Pulsing gold dot */}
-                <span style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: 'var(--gold)',
-                  boxShadow: '0 0 10px var(--gold)',
-                  animation: 'pulse-dot 2s ease-in-out infinite',
-                  flexShrink: 0,
-                }} />
-                XL Ventures Agentic AI Platform
-              </div>
-            </div>
-
-            {/* H1 */}
-            <h1 style={{
-              fontFamily: "'Sora', sans-serif",
-              fontWeight: 800,
-              fontSize: '3rem',
-              lineHeight: 1.15,
-              letterSpacing: '-0.03em',
-              color: 'var(--text-0)',
-              margin: 0,
-            }}>
-              Discover Startups<br />with{' '}
-              <span style={{
-                background: 'linear-gradient(135deg, var(--violet), var(--gold))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>
-                11 AI Agents
-              </span>
-            </h1>
-
-            {/* Subtitle */}
-            <p style={{
-              fontSize: '1.05rem',
-              color: 'var(--text-1)',
-              lineHeight: 1.7,
-              maxWidth: '480px',
-              margin: 0,
-            }}>
-              VenturePilot AI deploys a coordinated multi-agent pipeline to autonomously
-              discover, validate, and score B2B startups — from first signal to full
-              due diligence — without human bottlenecks.
-            </p>
-
-            {/* Stats row */}
-            <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
-              {[
-                { value: '11', label: 'Specialized Agents' },
-                { value: '4', label: 'Score Dimensions' },
-                { value: '100%', label: 'Autonomous' },
-              ].map(stat => (
-                <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{
-                    fontFamily: "'Sora', sans-serif",
-                    fontWeight: 800,
-                    fontSize: '1.8rem',
-                    background: 'linear-gradient(135deg, var(--violet-bright), var(--gold))',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    lineHeight: 1.1,
-                  }}>{stat.value}</span>
-                  <span style={{
-                    fontSize: '0.78rem',
-                    color: 'var(--text-2)',
-                    fontWeight: 500,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em',
-                  }}>{stat.label}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* CTAs */}
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowLanding(false)}
-                style={{
-                  padding: '14px 32px',
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  fontFamily: "'Sora', sans-serif",
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                Launch Discovery →
-              </button>
-              <a
-                href="#agents"
-                className="btn btn-ghost"
-                style={{ padding: '14px 24px', fontSize: '0.95rem', fontWeight: 600 }}
-              >
-                Meet the Agents
-              </a>
-            </div>
-          </div>
-
-          {/* Right Column — Constellation Canvas */}
-          <div style={{
-            position: 'relative',
-            borderRadius: '20px',
-            border: '1px solid rgba(108, 63, 232, 0.25)',
-            background: 'rgba(10, 13, 24, 0.7)',
-            backdropFilter: 'blur(12px)',
-            height: '460px',
-            overflow: 'hidden',
-          }}>
-            {/* Top-left label */}
-            <div style={{
-              position: 'absolute',
-              top: '14px',
-              left: '16px',
-              zIndex: 2,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}>
-              <span style={{
-                fontSize: '0.7rem',
-                fontFamily: "'JetBrains Mono', monospace",
-                color: 'var(--text-2)',
-                fontWeight: 500,
-              }}>
-                Multi-Agent Network · Live
-              </span>
-            </div>
-
-            {/* Top-right ACTIVE badge */}
-            <div style={{
-              position: 'absolute',
-              top: '12px',
-              right: '16px',
-              zIndex: 2,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}>
-              <span style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: 'var(--success)',
-                boxShadow: '0 0 10px var(--success)',
-                animation: 'pulse-dot 1.5s ease-in-out infinite',
-              }} />
-              <span style={{
-                fontSize: '0.65rem',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontWeight: 700,
-                color: 'var(--success)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-              }}>ACTIVE</span>
-            </div>
-
-            <MagicRings
-              color="#fc42ff"
-              colorTwo="#42fcff"
-              ringCount={6}
-              speed={1.0}
-              attenuation={10}
-              lineThickness={2}
-              baseRadius={0.35}
-              radiusStep={0.1}
-              scaleRate={0.1}
-              opacity={1}
-              blur={0}
-              noiseAmount={0.1}
-              rotation={0}
-              ringGap={1.5}
-              fadeIn={0.7}
-              fadeOut={0.5}
-              followMouse={true}
-              mouseInfluence={0.2}
-              hoverScale={1.2}
-              parallax={0.05}
-              clickBurst={true}
-            />
-          </div>
+        {/* Section 2: Scroll Reveal Effect Description */}
+        <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 40px', background: '#090d1a' }}>
+          <ScrollReveal baseOpacity={0.08} enableBlur={true} baseRotation={3} blurStrength={8}>
+            VenturePilot AI is a cognitive multi-agent orchestration engine. It works day and night to scrape startup signals, validate metrics, index founding teams, cross-reference GitHub repositories, and construct comprehensive investment due diligence reports automatically.
+          </ScrollReveal>
         </div>
 
-        {/* ── SECTION B: Agent Cards ───────────────────── */}
-        <div id="agents" style={{ scrollMarginTop: '80px', marginTop: '48px' }}>
-          <div style={{ marginBottom: '28px' }}>
-            <h2 style={{
-              fontFamily: "'Sora', sans-serif",
-              fontWeight: 700,
-              fontSize: '1.5rem',
-              color: 'var(--text-0)',
-              marginBottom: '8px',
-            }}>
-              ◈ The 11-Agent Pipeline
+        {/* Section 3: Scroll Stack Cards Product Details */}
+        <div style={{ padding: '100px 20px', background: '#0A0F1E', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: '2.8rem', fontWeight: 800, color: '#fff', margin: 0 }}>
+              Platform Capabilities
             </h2>
-            <p style={{ fontSize: '0.95rem', color: 'var(--text-2)', margin: 0 }}>
-              Each agent specializes in a distinct phase of B2B startup intelligence gathering.
+            <p style={{ color: '#8892A4', fontSize: '1.1rem', marginTop: '12px' }}>
+              How our 11 autonomous agents diligence startup pipelines
             </p>
           </div>
-
-          <div className="agents-grid-landing">
-            {LANDING_AGENTS.map((agent, idx) => {
-              const tile = TILE_COLORS[idx % 3];
-              return (
-                <div
-                  key={agent.num}
-                  className="card"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '14px',
-                    padding: '22px',
-                    animation: `fadeIn 0.5s ease-out ${idx * 40}ms backwards`,
-                    cursor: 'default',
-                  }}
-                >
-                  {/* Icon tile + Agent num */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '10px',
-                      background: tile.bg,
-                      border: `1px solid ${tile.border}`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.4rem',
-                    }}>
-                      {agent.icon}
-                    </div>
-                    <span style={{
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: '0.65rem',
-                      fontWeight: 500,
-                      color: 'var(--text-2)',
-                      letterSpacing: '0.1em',
-                    }}>
-                      Agent {agent.num}
-                    </span>
-                  </div>
-
-                  {/* Name */}
-                  <div style={{
-                    fontFamily: "'Sora', sans-serif",
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    color: 'var(--text-0)',
-                    lineHeight: 1.3,
-                  }}>
-                    {agent.name}
-                  </div>
-
-                  {/* Description */}
-                  <p style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: '0.82rem',
-                    color: 'var(--text-2)',
-                    lineHeight: 1.6,
-                    margin: 0,
-                  }}>
-                    {agent.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+          
+          <ScrollStack useWindowScroll={true} itemDistance={100} itemScale={0.025} itemStackDistance={24} blurAmount={2}>
+            <ScrollStackItem>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ fontSize: '3rem' }}>🔍</div>
+                <h3 style={{ fontSize: '1.6rem', color: '#fff' }}>01 · Autonomous Sourcing</h3>
+                <p style={{ fontSize: '1rem', color: '#8892A4', lineHeight: 1.6 }}>
+                  VenturePilot deploys specialized discovery agents that crawl startup directories, repositories, and search engines to capture early signals of innovative companies.
+                </p>
+              </div>
+            </ScrollStackItem>
+            <ScrollStackItem>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ fontSize: '3rem' }}>🐙</div>
+                <h3 style={{ fontSize: '1.6rem', color: '#fff' }}>02 · Deep Technical Diligence</h3>
+                <p style={{ fontSize: '1rem', color: '#8892A4', lineHeight: 1.6 }}>
+                  Enrichment agents interface directly with open-source repositories to inspect code velocity, language composition, stars, and forks, yielding precise technical scores.
+                </p>
+              </div>
+            </ScrollStackItem>
+            <ScrollStackItem>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ fontSize: '3rem' }}>👨‍💼</div>
+                <h3 style={{ fontSize: '1.6rem', color: '#fff' }}>03 · Executive Profiles</h3>
+                <p style={{ fontSize: '1rem', color: '#8892A4', lineHeight: 1.6 }}>
+                  Founder research agents compile detailed executive bios, analyzing historical exits, educational credentials, and past company associations to score team quality.
+                </p>
+              </div>
+            </ScrollStackItem>
+            <ScrollStackItem>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ fontSize: '3rem' }}>📄</div>
+                <h3 style={{ fontSize: '1.6rem', color: '#fff' }}>04 · Automated Due Diligence</h3>
+                <p style={{ fontSize: '1rem', color: '#8892A4', lineHeight: 1.6 }}>
+                  A direct integration with Google Gemini synthesizes all unstructured search results, competitor analysis, and news sentiment into a clean investment report.
+                </p>
+              </div>
+            </ScrollStackItem>
+          </ScrollStack>
         </div>
 
-        {/* ── SECTION C: CTA Banner ────────────────────── */}
-        <div style={{
-          borderRadius: '20px',
-          padding: '48px',
-          marginTop: '48px',
-          background: 'linear-gradient(135deg, rgba(108,63,232,0.08), rgba(245,166,35,0.08))',
-          border: '1px solid rgba(108, 63, 232, 0.2)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          gap: '20px',
-        }}>
-          <h3 style={{
-            fontFamily: "'Sora', sans-serif",
-            fontWeight: 800,
-            fontSize: '1.8rem',
-            color: 'var(--text-0)',
-            margin: 0,
-            letterSpacing: '-0.02em',
-          }}>
-            Ready to find your next investment?
-          </h3>
-          <p style={{
-            color: 'var(--text-2)',
-            fontSize: '1rem',
-            maxWidth: '460px',
-            margin: 0,
-            lineHeight: 1.7,
-          }}>
-            Configure your Ideal Customer Profile and let 11 autonomous AI agents
-            surface, score, and diligence the best opportunities for you.
+        {/* Section 4: Final Call to Action */}
+        <div style={{ minHeight: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '28px', textAlign: 'center', background: '#090d1a', borderTop: '1px solid rgba(108, 63, 232, 0.15)', padding: '100px 20px' }}>
+          <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: '3rem', fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>
+            Ready to discover your next opportunity?
+          </h2>
+          <p style={{ color: '#8892A4', fontSize: '1.2rem', maxWidth: '600px', margin: 0, lineHeight: 1.7 }}>
+            Access the interactive multi-agent discovery panel to configure your Ideal Customer Profile and run the pipeline.
           </p>
           <button
             className="btn btn-primary"
             onClick={() => setShowLanding(false)}
-            style={{
-              padding: '16px 40px',
-              fontSize: '1rem',
-              fontWeight: 700,
-              fontFamily: "'Sora', sans-serif",
-              letterSpacing: '-0.01em',
-              marginTop: '8px',
-            }}
+            style={{ padding: '18px 56px', fontSize: '1.15rem', fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif", marginTop: '20px', borderRadius: '12px' }}
           >
-            Start Discovery Workflow →
+            Launch Discovery Pipeline →
           </button>
         </div>
       </div>
