@@ -274,7 +274,7 @@ def _mock_llm_ask_json(prompt: str, fallback: dict) -> dict:
                 "title": "CEO & Co-founder",
                 "background": "Ex-product manager at top tech firm. Serial entrepreneur.",
                 "education": "IIT Bombay, B.Tech Computer Science",
-                "linkedin_url": "https://linkedin.com/in/placeholder",
+                "linkedin_url": "https://linkedin.com/in/arjun-mehta",
                 "past_companies": ["Tech Giant", "First Startup"]
             },
             {
@@ -282,7 +282,7 @@ def _mock_llm_ask_json(prompt: str, fallback: dict) -> dict:
                 "title": "CTO & Co-founder",
                 "background": "Deep learning researcher. Software engineer.",
                 "education": "IISc Bangalore, M.Tech AI",
-                "linkedin_url": "https://linkedin.com/in/placeholder",
+                "linkedin_url": "https://linkedin.com/in/priya-nair",
                 "past_companies": ["Research Lab"]
             }
         ]

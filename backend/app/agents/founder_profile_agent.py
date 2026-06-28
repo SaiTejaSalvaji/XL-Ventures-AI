@@ -37,18 +37,19 @@ Return ONLY a JSON array with 1-3 founders, each having these keys:
     "title": "CEO | CTO | COO",
     "background": "2-sentence professional background",
     "education": "University, Degree",
-    "linkedin_url": "https://linkedin.com/in/placeholder",
+    "linkedin_url": "use a realistic linkedin.com/in/name URL",
     "past_companies": ["Company1", "Company2"]
   }}
 ]
 """
+        name_slug = name.lower().replace(" ", "-").replace(".", "")
         result = ask_json(prompt, fallback=[
             {
                 "name": f"{name} Founder",
                 "title": "CEO & Co-founder",
                 "background": f"Serial entrepreneur with 10+ years in {industry}.",
                 "education": "IIT Delhi, B.Tech Computer Science",
-                "linkedin_url": "https://linkedin.com/in/placeholder",
+                "linkedin_url": f"https://linkedin.com/in/{name_slug}-founder",
                 "past_companies": ["Previous Startup", "Big Tech Co"],
             }
         ])
