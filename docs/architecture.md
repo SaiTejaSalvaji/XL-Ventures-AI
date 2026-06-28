@@ -1,140 +1,130 @@
-# VenturePilot AI — Architecture (Prototype)
-
-Simple, effective multi-agent system powered entirely by **free APIs**.
-
+---
+title: "Architecture Overview"
+description: "High-level architecture of VenturePilot AI"
 ---
 
-## System Diagram
+# VenturePilot AI — Architecture Overview
+
+## Introduction
+
+VenturePilot AI is a **multi-agent agentic AI platform** that automates B2B startup discovery and due-diligence for venture capital analysts. The system accepts an Ideal Customer Profile (ICP) from the user, orchestrates a pipeline of 9+ specialized AI agents, and produces scored company profiles with full investment reports.
+
+## System Architecture
+
+The platform follows a **3-tier architecture**: a React frontend, a FastAPI backend, and an in-memory data store. All LLM calls are routed through a unified helper module (`llm.py`) that supports Groq (primary) and Gemini (fallback).
 
 ```mermaid
-flowchart TD
-    subgraph UI ["React + TypeScript (Vite) — Port 5173"]
-        Form[ICP Form] -->|POST /analyze| API
-        Progress[Agent Progress Bar] -->|polls GET /results/id| API
-        Table[Company Results Table] --> Detail[Company Detail + Report]
-        Detail --> HITL[Approve / Reject buttons]
+graph TB
+    subgraph Frontend["Frontend (React + Vite)"]
+        UI[Dashboard UI]
+        ICPForm[ICP Form]
+        CompanyTable[Company Table]
+        DetailPage[Company Detail Page]
+        HITL[HITL Approval Panel]
     end
 
-    subgraph Backend ["FastAPI — Port 8000"]
-        API[main.py] --> Runner[workflow/runner.py<br/>Sequential Agent Runner]
-        Runner --> D[DiscoveryAgent]
-        Runner --> V[ValidationAgent]
-        Runner --> CP[CompanyProfileAgent]
-        Runner --> FP[FounderProfileAgent]
-        Runner --> GH[GitHubAgent]
-        Runner --> NW[NewsAgent]
-        Runner --> MA[MarketAnalysisAgent]
-        Runner --> SC[ScoringAgent]
-        Runner --> RP[ReportAgent]
-        Runner -->|save| Store[(memory/store.py<br/>In-Memory Dict)]
-        API -->|read| Store
+    subgraph Backend["Backend (FastAPI + Uvicorn)"]
+        API[FastAPI Router]
+        Runner[Workflow Runner]
+        Store[In-Memory Store]
+
+        subgraph Agents["Agent Pipeline"]
+            A1[PlannerAgent]
+            A2[DiscoveryAgent]
+            A3[ValidationAgent]
+            A4[CompanyProfileAgent]
+            A5[FounderProfileAgent]
+            A6[GitHubAgent]
+            A7[NewsAgent]
+            A8[MarketAnalysisAgent]
+            A9[ScoringAgent]
+            A10[ReportAgent]
+            A11[ContactAgent]
+        end
     end
 
-    subgraph External ["Free External APIs"]
-        Gemini[Google Gemini 1.5 Flash<br/>FREE]
-        GithubAPI[GitHub REST API<br/>FREE]
-        NewsAPI2[NewsAPI.org<br/>FREE 100/day]
-        CSE[Google Custom Search<br/>FREE 100/day]
-        Mock[Curated Mock Data<br/>Always available]
+    subgraph LLM["LLM Providers"]
+        Groq[Groq API — Llama 3.3 70B]
+        Gemini[Google Gemini 2.0 Flash]
+        Mocks[Smart Mock Fallback]
     end
 
-    CP & FP & MA & SC & RP --> Gemini
-    GH --> GithubAPI
-    NW --> NewsAPI2
-    D --> CSE
-    D -->|fallback| Mock
+    subgraph External["External APIs"]
+        CSE[Google Custom Search]
+        GH[GitHub REST API]
+        News[NewsAPI.org]
+    end
+
+    UI --> API
+    ICPForm --> API
+    API --> Runner
+    Runner --> Agents
+    Runner --> Store
+    Store --> API
+    API --> UI
+
+    A2 --> CSE
+    A6 --> GH
+    A7 --> News
+
+    A1 & A2 & A4 & A5 & A7 & A8 & A9 & A10 --> Groq
+    Groq -.->|fallback| Gemini
+    Gemini -.->|fallback| Mocks
 ```
 
----
+## Key Design Decisions
 
-## Agent Pipeline
+| Decision | Rationale |
+|----------|-----------|
+| **Sequential agent pipeline** | Simplicity over parallelism for the prototype; agents depend on prior outputs |
+| **In-memory store** | Zero database setup; data persists only during the server session |
+| **Groq-first LLM routing** | 14,400 RPD free tier vs. Gemini's 20 RPD on GCP sandbox keys |
+| **3-tier LLM failover** | Groq → Gemini → Smart Mocks ensures the demo always works |
+| **Background threads** | `threading.Thread` for async workflow execution without asyncio complexity |
+| **CORS allow-all** | Development convenience; should be restricted in production |
 
-```
-ICP Input
-   │
-   ▼
-DiscoveryAgent ──── Google CSE → 7-12 candidates
-   │
-   ▼
-ValidationAgent ─── HTTP HEAD check → filtered list
-   │
-   ├── CompanyProfileAgent ─── scrape + Gemini JSON extract
-   ├── FounderProfileAgent ─── Gemini knowledge
-   ├── GitHubAgent ─────────── PyGithub stats
-   ├── NewsAgent ───────────── NewsAPI + Gemini sentiment
-   └── MarketAnalysisAgent ─── Gemini competitive landscape
-   │
-   ▼
-ScoringAgent ──── rubric (team 30% + tech 25% + traction 25% + market 20%)
-                  + Gemini rationale text
-   │
-   ▼
-ReportAgent ───── Gemini full Markdown report (9 sections)
-   │
-   ▼
-In-Memory Store → React UI → Human Approval (HITL)
-```
+## Data Flow
 
----
+1. **User** submits an ICP via the React form (industry, stage, location, tech keywords).
+2. **FastAPI** receives the POST at `/analyze`, clears the store, creates a job, and launches the workflow in a background thread.
+3. **Workflow Runner** chains agents sequentially: Discovery → Validation → Enrichment (Profile + GitHub + News + Market) → Scoring → Report.
+4. Each enriched company is saved to the **In-Memory Store** as it completes.
+5. **Frontend** polls `GET /results/{job_id}` every 2 seconds until status is `done`.
+6. On completion, the frontend fetches `GET /companies` to display the scored pipeline.
+7. **HITL Panel** allows the analyst to approve/reject companies via `POST /approve/{id}`.
 
-## Tech Stack
-
-| Component | Technology | Why |
-|-----------|-----------|-----|
-| LLM | Gemini 1.5 Flash | Free, fast, 1M tokens/day |
-| Backend | FastAPI + Uvicorn | Async, auto-docs at /docs |
-| Frontend | React + TypeScript + Vite | Fast, type-safe SPA |
-| Storage | Python dict (in-memory) | Zero setup, prototype-perfect |
-| Orchestration | Python threading | Simple, no framework lock-in |
-| Company data | Google CSE + mock | 100 free/day + always works |
-| GitHub data | PyGithub | 5000 req/hr free with token |
-| News | NewsAPI.org | 100 req/day free |
-
----
-
-## API Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/health` | Liveness probe |
-| GET | `/docs` | Auto-generated OpenAPI UI |
-| POST | `/analyze` | Start workflow (returns job_id) |
-| GET | `/results/{job_id}` | Poll status + get companies |
-| GET | `/companies` | All companies sorted by score |
-| POST | `/approve/{company_id}` | HITL decision |
-| GET | `/company/{company_id}/report` | Full Gemini report |
-
----
-
-## Scoring Rubric
+## Deployment Topology
 
 ```
-Final Score = (Team × 30%) + (Technology × 25%) + (Traction × 25%) + (Market × 20%)
-
-Team      : founder count + IIT/exit signal → 0-100
-Technology: GitHub stars + repo activity    → 0-100
-Traction  : funding stage + news sentiment  → 0-100
-Market    : market_stage from Gemini        → 0-100
-
-Tier: High ≥ 75 | Medium ≥ 50 | Low < 50
+┌─────────────────┐     HTTP      ┌──────────────────────────┐
+│  React (Vite)   │ ◄──────────► │  FastAPI (Uvicorn)       │
+│  :5173          │               │  :8000                   │
+│                 │               │  ├── /analyze            │
+│  Dashboard.tsx  │               │  ├── /results/{id}       │
+│  CompanyDetail  │               │  ├── /companies          │
+│                 │               │  ├── /approve/{id}       │
+└─────────────────┘               │  └── /health             │
+                                  │                          │
+                                  │  ┌─ Workflow Runner ───┐ │
+                                  │  │  9 Agents Pipeline  │ │
+                                  │  │  In-Memory Store    │ │
+                                  │  └────────────────────┘ │
+                                  └──────────────────────────┘
+                                           │
+                                           ▼
+                              ┌─────────────────────────┐
+                              │  External APIs           │
+                              │  • Groq (LLM)            │
+                              │  • Gemini (LLM fallback) │
+                              │  • GitHub API             │
+                              │  • NewsAPI                │
+                              │  • Google CSE             │
+                              └─────────────────────────┘
 ```
 
----
+## Security Considerations
 
-## Frontend Structure (React + TypeScript)
-
-```
-frontend/src/
-├── App.tsx                     # Router
-├── pages/
-│   ├── Dashboard.tsx           # ICP form + progress + results table
-│   └── CompanyDetail.tsx       # Score, founders, report, HITL panel
-├── components/
-│   ├── ICPForm.tsx             # Industry, stage, location inputs
-│   ├── CompanyTable.tsx        # Sortable scored company list
-│   ├── ScoreBadge.tsx          # Green/Yellow/Red tier badge
-│   ├── AgentProgress.tsx       # Live step-by-step progress
-│   └── HITLPanel.tsx           # Approve/Reject/More Info
-├── api/client.ts               # Axios to FastAPI
-└── types/index.ts              # Company, ICP, Score TypeScript types
-```
+- API keys are loaded from `.env` via `python-dotenv` and never committed (`.gitignore`).
+- CORS is set to allow all origins (`*`) for development — must be restricted for production.
+- No authentication layer is implemented in the prototype.
+- The in-memory store is ephemeral; no persistent data is stored.
