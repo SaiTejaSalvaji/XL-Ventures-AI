@@ -37,6 +37,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
   const handleStartAnalysis = async (icp: ICP) => {
     setIsAnalyzing(true);
     setErrorMsg('');
+    setCompanies([]); // Clear old companies instantly so they don't see previous results!
     setJobStatus({
       job_id: '',
       status: 'queued',

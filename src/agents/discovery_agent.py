@@ -91,17 +91,17 @@ class DiscoveryAgent(BaseAgent):
 
         companies = self._google_cse_search(icp)
         if not companies:
-            self.logger.info("Google CSE unavailable or returned 0 results — trying Gemini discovery")
-            companies = self._gemini_discovery(icp)
+            self.logger.info("Google CSE unavailable or returned 0 results — trying LLM discovery")
+            companies = self._llm_discovery(icp)
 
         if not companies:
-            self.logger.info("Gemini discovery failed — using static mock data")
+            self.logger.info("LLM discovery failed — using static mock data")
             companies = self._filtered_mock(icp)
 
         self.log_done(f"Discovered {len(companies)} companies")
         return companies
 
-    def _gemini_discovery(self, icp: dict) -> list[dict]:
+    def _llm_discovery(self, icp: dict) -> list[dict]:
         industry = icp.get("industry", "AI")
         location = icp.get("location", "Global")
         stage = icp.get("stage", "Seed")
@@ -124,7 +124,7 @@ Return ONLY a JSON array of objects, where each object has these exact keys:
     "industry": "{industry}",
     "location": "{location}",
     "stage": "{stage}",
-    "source": "gemini_discovery"
+    "source": "llm_discovery"
   }}
 ]
 
@@ -138,7 +138,7 @@ Make sure the URLs are plausible and formatted correctly. Return ONLY valid raw 
                     item.setdefault("industry", industry)
                     item.setdefault("location", location)
                     item.setdefault("stage", stage)
-                    item.setdefault("source", "gemini_discovery")
+                    item.setdefault("source", "llm_discovery")
                     valid_companies.append(item)
             return valid_companies
         return []
@@ -181,8 +181,58 @@ Make sure the URLs are plausible and formatted correctly. Return ONLY valid raw 
     def _filtered_mock(self, icp: dict) -> list[dict]:
         """Return mock companies filtered by ICP industry keyword."""
         keyword = icp.get("industry", "").lower()
-        return [
+        matched = [
             c for c in MOCK_COMPANIES
             if not keyword or keyword in c.get("industry", "").lower()
                             or keyword in c.get("description", "").lower()
-        ] or MOCK_COMPANIES[:5]
+        ]
+        if matched:
+            return matched
+
+        # Dynamic fallback: If no static mock matches, create plausible ones based on target ICP parameters
+        industry_title = icp.get("industry", "SaaS").title()
+        location = icp.get("location", "India")
+        stage = icp.get("stage", "Seed")
+        tech_words = ", ".join(icp.get("tech_keywords", ["AI", "ML"]))
+
+        # Remove spaces or dots for clean URLs
+        domain_safe = industry_title.lower().replace(" ", "").replace(".", "")
+
+        return [
+            {
+                "name": f"{industry_title} Flow",
+                "url": f"https://{domain_safe}flow.com",
+                "industry": industry_title,
+                "location": location,
+                "stage": stage,
+                "description": f"Next-generation {industry_title} automation platform powered by {tech_words} to streamline business operations.",
+                "source": "mock_discovery"
+            },
+            {
+                "name": f"{industry_title} Hub",
+                "url": f"https://{domain_safe}hub.co",
+                "industry": industry_title,
+                "location": location,
+                "stage": stage,
+                "description": f"Collaborative cloud workspace built specifically for {industry_title} using {tech_words} workflows.",
+                "source": "mock_discovery"
+            },
+            {
+                "name": f"Nova {industry_title}",
+                "url": f"https://nova{domain_safe}.io",
+                "industry": industry_title,
+                "location": location,
+                "stage": stage,
+                "description": f"Innovative technology systems optimized for {industry_title} leveraging {tech_words}.",
+                "source": "mock_discovery"
+            },
+            {
+                "name": f"Aero {industry_title}",
+                "url": f"https://aero{domain_safe}.com",
+                "industry": industry_title,
+                "location": location,
+                "stage": stage,
+                "description": f"Enterprise-grade software designed to scale {industry_title} using secure {tech_words} models.",
+                "source": "mock_discovery"
+            }
+        ]

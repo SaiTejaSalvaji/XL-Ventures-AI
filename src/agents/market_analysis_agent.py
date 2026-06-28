@@ -41,12 +41,12 @@ Return ONLY valid JSON:
 """
         result = ask_json(prompt, fallback={
             "competitors": [
-                {"name": "Competitor A", "url": "https://example.com", "differentiator": "Market leader"},
-                {"name": "Competitor B", "url": "https://example.com", "differentiator": "Niche focus"},
+                {"name": f"{industry} Alpha", "url": "https://example.com", "differentiator": "Market leader"},
+                {"name": f"{industry} Beta", "url": "https://example.com", "differentiator": "Niche focus"},
             ],
-            "tam_estimate": "$2B by 2027",
-            "market_growth_rate": "25% CAGR",
-            "key_trends": ["AI adoption", "Digital health", "Remote monitoring"],
+            "tam_estimate": "$2.5B by 2027",
+            "market_growth_rate": "28% CAGR",
+            "key_trends": [f"AI integration in {industry}", "Workflow automation", "Cloud scalability"],
             "market_stage": "growing",
         })
         self.log_done(f"Market analysis complete for {name}")
