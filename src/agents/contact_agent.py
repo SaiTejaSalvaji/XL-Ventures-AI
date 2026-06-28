@@ -4,8 +4,8 @@ Generates plausible professional contact info using Gemini (prototype).
 No paid API (Hunter.io) needed for the demo.
 """
 
-from src.agents.base_agent import BaseAgent
-from src.llm import ask_json
+from .base_agent import BaseAgent
+from ..llm import ask_json
 
 
 class ContactAgent(BaseAgent):

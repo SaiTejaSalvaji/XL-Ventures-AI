@@ -4,7 +4,7 @@ Fetches real GitHub stats via PyGithub. Falls back gracefully if org not found.
 """
 
 import os
-from src.agents.base_agent import BaseAgent
+from .base_agent import BaseAgent
 
 
 class GitHubAgent(BaseAgent):

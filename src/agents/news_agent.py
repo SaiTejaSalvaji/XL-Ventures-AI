@@ -6,8 +6,8 @@ Falls back to Gemini-generated mock news when NewsAPI key is unavailable.
 
 import os
 import requests
-from src.agents.base_agent import BaseAgent
-from src.llm import ask, ask_json
+from .base_agent import BaseAgent
+from ..llm import ask, ask_json
 
 
 class NewsAgent(BaseAgent):

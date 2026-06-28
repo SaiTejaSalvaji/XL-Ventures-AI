@@ -4,8 +4,8 @@ Uses Gemini's built-in knowledge to generate competitive landscape and market da
 No external API needed — Gemini knows market data for most industries.
 """
 
-from src.agents.base_agent import BaseAgent
-from src.llm import ask_json
+from .base_agent import BaseAgent
+from ..llm import ask_json
 
 
 class MarketAnalysisAgent(BaseAgent):

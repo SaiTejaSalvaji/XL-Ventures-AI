@@ -4,7 +4,7 @@ Checks discovered companies are reachable (HTTP HEAD) and filters dead links.
 """
 
 import requests
-from src.agents.base_agent import BaseAgent
+from .base_agent import BaseAgent
 
 
 class ValidationAgent(BaseAgent):

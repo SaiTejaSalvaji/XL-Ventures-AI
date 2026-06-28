@@ -4,8 +4,8 @@ Uses Gemini to generate a dynamic agent execution plan from the ICP.
 Falls back to a sensible default plan if Gemini is unavailable.
 """
 
-from src.agents.base_agent import BaseAgent
-from src.llm import ask_json
+from .base_agent import BaseAgent
+from ..llm import ask_json
 
 DEFAULT_PLAN = [
     "discovery", "validation", "company_profile",

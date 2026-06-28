@@ -3,8 +3,8 @@ scoring_agent.py — Scoring Agent
 Computes a weighted investment score and uses Gemini to write a rationale paragraph.
 """
 
-from src.agents.base_agent import BaseAgent
-from src.llm import ask
+from .base_agent import BaseAgent
+from ..llm import ask
 
 
 class ScoringAgent(BaseAgent):

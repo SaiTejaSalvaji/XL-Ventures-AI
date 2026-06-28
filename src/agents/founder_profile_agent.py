@@ -6,8 +6,8 @@ Optionally enriched via Google CSE search.
 
 import os
 import requests
-from src.agents.base_agent import BaseAgent
-from src.llm import ask_json
+from .base_agent import BaseAgent
+from ..llm import ask_json
 
 
 class FounderProfileAgent(BaseAgent):

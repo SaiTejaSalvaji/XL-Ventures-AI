@@ -5,8 +5,8 @@ Scrapes company homepage and uses Gemini to extract structured profile info.
 
 import requests
 from bs4 import BeautifulSoup
-from src.agents.base_agent import BaseAgent
-from src.llm import ask_json
+from .base_agent import BaseAgent
+from ..llm import ask_json
 
 
 class CompanyProfileAgent(BaseAgent):

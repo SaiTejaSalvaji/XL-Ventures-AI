@@ -7,8 +7,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from src.memory import store
-from src.workflow.runner import start_workflow_async
+from .memory import store
+from .workflow.runner import start_workflow_async
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

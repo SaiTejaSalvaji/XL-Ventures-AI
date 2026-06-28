@@ -7,7 +7,7 @@ Falls back to curated mock data so the demo always works.
 
 import os
 import requests
-from src.agents.base_agent import BaseAgent
+from .base_agent import BaseAgent
 
 # Curated mock companies for demo fallback
 MOCK_COMPANIES = [

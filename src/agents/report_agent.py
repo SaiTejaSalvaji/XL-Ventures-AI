@@ -3,8 +3,8 @@ report_agent.py — Report Agent
 Uses Gemini to generate a full Markdown due-diligence report from all collected data.
 """
 
-from src.agents.base_agent import BaseAgent
-from src.llm import ask
+from .base_agent import BaseAgent
+from ..llm import ask
 
 
 class ReportAgent(BaseAgent):
