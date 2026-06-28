@@ -201,6 +201,16 @@ class TestTools:
         result = generate_contact("John", "testco.com")
         assert "john@testco.com" in result["email"]
 
+    def test_hunter_tool_confidence_full_info(self):
+        from app.tools.hunter_tool import generate_contact
+        result = generate_contact("John Doe", "testco.com")
+        assert result["confidence_score"] >= 80
+
+    def test_hunter_tool_confidence_unknown(self):
+        from app.tools.hunter_tool import generate_contact
+        result = generate_contact("Unknown", "")
+        assert result["confidence_score"] <= 50
+
 
 class TestStore:
     def setup_method(self):
