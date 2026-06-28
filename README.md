@@ -85,13 +85,34 @@ To enable real company discovery (instead of mock data), configure Google Custom
 
 ---
 
-## ⚡ Quickstart
+## 🐳 Docker Setup (Recommended)
 
-### 1. Clone and Install
 ```bash
+# Clone the repo
 git clone https://github.com/SaiTejaSalvaji/XL-Ventures-AI.git
 cd XL-Ventures-AI
+
+# Configure API keys in backend/.env
+cp backend/.env.example backend/.env
+# Edit backend/.env with your GROQ_API_KEY or GEMINI_API_KEY
+
+# Build and start all services
+docker compose up -d
+
+# Backend: http://localhost:8000
+# Frontend: http://localhost:80
+```
+
+The frontend nginx automatically proxies API requests to the backend. No manual configuration needed.
+
+---
+
+## ⚡ Quickstart (Manual)
+
+### 1. Install Dependencies
+```bash
 pip install -r backend/requirements.txt
+cd frontend && npm install && cd ..
 ```
 
 ### 2. Configure Environment Keys
