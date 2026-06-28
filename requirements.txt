@@ -2,7 +2,8 @@
 # VenturePilot AI — Simplified Prototype Dependencies
 # ============================================================
 
-# LLM — Google Gemini (new SDK)
+# LLM — Groq (primary) + Google Gemini (fallback)
+groq>=0.25.0
 google-genai
 
 # Web Framework
