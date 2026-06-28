@@ -63,7 +63,21 @@ MOCK_COMPANIES = [
      "description": "Social commerce marketplace connecting resellers and small businesses"},
     {"name": "Zepto Delivery", "url": "https://zepto.com",
      "industry": "E-commerce", "location": "India", "stage": "Series E",
-     "description": "10-minute grocery delivery app serving major metropolitan areas"}
+     "description": "10-minute grocery delivery app serving major metropolitan areas"},
+
+    # --- AI Video / Media ---
+    {"name": "InVideo AI", "url": "https://invideo.io",
+     "industry": "AI Video Editing", "location": "India", "stage": "Series B",
+     "description": "AI video generation platform converting text scripts into complete videos with voiceovers"},
+    {"name": "Synthesia", "url": "https://synthesia.io",
+     "industry": "AI Video Editing", "location": "United Kingdom", "stage": "Series C",
+     "description": "AI video creation platform using digital avatars to speak text scripts dynamically"},
+    {"name": "Runway", "url": "https://runwayml.com",
+     "industry": "AI Video Editing", "location": "United States", "stage": "Series C",
+     "description": "Generative AI tools for video generation, video editing, and text-to-video diffusion models"},
+    {"name": "Kaiber AI", "url": "https://kaiber.ai",
+     "industry": "AI Video Editing", "location": "United States", "stage": "Seed",
+     "description": "Creative AI video platform generating animations from images and text audio prompts"}
 ]
 
 

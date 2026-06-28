@@ -31,7 +31,7 @@ def _get_client():
     """Lazy-initialize the Gemini client (avoids import-time API calls)."""
     global _client
     if _client is None:
-        api_key = os.getenv("GEMINI_API_KEY", "")
+        api_key = os.getenv("GEMINI_API_KEY", "").strip()
         if not api_key:
             logger.warning("GEMINI_API_KEY not set — LLM calls will return placeholder text.")
             return None
