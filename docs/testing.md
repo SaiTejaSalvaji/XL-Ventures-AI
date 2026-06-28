@@ -44,9 +44,10 @@ python -m pytest tests/ --cov=src --cov-report=html
 |------------|-------|---------|
 | `TestImports` | 4 | Verify all modules are importable without errors |
 | `TestBaseAgentContract` | 4 | Ensure all agents follow the BaseAgent interface |
-| `TestAgentOutputTypes` | 6 | Validate agents return correct data types |
-| `TestStore` | 2 | Test in-memory store CRUD operations |
-| `TestFastAPIEndpoints` | 2 | Test API endpoint responses |
+| `TestAgentOutputTypes` | 11 | Validate all 11 agents return correct data types |
+| `TestTools` | 6 | Unit tests for the tools package (search, scrape, news, contact) |
+| `TestStore` | 9 | Full in-memory store CRUD operations |
+| `TestFastAPIEndpoints` | 8 | API endpoint responses, 404s, approval workflow |
 
 ### Test Details
 
@@ -62,37 +63,70 @@ python -m pytest tests/ --cov=src --cov-report=html
 - `test_all_have_run` — Every agent implements `run()` method
 - `test_unique_names` — No two agents share the same name
 
-#### TestAgentOutputTypes (6 tests)
+#### TestAgentOutputTypes (11 tests)
 - `test_planner_returns_list_of_strings` — PlannerAgent returns `list[str]`
 - `test_discovery_returns_list` — DiscoveryAgent returns `list[dict]`
 - `test_validation_keeps_companies` — ValidationAgent preserves company structure
 - `test_scoring_returns_score_dict` — ScoringAgent returns dict with score, tier, breakdown
 - `test_report_returns_string` — ReportAgent returns a string
 - `test_github_returns_dict_with_required_keys` — GitHubAgent returns required metric keys
+- `test_company_profile_returns_dict` — CompanyProfileAgent returns dict with company info
+- `test_founder_profile_returns_list` — FounderProfileAgent returns list of founder profiles
+- `test_market_analysis_returns_dict` — MarketAnalysisAgent returns competitive landscape
+- `test_news_returns_dict` — NewsAgent returns sentiment + articles
+- `test_contact_returns_dict` — ContactAgent returns email + linkedin
 
-#### TestStore (2 tests)
+#### TestTools (6 tests)
+- `test_search_tool_empty_keys_returns_empty` — Returns `[]` when API key missing
+- `test_search_tool_empty_cse_id_returns_empty` — Returns `[]` when CSE ID missing
+- `test_scraping_tool_empty_url_returns_empty` — Returns `""` when URL is empty
+- `test_news_tool_empty_key_returns_empty` — Returns `[]` when API key missing
+- `test_hunter_tool_generates_email` — Generates correct `first.last@domain` format
+- `test_hunter_tool_single_name` — Handles single-word names gracefully
+
+#### TestStore (9 tests)
 - `test_save_and_retrieve_company` — Save a company and retrieve it by name
 - `test_create_and_update_job` — Create a job and verify status updates
+- `test_get_company_by_id` — Lookup company by UUID works
+- `test_get_company_by_id_not_found` — Returns `None` for unknown ID
+- `test_clear_companies` — `clear_companies()` empties the company store
+- `test_save_and_get_report` — Report CRUD (save, get, miss)
+- `test_save_and_get_decision` — Decision CRUD with notes
+- `test_get_job_not_found` — Returns `None` for unknown job ID
+- `test_update_job_non_existent_no_error` — Doesn't crash on missing job
 
-#### TestFastAPIEndpoints (2 tests)
+#### TestFastAPIEndpoints (8 tests)
 - `test_health` — `GET /health` returns 200 with service info
 - `test_companies_empty` — `GET /companies` returns empty list on fresh start
+- `test_analyze_returns_job_id` — `POST /analyze` returns job_id immediately
+- `test_get_results_not_found` — `GET /results/{bad_id}` returns 404
+- `test_get_company_report_not_found` — `GET /company/{bad_id}/report` returns 404
+- `test_approve_company_not_found` — `POST /approve/{bad_id}` returns 404
+- `test_approve_company_valid` — `POST /approve` records decision correctly
+- `test_health_version` — Health response includes version field
 
 ## Coverage Report
 
-Current coverage (18 tests passing):
+Current coverage (42 tests passing):
 
 | Module | Coverage |
 |--------|----------|
-| `backend/app/agents/base_agent.py` | 85% |
-| `backend/app/agents/planner_agent.py` | 100% |
-| `backend/app/agents/scoring_agent.py` | 97% |
-| `backend/app/agents/report_agent.py` | 100% |
-| `backend/app/agents/validation_agent.py` | 75% |
-| `backend/app/memory/store.py` | 70% |
-| `backend/app/llm.py` | 36% |
-| `backend/app/main.py` | 62% |
-| **TOTAL** | **~53%** |
+| `app/agents/base_agent.py` | 85% |
+| `app/agents/company_profile_agent.py` | 100% |
+| `app/agents/contact_agent.py` | 100% |
+| `app/agents/founder_profile_agent.py` | 100% |
+| `app/agents/market_analysis_agent.py` | 100% |
+| `app/agents/planner_agent.py` | 100% |
+| `app/agents/report_agent.py` | 100% |
+| `app/agents/scoring_agent.py` | 97% |
+| `app/agents/news_agent.py` | 80% |
+| `app/agents/validation_agent.py` | 75% |
+| `app/main.py` | 91% |
+| `app/memory/store.py` | 100% |
+| `app/tools/hunter_tool.py` | 100% |
+| `app/tools/news_tool.py` | 80% |
+| `app/tools/scraping_tool.py` | 86% |
+| **TOTAL** | **~68%** |
 
 ## Testing Principles
 

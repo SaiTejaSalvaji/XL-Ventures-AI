@@ -131,6 +131,76 @@ class TestAgentOutputTypes:
         assert "total_stars" in result
         assert "repo_count" in result
 
+    def test_company_profile_returns_dict(self):
+        from app.agents.company_profile_agent import CompanyProfileAgent
+        result = CompanyProfileAgent().run(company=self.SAMPLE_COMPANY)
+        assert isinstance(result, dict)
+        assert "name" in result
+
+    def test_founder_profile_returns_list(self):
+        from app.agents.founder_profile_agent import FounderProfileAgent
+        result = FounderProfileAgent().run(company=self.SAMPLE_COMPANY)
+        assert isinstance(result, list)
+        if result:
+            assert "name" in result[0]
+            assert "title" in result[0]
+
+    def test_market_analysis_returns_dict(self):
+        from app.agents.market_analysis_agent import MarketAnalysisAgent
+        result = MarketAnalysisAgent().run(company=self.SAMPLE_COMPANY)
+        assert isinstance(result, dict)
+        assert "competitors" in result
+        assert "tam_estimate" in result
+        assert "market_stage" in result
+
+    def test_news_returns_dict(self):
+        from app.agents.news_agent import NewsAgent
+        result = NewsAgent().run(company=self.SAMPLE_COMPANY)
+        assert isinstance(result, dict)
+        assert "sentiment" in result
+        assert "summary" in result
+
+    def test_contact_returns_dict(self):
+        from app.agents.contact_agent import ContactAgent
+        result = ContactAgent().run(founder={"name": "Test Person"}, domain="example.com")
+        assert isinstance(result, dict)
+        assert "email" in result
+        assert "linkedin_url" in result
+        assert "confidence_score" in result
+
+
+class TestTools:
+    def test_search_tool_empty_keys_returns_empty(self):
+        from app.tools.search_tool import google_cse_search
+        result = google_cse_search("AI startups", "", "")
+        assert result == []
+
+    def test_search_tool_empty_cse_id_returns_empty(self):
+        from app.tools.search_tool import google_cse_search
+        result = google_cse_search("AI startups", "some-key", "")
+        assert result == []
+
+    def test_scraping_tool_empty_url_returns_empty(self):
+        from app.tools.scraping_tool import scrape_website
+        result = scrape_website("")
+        assert result == ""
+
+    def test_news_tool_empty_key_returns_empty(self):
+        from app.tools.news_tool import fetch_news
+        result = fetch_news("TestCo", "")
+        assert result == []
+
+    def test_hunter_tool_generates_email(self):
+        from app.tools.hunter_tool import generate_contact
+        result = generate_contact("John Doe", "testco.com")
+        assert result["email"] == "john.doe@testco.com"
+        assert "linkedin.com/in/" in result["linkedin_url"]
+
+    def test_hunter_tool_single_name(self):
+        from app.tools.hunter_tool import generate_contact
+        result = generate_contact("John", "testco.com")
+        assert "john@testco.com" in result["email"]
+
 
 class TestStore:
     def setup_method(self):
@@ -152,6 +222,50 @@ class TestStore:
         store.update_job(job_id, status="done")
         assert store.get_job(job_id)["status"] == "done"
 
+    def test_get_company_by_id(self):
+        from app.memory import store
+        from app.memory.store import clear_companies
+        clear_companies()
+        company = {"name": "IDTestCo", "score": 75}
+        store.save_company(company)
+        result = store.get_company_by_id(company["id"])
+        assert result is not None
+        assert result["name"] == "IDTestCo"
+
+    def test_get_company_by_id_not_found(self):
+        from app.memory.store import get_company_by_id
+        assert get_company_by_id("nonexistent-id") is None
+
+    def test_clear_companies(self):
+        from app.memory import store
+        from app.memory.store import clear_companies
+        store.save_company({"name": "ClearMe"})
+        clear_companies()
+        assert len(store.get_all_companies()) == 0
+
+    def test_save_and_get_report(self):
+        from app.memory import store
+        store.save_report("TestCo", "## Due Diligence Report")
+        assert store.get_report("TestCo") == "## Due Diligence Report"
+        assert store.get_report("NoSuchCo") is None
+
+    def test_save_and_get_decision(self):
+        from app.memory import store
+        store.save_decision("co-1", "approve", "Looks good")
+        decision = store.get_decision("co-1")
+        assert decision["decision"] == "approve"
+        assert decision["notes"] == "Looks good"
+        assert store.get_decision("nonexistent") is None
+
+    def test_get_job_not_found(self):
+        from app.memory import store
+        assert store.get_job("bad-job-id") is None
+
+    def test_update_job_non_existent_no_error(self):
+        from app.memory import store
+        store.update_job("no-such-job", status="done")
+        assert store.get_job("no-such-job") is None
+
 
 class TestFastAPIEndpoints:
     def test_health(self):
@@ -171,3 +285,65 @@ class TestFastAPIEndpoints:
         resp = client.get("/companies")
         assert resp.status_code == 200
         assert isinstance(resp.json()["companies"], list)
+
+    def test_analyze_returns_job_id(self):
+        from fastapi.testclient import TestClient
+        from app.main import app
+        from app.memory.store import clear_all
+        clear_all()
+        client = TestClient(app)
+        resp = client.post("/analyze", json={
+            "industry": "AI Healthcare",
+            "stage": "Seed",
+            "location": "India",
+        })
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "job_id" in data
+        assert data["status"] == "running"
+
+    def test_get_results_not_found(self):
+        from fastapi.testclient import TestClient
+        from app.main import app
+        client = TestClient(app)
+        resp = client.get("/results/nonexistent-job")
+        assert resp.status_code == 404
+
+    def test_get_company_report_not_found(self):
+        from fastapi.testclient import TestClient
+        from app.main import app
+        client = TestClient(app)
+        resp = client.get("/company/nonexistent-id/report")
+        assert resp.status_code == 404
+
+    def test_approve_company_not_found(self):
+        from fastapi.testclient import TestClient
+        from app.main import app
+        client = TestClient(app)
+        resp = client.post("/approve/nonexistent-id", json={"decision": "approve"})
+        assert resp.status_code == 404
+
+    def test_approve_company_valid(self):
+        from fastapi.testclient import TestClient
+        from app.main import app
+        from app.memory.store import clear_companies
+        clear_companies()
+        from app.memory import store
+        company = {"name": "ApprovalTest", "industry": "AI", "stage": "Seed"}
+        store.save_company(company)
+        client = TestClient(app)
+        resp = client.post(f"/approve/{company['id']}", json={
+            "decision": "approve",
+            "notes": "Great potential",
+        })
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["company_name"] == "ApprovalTest"
+        assert data["decision"] == "approve"
+
+    def test_health_version(self):
+        from fastapi.testclient import TestClient
+        from app.main import app
+        client = TestClient(app)
+        resp = client.get("/health")
+        assert resp.json()["version"] == "1.0.0"
