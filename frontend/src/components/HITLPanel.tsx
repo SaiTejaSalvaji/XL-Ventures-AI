@@ -32,8 +32,16 @@ export const HITLPanel: React.FC<HITLPanelProps> = ({ company, onDecisionSubmitt
   return (
     <div className="card card-glass flex flex-col gap-6">
       <div>
-        <h3 className="text-sm font-bold uppercase text-secondary tracking-wider" style={{ letterSpacing: '0.08em' }}>
-          👤 Human-In-The-Loop Action
+        <h3 style={{
+          fontFamily: "'Syne', sans-serif",
+          fontSize: '0.8rem',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          color: 'var(--text-2)',
+          margin: 0,
+        }}>
+          ✦ Human-In-The-Loop Action
         </h3>
       </div>
       
