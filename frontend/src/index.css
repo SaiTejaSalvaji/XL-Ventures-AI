@@ -21,6 +21,18 @@
   --border-color:      rgba(0, 212, 255, 0.15);
   --border-glow:       rgba(0, 212, 255, 0.3);
 
+  /* Premium Design Brand Colors & Utilities */
+  --violet:            #6c3fe8;
+  --violet-bright:     #8c5cff;
+  --gold:              #f5a623;
+  --gold-bright:       #ffca28;
+  --success:           #10d98c;
+  --danger:            #f0526a;
+  --info:              #00d4ff;
+  --text-0:            #ffffff;
+  --text-1:            #f0f4ff;
+  --text-2:            #8892a4;
+
   /* Deprecated for compatibility - will be removed */
   --bg-base:           #0A0F1E;
   --bg-surface:        #0D1B2A;

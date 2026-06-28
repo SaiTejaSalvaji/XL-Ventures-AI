@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Company } from '../types';
-import { ScoreBadge } from './ScoreBadge';
+
 
 interface CompanyTableProps {
   companies: Company[];
@@ -9,6 +9,59 @@ interface CompanyTableProps {
 
 type SortField = 'score' | 'name' | 'stage';
 type SortOrder = 'asc' | 'desc';
+
+const formatUrl = (url: string | undefined): string => {
+  if (!url) return '#';
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+};
+
+// ── SVG Score Ring ───────────────────────────────────────────────
+interface ScoreRingProps {
+  score: number;
+  color: string;
+  size?: number;
+  stroke?: number;
+}
+
+const ScoreRing: React.FC<ScoreRingProps> = ({ score, color, size = 50, stroke = 4 }) => {
+  const r = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * r;
+  const offset = circumference - (score / 100) * circumference;
+
+  return (
+    <div style={{ position: 'relative', width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)', position: 'absolute', top: 0, left: 0 }}>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={stroke} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          style={{ filter: `drop-shadow(0 0 4px ${color})` }}
+        />
+      </svg>
+      <span style={{
+        position: 'relative',
+        zIndex: 1,
+        fontSize: '0.78rem',
+        fontWeight: 800,
+        fontFamily: "'Syne', sans-serif",
+        color,
+      }}>
+        {score}
+      </span>
+    </div>
+  );
+};
 
 export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectCompany }) => {
   const [sortField, setSortField] = useState<SortField>('score');
@@ -37,50 +90,61 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
     return 0;
   });
 
+  const getSortIndicator = (field: SortField) => {
+    if (sortField !== field) return <span style={{ color: 'var(--text-2)', opacity: 0.6, marginLeft: '4px' }}>⇅</span>;
+    return (
+      <span style={{ color: 'var(--violet)', marginLeft: '4px' }}>
+        {sortOrder === 'asc' ? '▲' : '▼'}
+      </span>
+    );
+  };
+
   const getScoreColor = (score: number) => {
-    if (score >= 80) return '#00FF88';
-    if (score >= 50) return '#FFB800';
-    return '#FF6B6B';
+    if (score >= 80) return 'var(--success)';
+    if (score >= 50) return 'var(--gold)';
+    return 'var(--danger)';
   };
 
   const getTierColor = (tier: string) => {
     switch (tier.toLowerCase()) {
-      case 'high':
-        return '#FFD700'; // Gold
-      case 'medium':
-        return '#C0C0C0'; // Silver
-      case 'low':
-        return '#CD7F32'; // Bronze
-      default:
-        return '#00D4FF';
+      case 'high':   return '#FFD700';
+      case 'medium': return '#C0C0C0';
+      case 'low':    return '#CD7F32';
+      default:       return 'var(--info)';
     }
   };
 
   const getStageColor = (stage: string) => {
     const stageMap: Record<string, string> = {
-      'Seed': '#00D4FF',
-      'Series A': '#7B2FBE',
-      'Series B': '#FFB800',
-      'Series C': '#00FF88',
+      'Seed':     'var(--violet-bright)',
+      'Series A': 'var(--gold)',
+      'Series B': 'var(--info)',
+      'Series C': 'var(--success)',
     };
-    return stageMap[stage] || '#8892A4';
+    return stageMap[stage] || 'var(--text-2)';
   };
 
   return (
     <div className="table-wrap fade-in">
       {sortedCompanies.length === 0 ? (
+        /* ── Empty State with ◈ symbol ── */
         <div style={{
           padding: '60px 24px',
           textAlign: 'center',
-          background: 'rgba(13, 27, 42, 0.5)',
+          background: 'rgba(10, 13, 24, 0.5)',
           borderRadius: '16px',
-          border: '1px solid rgba(0, 212, 255, 0.15)',
+          border: '2px dashed rgba(108, 63, 232, 0.2)',
         }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🎯</div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          <div style={{
+            fontSize: '2.2rem',
+            marginBottom: '12px',
+            color: 'var(--violet)',
+            lineHeight: 1,
+          }}>◈</div>
+          <p style={{ color: 'var(--text-1)', fontSize: '0.95rem' }}>
             No opportunities discovered yet.
           </p>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '6px' }}>
+          <p style={{ color: 'var(--text-2)', fontSize: '0.85rem', marginTop: '6px' }}>
             Adjust ICP criteria and trigger AgentOS to begin discovery.
           </p>
         </div>
@@ -90,14 +154,14 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
             <thead>
               <tr>
                 <th className="th-sort" onClick={() => handleSort('name')}>
-                  Company Name {sortField === 'name' && (sortOrder === 'asc' ? '▲' : '▼')}
+                  Company Name {getSortIndicator('name')}
                 </th>
                 <th className="th-sort" onClick={() => handleSort('score')}>
-                  Score {sortField === 'score' && (sortOrder === 'asc' ? '▲' : '▼')}
+                  Score {getSortIndicator('score')}
                 </th>
                 <th>Tier</th>
                 <th className="th-sort" onClick={() => handleSort('stage')}>
-                  Stage {sortField === 'stage' && (sortOrder === 'asc' ? '▲' : '▼')}
+                  Stage {getSortIndicator('stage')}
                 </th>
                 <th>Tech Stack</th>
                 <th>Website</th>
@@ -106,46 +170,47 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
             </thead>
             <tbody>
               {sortedCompanies.map((c, idx) => (
-                <tr 
+                <tr
                   key={c.id}
                   onClick={() => onSelectCompany(c)}
                   style={{
                     animation: `slideInUp 0.3s ease-out ${idx * 50}ms backwards`,
                   }}
                 >
-                  <td className="font-semibold">{c.name}</td>
+                  {/* Company name with Syne font + tagline below */}
                   <td>
-                    <div style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '50px',
-                      height: '50px',
-                      borderRadius: '50%',
-                      background: `conic-gradient(from 0deg, ${getScoreColor(c.score)}, transparent ${(c.score / 100) * 360}deg, rgba(0,212,255,0.1) 0deg)`,
-                      position: 'relative',
-                      fontSize: '0.85rem',
-                      fontWeight: 800,
-                      color: getScoreColor(c.score),
-                      textShadow: `0 0 8px ${getScoreColor(c.score)}`,
-                    }}>
+                    <div>
                       <div style={{
-                        position: 'absolute',
-                        width: '44px',
-                        height: '44px',
-                        borderRadius: '50%',
-                        background: 'var(--card-bg)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '0.8rem',
-                        fontWeight: 800,
-                        color: getScoreColor(c.score),
+                        fontFamily: "'Syne', sans-serif",
+                        fontWeight: 700,
+                        fontSize: '0.9rem',
+                        color: 'var(--text-0)',
+                        lineHeight: 1.2,
                       }}>
-                        {c.score}
+                        {c.name}
                       </div>
+                      {(c.tagline || c.description) && (
+                        <div style={{
+                          fontSize: '0.72rem',
+                          color: 'var(--text-2)',
+                          marginTop: '3px',
+                          lineHeight: 1.3,
+                          maxWidth: '220px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {c.tagline || c.description}
+                        </div>
+                      )}
                     </div>
                   </td>
+
+                  {/* SVG Score ring */}
+                  <td>
+                    <ScoreRing score={c.score} color={getScoreColor(c.score)} />
+                  </td>
+
                   <td>
                     <span
                       className="badge"
@@ -161,6 +226,7 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
                       Tier {c.tier.charAt(0)}
                     </span>
                   </td>
+
                   <td>
                     <span
                       className="badge"
@@ -176,26 +242,24 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
                       {c.stage}
                     </span>
                   </td>
+
                   <td>
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', maxWidth: '300px' }}>
                       {c.tech_stack?.slice(0, 3).map((t) => (
                         <span
                           key={t}
                           className="chip"
-                          style={{
-                            padding: '4px 10px',
-                            fontSize: '0.7rem',
-                            fontWeight: 600,
-                          }}
+                          style={{ padding: '4px 10px', fontSize: '0.7rem', fontWeight: 600 }}
                         >
                           {t}
                         </span>
-                      )) || <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>N/A</span>}
+                      )) || <span style={{ color: 'var(--text-2)', fontSize: '0.85rem' }}>N/A</span>}
                     </div>
                   </td>
+
                   <td>
                     <a
-                      href={c.url}
+                      href={formatUrl(c.url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
@@ -204,13 +268,14 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
                         padding: '6px 12px',
                         fontSize: '0.75rem',
                         fontWeight: 600,
-                        border: `1px solid rgba(0, 212, 255, 0.3)`,
-                        color: 'var(--accent-primary)',
+                        border: `1px solid rgba(108, 63, 232, 0.3)`,
+                        color: 'var(--violet-bright)',
                       }}
                     >
                       🔗 Visit
                     </a>
                   </td>
+
                   <td>
                     <button
                       className="btn btn-ghost btn-sm"
@@ -222,8 +287,8 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
                         padding: '6px 12px',
                         fontSize: '0.75rem',
                         fontWeight: 600,
-                        border: `1px solid rgba(0, 212, 255, 0.3)`,
-                        color: 'var(--accent-primary)',
+                        border: `1px solid rgba(108, 63, 232, 0.3)`,
+                        color: 'var(--violet-bright)',
                       }}
                     >
                       📋 View
@@ -238,21 +303,22 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
           <div
             style={{
               padding: '16px 18px',
-              background: 'rgba(13, 27, 42, 0.5)',
-              borderTop: '1px solid rgba(0, 212, 255, 0.15)',
+              background: 'rgba(10, 13, 24, 0.5)',
+              borderTop: '1px solid rgba(108, 63, 232, 0.15)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
           >
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 600 }}>
+            <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>
               Showing {sortedCompanies.length} result{sortedCompanies.length !== 1 ? 's' : ''}
             </span>
             <div
               style={{
                 fontSize: '1.6rem',
                 fontWeight: 800,
-                background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
+                fontFamily: "'Syne', sans-serif",
+                background: 'linear-gradient(135deg, var(--violet), var(--gold))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',

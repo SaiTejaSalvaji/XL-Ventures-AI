@@ -5,25 +5,6 @@ interface AgentProgressProps {
   currentStep: string | null;
 }
 
-const AGENT_ICONS: Record<string, string> = {
-  discovery: '🔍',
-  validation: '✓',
-  enriching: '📊',
-  scoring: '⭐',
-  report: '📄',
-  company_profile: '🏢',
-  contact: '👤',
-  founder_profile: '👨‍💼',
-  github: '🐙',
-  market_analysis: '📈',
-  news: '📰',
-  enrichment: '📊',
-};
-
-interface AgentProgressProps {
-  status: 'queued' | 'running' | 'done' | 'error';
-  currentStep: string | null;
-}
 
 export const AgentProgress: React.FC<AgentProgressProps> = ({ status, currentStep }) => {
   const agents = [
