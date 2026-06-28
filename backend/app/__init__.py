@@ -1,3 +1,0 @@
-"""
-VenturePilot AI — Backend Package
-"""
