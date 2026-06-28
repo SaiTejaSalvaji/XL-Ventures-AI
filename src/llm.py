@@ -1,15 +1,16 @@
 """
-llm.py — LLM Helper (Gemini & Groq)
+llm.py — LLM Helper (Groq Primary + Gemini Fallback)
 
 Single shared entry point for all LLM calls in VenturePilot AI.
-Uses Groq (llama-3.3-70b-versatile) as primary if configured, with auto-failover
-to Gemini (gemini-2.0-flash) and smart mock fallback.
+Uses Groq (llama-3.3-70b-versatile) as PRIMARY provider for speed & generous limits.
+Falls back to Gemini (gemini-2.0-flash) if Groq is unavailable, then smart mocks.
 """
 
 import json
 import os
 import re
 import logging
+import time
 
 from google import genai
 from google.genai import errors as gemini_errors
@@ -24,45 +25,105 @@ except ImportError:
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-# Gemini model — "gemini-2.0-flash" is free-tier and fast
-_MODEL_NAME = "gemini-2.0-flash"
-_client = None
+# Model configs
+_GEMINI_MODEL = "gemini-2.0-flash"
+_GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile").strip()
+
+_gemini_client = None
+_groq_client = None
 
 
-def _get_client():
-    """Lazy-initialize the Gemini client (avoids import-time API calls)."""
-    global _client
-    if _client is None:
+def _get_groq_client():
+    """Lazy-initialize the Groq client."""
+    global _groq_client
+    if _groq_client is None:
+        if Groq is None:
+            logger.warning("groq package not installed — pip install groq")
+            return None
+        api_key = os.getenv("GROQ_API_KEY", "").strip()
+        if not api_key:
+            logger.info("GROQ_API_KEY not set — skipping Groq provider.")
+            return None
+        _groq_client = Groq(api_key=api_key)
+        logger.info(f"Groq client initialized (model: {_GROQ_MODEL})")
+    return _groq_client
+
+
+def _get_gemini_client():
+    """Lazy-initialize the Gemini client (fallback provider)."""
+    global _gemini_client
+    if _gemini_client is None:
         api_key = os.getenv("GEMINI_API_KEY", "").strip()
         if not api_key:
-            logger.warning("GEMINI_API_KEY not set — LLM calls will return placeholder text.")
+            logger.warning("GEMINI_API_KEY not set — Gemini fallback unavailable.")
             return None
-        _client = genai.Client(api_key=api_key)
-    return _client
+        _gemini_client = genai.Client(api_key=api_key)
+    return _gemini_client
+
+
+def _ask_groq(prompt: str) -> str | None:
+    """Call Groq API. Returns response text or None on failure."""
+    client = _get_groq_client()
+    if client is None:
+        return None
+    try:
+        response = client.chat.completions.create(
+            model=_GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2,
+        )
+        text = response.choices[0].message.content
+        return text.strip() if text else None
+    except Exception as e:
+        err_msg = str(e)
+        if "429" in err_msg or "rate_limit" in err_msg.lower():
+            logger.warning(f"Groq rate limit hit: {e}")
+        else:
+            logger.error(f"Groq error: {e}")
+        return None
+
+
+def _ask_gemini(prompt: str) -> str | None:
+    """Call Gemini API. Returns response text or None on failure."""
+    client = _get_gemini_client()
+    if client is None:
+        return None
+    try:
+        response = client.models.generate_content(
+            model=_GEMINI_MODEL, contents=prompt
+        )
+        return response.text.strip() if response.text else None
+    except Exception as e:
+        logger.error(f"Gemini error: {e}")
+        return None
 
 
 def ask(prompt: str, fallback: str = "N/A") -> str:
     """
-    Send a prompt to Gemini and return the text response.
+    Send a prompt to Groq (primary) → Gemini (fallback) → smart mock (last resort).
 
     Args:
         prompt:   The prompt string.
-        fallback: Value returned if Gemini is unavailable or errors out.
+        fallback: Value returned if all providers are unavailable.
 
     Returns:
-        str: Gemini's response text, or fallback on error.
+        str: LLM response text, or fallback on error.
     """
-    client = _get_client()
-    if client is None:
-        return fallback
-    try:
-        response = client.models.generate_content(
-            model=_MODEL_NAME, contents=prompt
-        )
-        return response.text.strip()
-    except Exception as e:
-        logger.error(f"Gemini error: {e}")
-        return fallback
+    # 1. Try Groq first (fast, generous limits)
+    result = _ask_groq(prompt)
+    if result:
+        return result
+
+    # 2. Fallback to Gemini
+    logger.info("Groq unavailable — falling back to Gemini...")
+    result = _ask_gemini(prompt)
+    if result:
+        return result
+
+    # 3. Last resort: smart mock
+    logger.warning("Both Groq and Gemini failed — using smart mock fallback.")
+    mock_result = _mock_llm_ask(prompt, fallback)
+    return mock_result
 
 
 def ask_json(prompt: str, fallback: dict | None = None) -> dict:
