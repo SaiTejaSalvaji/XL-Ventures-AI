@@ -1,0 +1,21 @@
+.scroll-reveal {
+  margin: 100px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.scroll-reveal-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--text-primary);
+  max-width: 900px;
+}
+
+.word {
+  display: inline-block;
+  white-space: pre-wrap;
+}
