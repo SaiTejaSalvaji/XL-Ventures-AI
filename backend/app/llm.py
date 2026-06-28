@@ -126,7 +126,7 @@ def ask(prompt: str, fallback: str = "N/A") -> str:
     return mock_result
 
 
-def ask_json(prompt: str, fallback: dict | None = None) -> dict:
+def ask_json(prompt: str, fallback: dict | list | None = None) -> dict | list:
     """
     Send a prompt to the active LLM expecting a JSON response.
     Automatically strips markdown code fences if present.
@@ -206,7 +206,7 @@ Key risks include scaling customer acquisition channels and product delivery tim
     return fallback
 
 
-def _mock_llm_ask_json(prompt: str, fallback: dict) -> dict:
+def _mock_llm_ask_json(prompt: str, fallback: dict | list) -> dict | list:
     """Generate smart mock JSON responses based on prompt structure."""
     prompt_lower = prompt.lower()
     
