@@ -90,12 +90,14 @@ const ScrollStack = ({
 
   const getElementOffset = useCallback(
     (element: HTMLElement) => {
-      if (useWindowScroll) {
-        const rect = element.getBoundingClientRect();
-        return rect.top + window.scrollY;
-      } else {
-        return element.offsetTop;
+      let top = 0;
+      let curr: HTMLElement | null = element;
+      const stopAt = useWindowScroll ? null : scrollerRef.current;
+      while (curr && curr !== stopAt && curr !== document.body) {
+        top += curr.offsetTop;
+        curr = curr.offsetParent as HTMLElement | null;
       }
+      return top;
     },
     [useWindowScroll]
   );
