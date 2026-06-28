@@ -1,17 +1,15 @@
 """
 VenturePilot AI — Sequential Workflow Runner
 
-Chains all agents in order for the prototype.
-No LangGraph required — simple Python loop.
-
-Flow:
-  Discovery → Validation → [CompanyProfile + GitHub + News + Market] → Scoring → Report
+Chains all agents in order using the PlannerAgent's dynamic plan.
+Flow: Planner → Discovery → Validation → per-company (plan-driven order)
 """
 
 import logging
 import threading
 from app import memory as store_module
 from app.memory import store
+from app.agents.planner_agent import PlannerAgent
 from app.agents.discovery_agent import DiscoveryAgent
 from app.agents.validation_agent import ValidationAgent
 from app.agents.company_profile_agent import CompanyProfileAgent
@@ -24,8 +22,8 @@ from app.agents.report_agent import ReportAgent
 
 logger = logging.getLogger(__name__)
 
-# Agent instances (reused across calls)
 _agents = {
+    "planner": PlannerAgent(),
     "discovery": DiscoveryAgent(),
     "validation": ValidationAgent(),
     "company_profile": CompanyProfileAgent(),
@@ -37,52 +35,63 @@ _agents = {
     "report": ReportAgent(),
 }
 
+BATCH_AGENTS = {"discovery", "validation"}
+
+
+def _run_per_company_agent(company: dict, agent_name: str) -> dict:
+    agent = _agents[agent_name]
+    if agent_name == "company_profile":
+        company.update(agent.run(company=company))
+    elif agent_name == "founder_profile":
+        company["founders"] = agent.run(company=company)
+    elif agent_name == "github":
+        company["github"] = agent.run(company=company)
+    elif agent_name == "news":
+        company["news"] = agent.run(company=company)
+    elif agent_name == "market_analysis":
+        company["market"] = agent.run(company=company)
+    elif agent_name == "scoring":
+        result = agent.run(profile=company)
+        company["score"] = result.get("score", 0)
+        company["tier"] = result.get("tier", "Low")
+        company["score_breakdown"] = result.get("breakdown", {})
+        company["rationale"] = result.get("rationale", "")
+    elif agent_name == "report":
+        company["report"] = agent.run(profile=company)
+    return company
+
 
 def run_workflow(job_id: str, icp: dict) -> None:
-    """
-    Run the full agent pipeline for a given ICP.
-    Designed to be called in a background thread.
-
-    Updates the job store at each step so the frontend can poll progress.
-    """
     try:
-        store.update_job(job_id, status="running", current_step="discovery")
+        store.update_job(job_id, status="running", current_step="planner")
         logger.info(f"Job {job_id}: starting workflow for ICP={icp}")
 
-        # Step 1 — Discovery
-        companies = _agents["discovery"].run(icp=icp)
-        logger.info(f"Job {job_id}: discovered {len(companies)} companies")
-        store.update_job(job_id, current_step="validation")
+        plan = _agents["planner"].run(icp=icp)
+        logger.info(f"Job {job_id}: planner produced plan={plan}")
 
-        # Step 2 — Validation
-        companies = _agents["validation"].run(companies=companies)
-        logger.info(f"Job {job_id}: {len(companies)} companies passed validation")
+        # Batch phase: discovery + validation
+        if "discovery" in plan:
+            store.update_job(job_id, current_step="discovery")
+            companies = _agents["discovery"].run(icp=icp)
+        else:
+            companies = _agents["discovery"].run(icp=icp)
 
-        # Step 3 — Enrich each company
+        if "validation" in plan:
+            store.update_job(job_id, current_step="validation")
+            companies = _agents["validation"].run(companies=companies)
+
+        per_company_agents = [a for a in plan if a not in BATCH_AGENTS]
+
         enriched = []
         for i, company in enumerate(companies):
-            step = f"enriching:{company['name']}"
-            store.update_job(job_id, current_step=step)
+            store.update_job(job_id, current_step=f"enriching:{company['name']}")
             logger.info(f"Job {job_id}: enriching {company['name']}")
 
-            # Profile + GitHub + News + Market (sequential for simplicity)
-            company.update(_agents["company_profile"].run(company=company))
-            company["founders"] = _agents["founder_profile"].run(company=company)
-            company["github"] = _agents["github"].run(company=company)
-            company["news"] = _agents["news"].run(company=company)
-            company["market"] = _agents["market_analysis"].run(company=company)
-
-            # Score
-            store.update_job(job_id, current_step=f"scoring:{company['name']}")
-            scoring_result = _agents["scoring"].run(profile=company)
-            company["score"] = scoring_result.get("score", 0)
-            company["tier"] = scoring_result.get("tier", "Low")
-            company["score_breakdown"] = scoring_result.get("breakdown", {})
-            company["rationale"] = scoring_result.get("rationale", "")
-
-            # Report
-            store.update_job(job_id, current_step=f"report:{company['name']}")
-            company["report"] = _agents["report"].run(profile=company)
+            for agent_name in per_company_agents:
+                if agent_name not in _agents:
+                    continue
+                store.update_job(job_id, current_step=f"{agent_name}:{company['name']}")
+                company = _run_per_company_agent(company, agent_name)
 
             store.save_company(company)
             enriched.append(company)
@@ -101,7 +110,6 @@ def run_workflow(job_id: str, icp: dict) -> None:
 
 
 def start_workflow_async(job_id: str, icp: dict) -> None:
-    """Launch the workflow in a background thread (non-blocking)."""
     thread = threading.Thread(
         target=run_workflow,
         args=(job_id, icp),

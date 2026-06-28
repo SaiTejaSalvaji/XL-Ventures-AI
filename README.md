@@ -56,6 +56,35 @@ We run all agent calls through a unified gateway that automatically routes reque
 
 ---
 
+## 🔧 What's New
+
+### 1. Planner-Driven Pipeline
+The workflow is now dynamically orchestrated by the `PlannerAgent` — the LLM decides which agents to run and in what order based on your ICP, instead of a hardcoded sequence. The runner executes the plan from `backend/app/agents/planner_agent.py`.
+
+### 2. Tools Package (`backend/app/tools/`)
+External API calls have been extracted into reusable, stateless tool modules:
+
+| Tool | File | Purpose |
+|------|------|---------|
+| `search_tool.py` | `app/tools/search_tool.py` | Google Custom Search API wrapper |
+| `scraping_tool.py` | `app/tools/scraping_tool.py` | BeautifulSoup web scraper |
+| `news_tool.py` | `app/tools/news_tool.py` | NewsAPI.org wrapper |
+| `hunter_tool.py` | `app/tools/hunter_tool.py` | Contact/email generation |
+
+Agents now import from these tools instead of calling APIs directly.
+
+### 3. Google CSE Integration
+To enable real company discovery (instead of mock data), configure Google Custom Search:
+
+```bash
+# 1. Create a search engine at https://programmablesearchengine.google.com/
+#    Choose "Search the entire web"
+# 2. Copy the Search engine ID (cx) to .env
+# 3. Ensure GOOGLE_CSE_API_KEY is set (your Gemini key works if enabled in GCP)
+```
+
+---
+
 ## ⚡ Quickstart
 
 ### 1. Clone and Install

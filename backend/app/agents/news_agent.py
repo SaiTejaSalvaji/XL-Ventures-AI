@@ -5,9 +5,9 @@ Falls back to Gemini-generated mock news when NewsAPI key is unavailable.
 """
 
 import os
-import requests
 from .base_agent import BaseAgent
 from ..llm import ask, ask_json
+from ..tools.news_tool import fetch_news
 
 
 class NewsAgent(BaseAgent):
@@ -31,33 +31,7 @@ class NewsAgent(BaseAgent):
 
     def _fetch_news(self, company_name: str) -> list[dict]:
         api_key = os.getenv("NEWSAPI_KEY", "")
-        if not api_key:
-            return []
-        try:
-            resp = requests.get(
-                "https://newsapi.org/v2/everything",
-                params={
-                    "q": company_name,
-                    "sortBy": "publishedAt",
-                    "pageSize": 5,
-                    "apiKey": api_key,
-                },
-                timeout=8,
-            )
-            articles = resp.json().get("articles", [])
-            return [
-                {
-                    "title": a.get("title", ""),
-                    "url": a.get("url", ""),
-                    "published_at": a.get("publishedAt", ""),
-                    "source": a.get("source", {}).get("name", ""),
-                }
-                for a in articles
-                if a.get("title")
-            ]
-        except Exception as e:
-            self.logger.warning(f"NewsAPI error: {e}")
-            return []
+        return fetch_news(company_name, api_key)
 
     def _gemini_sentiment(self, company_name: str, articles: list[dict]) -> dict:
         titles = "\n".join(f"- {a['title']}" for a in articles[:5])
