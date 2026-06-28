@@ -5,6 +5,7 @@ import type { Company } from '../types';
 interface CompanyTableProps {
   companies: Company[];
   onSelectCompany: (company: Company) => void;
+  isLoading?: boolean;
 }
 
 type SortField = 'score' | 'name' | 'stage';
@@ -54,7 +55,7 @@ const ScoreRing: React.FC<ScoreRingProps> = ({ score, color, size = 50, stroke =
         zIndex: 1,
         fontSize: '0.78rem',
         fontWeight: 800,
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Sora', sans-serif",
         color,
       }}>
         {score}
@@ -63,7 +64,7 @@ const ScoreRing: React.FC<ScoreRingProps> = ({ score, color, size = 50, stroke =
   );
 };
 
-export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectCompany }) => {
+export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectCompany, isLoading = false }) => {
   const [sortField, setSortField] = useState<SortField>('score');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
@@ -126,7 +127,20 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
 
   return (
     <div className="table-wrap fade-in">
-      {sortedCompanies.length === 0 ? (
+      {isLoading ? (
+        <div style={{ padding: '24px' }}>
+          {[1,2,3,4].map(i => (
+            <div key={i} style={{ display: 'flex', gap: '16px', padding: '16px 0', borderBottom: i < 4 ? '1px solid var(--border-color)' : 'none' }}>
+              <div className="skeleton" style={{ width: '180px', height: '20px' }} />
+              <div className="skeleton" style={{ width: '50px', height: '20px' }} />
+              <div className="skeleton" style={{ width: '70px', height: '20px' }} />
+              <div className="skeleton" style={{ width: '120px', height: '20px' }} />
+              <div className="skeleton" style={{ width: '60px', height: '20px' }} />
+              <div className="skeleton" style={{ width: '60px', height: '20px' }} />
+            </div>
+          ))}
+        </div>
+      ) : sortedCompanies.length === 0 ? (
         /* ── Empty State with ◈ symbol ── */
         <div style={{
           padding: '60px 24px',
@@ -181,7 +195,7 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
                   <td>
                     <div>
                       <div style={{
-                        fontFamily: "'Syne', sans-serif",
+                        fontFamily: "'Sora', sans-serif",
                         fontWeight: 700,
                         fontSize: '0.9rem',
                         color: 'var(--text-0)',
@@ -317,7 +331,7 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ companies, onSelectC
               style={{
                 fontSize: '1.6rem',
                 fontWeight: 800,
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 background: 'linear-gradient(135deg, var(--violet), var(--gold))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
