@@ -6,6 +6,49 @@ interface ICPFormProps {
   isLoading: boolean;
 }
 
+const PRESETS = [
+  {
+    name: '🏥 AI Healthcare (India)',
+    industry: 'AI Healthcare',
+    stage: 'Seed',
+    location: 'India',
+    keywords: 'machine learning, diagnostic screening, thermal imaging',
+    personas: 'CEO, CTO, Founder',
+    triggers: ['funding', 'github_activity'],
+    minScore: 75,
+  },
+  {
+    name: '🚀 SaaS DevTools (US)',
+    industry: 'SaaS DevTools',
+    stage: 'Series A',
+    location: 'United States',
+    keywords: 'CI/CD, Kubernetes, cloud security, observability',
+    personas: 'CTO, VP Engineering, Head of Infrastructure',
+    triggers: ['github_activity', 'sentiment_positive'],
+    minScore: 80,
+  },
+  {
+    name: '💳 Fintech & Neo-banking (SEA)',
+    industry: 'Fintech',
+    stage: 'Series B',
+    location: 'Singapore',
+    keywords: 'payment gateway, neo-banking, micro-lending, fraud detection',
+    personas: 'CEO, COO, Head of Product',
+    triggers: ['funding', 'product_launch'],
+    minScore: 70,
+  },
+  {
+    name: '📦 Logistics SaaS (Global)',
+    industry: 'Logistics SaaS',
+    stage: 'Series B',
+    location: 'Global',
+    keywords: 'route optimization, warehouse tracking, fleet management, IoT',
+    personas: 'COO, VP Operations, Supply Chain Lead',
+    triggers: ['funding', 'product_launch', 'sentiment_positive'],
+    minScore: 75,
+  }
+];
+
 export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
   const [industry, setIndustry] = useState('AI Healthcare');
   const [stage, setStage] = useState('Seed');
@@ -103,6 +146,56 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
         </div>
         {/* Divider below header */}
         <div className="divider" style={{ margin: '14px 0 0' }} />
+      </div>
+
+      {/* ── B2B Presets Selector ── */}
+      <div className="form-group" style={{ marginBottom: '8px' }}>
+        <label className="form-label" style={{ fontSize: '0.75rem', color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span>⚡</span> Quick-Load B2B Domain Template
+        </label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }}>
+          {PRESETS.map((preset) => (
+            <button
+              key={preset.name}
+              type="button"
+              onClick={() => {
+                setIndustry(preset.industry);
+                setStage(preset.stage);
+                setLocation(preset.location);
+                setKeywords(preset.keywords);
+                const chips = preset.keywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
+                setKeywordChips(chips);
+                setPersonas(preset.personas);
+                setTriggers(preset.triggers);
+                setMinScore(preset.minScore);
+              }}
+              style={{
+                padding: '6px 12px',
+                background: 'rgba(108, 63, 232, 0.08)',
+                border: '1px solid rgba(108, 63, 232, 0.25)',
+                borderRadius: '16px',
+                color: 'var(--text-1)',
+                fontSize: '0.72rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontWeight: 600,
+                fontFamily: "'Space Grotesk', sans-serif",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(108, 63, 232, 0.16)';
+                e.currentTarget.style.borderColor = 'var(--violet-bright)';
+                e.currentTarget.style.color = '#fff';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(108, 63, 232, 0.08)';
+                e.currentTarget.style.borderColor = 'rgba(108, 63, 232, 0.25)';
+                e.currentTarget.style.color = 'var(--text-1)';
+              }}
+            >
+              {preset.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="form-group">

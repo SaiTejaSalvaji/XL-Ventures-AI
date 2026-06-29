@@ -33,10 +33,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
     try {
       const data = await getAllCompanies();
       setCompanies(data.companies);
-      // If companies already exist, skip landing
-      if (data.companies.length > 0) {
-        setShowLanding(false);
-      }
+      // If companies already exist, keep landing page visible on mount
+      // and only show dashboard upon user action.
     } catch (err) {
       console.error('Failed to load existing companies', err);
     } finally {
@@ -50,6 +48,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
   }, []);
+
+  // Reset scroll to top on landing page transition
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [showLanding]);
 
   const handleStartAnalysis = async (icp: ICP) => {
     setIsAnalyzing(true);
@@ -133,7 +136,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
         </div>
 
         {/* Section 2: Scroll Reveal Effect Description */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1.5rem', background: '#090d1a' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 1.5rem', background: '#090d1a' }}>
           <ScrollReveal baseOpacity={0.08} enableBlur={true} baseRotation={3} blurStrength={8}>
             <p style={{
               fontSize: '1.3rem',
@@ -141,7 +144,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
               lineHeight: 1.7,
               maxWidth: '720px',
               margin: '0 auto',
-              padding: '2rem 1.5rem',
+              padding: '1rem 1.5rem',
               background: 'linear-gradient(135deg, #7c3aed, #f59e0b)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -152,8 +155,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
           </ScrollReveal>
         </div>
 {/* Section 1 — How It Works */}
-<div style={{ width: '100%', padding: '80px 0', background: '#0A0F1E', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-  <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: '2.4rem', fontWeight: 800, color: '#fff', marginBottom: '40px' }}>How It Works</h2>
+<div style={{ width: '100%', padding: '30px 0 50px', background: '#0A0F1E', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+  <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: '2.4rem', fontWeight: 800, color: '#fff', marginBottom: '30px' }}>How It Works</h2>
   <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
     <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '12px', padding: '24px', width: '260px', textAlign: 'center', backdropFilter: 'blur(10px)', border: '2px solid transparent', transition: 'border 0.3s' }}
          onMouseEnter={e => e.currentTarget.style.border = '2px solid #7c3aed'}
@@ -262,7 +265,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
             </p>
           </div>
 
-          <ScrollStack useWindowScroll={true} itemDistance={100} itemScale={0.025} itemStackDistance={24} blurAmount={2}>
+          <ScrollStack useWindowScroll={true} itemDistance={100} itemScale={0.008} itemStackDistance={14} blurAmount={2}>
             <ScrollStackItem key={1}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ fontSize: '3rem' }}>🔍</div>
@@ -415,7 +418,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
             }}
             style={{ fontSize: '0.8rem', padding: '8px 16px' }}
           >
-            ← Landing
+            ← Home
           </button>
         </div>
       </div>

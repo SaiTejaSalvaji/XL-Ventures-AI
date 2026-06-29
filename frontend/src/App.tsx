@@ -19,6 +19,11 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Reset scroll to top on view changes (Dashboard <-> Company Detail)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedCompany]);
+
   const handleDecisionSubmitted = () => {
     // Rerender or update stats if needed
     console.log('HITL decision updated');
