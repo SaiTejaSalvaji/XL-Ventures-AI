@@ -7,7 +7,7 @@ description: "High-level architecture of VenturePilot AI"
 
 ## Introduction
 
-VenturePilot AI is a **multi-agent agentic AI platform** that automates B2B startup discovery and due-diligence for venture capital analysts. The system accepts an Ideal Customer Profile (ICP) from the user, orchestrates a pipeline of 9+ specialized AI agents, and produces scored company profiles with full investment reports.
+VenturePilot AI is a **multi-agent agentic AI platform** that automates B2B startup discovery and due-diligence for venture capital analysts. The system accepts an Ideal Customer Profile (ICP) from the user, orchestrates a pipeline of 11 specialized AI agents, and produces scored company profiles with full investment reports.
 
 ## System Architecture
 
@@ -106,7 +106,7 @@ graph TB
 └─────────────────┘               │  └── /health             │
                                   │                          │
                                   │  ┌─ Workflow Runner ───┐ │
-                                  │  │  9 Agents Pipeline  │ │
+                                  │  │  11 Agents Pipeline  │ │
                                   │  │  In-Memory Store    │ │
                                   │  └────────────────────┘ │
                                   └──────────────────────────┘
