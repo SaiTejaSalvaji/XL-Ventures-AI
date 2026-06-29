@@ -6,34 +6,34 @@
 /* ── CSS Variables ─────────────────────────────────────── */
 :root {
   /* Color Palette */
-  --primary-bg:        #0A0F1E;
-  --secondary-bg:      #0D1B2A;
-  --card-bg:           #0F1E32;
-  --elevated-bg:       #132B45;
-  --accent-primary:    #00D4FF;
-  --accent-secondary:  #7B2FBE;
-  --accent-gradient:   linear-gradient(135deg, #00D4FF, #7B2FBE);
-  --success-color:     #00FF88;
+  --primary-bg:        #050505;
+  --secondary-bg:      #0C0C0C;
+  --card-bg:           #121212;
+  --elevated-bg:       #181818;
+  --accent-primary:    #D4AF37;
+  --accent-secondary:  #AA7C11;
+  --accent-gradient:   linear-gradient(135deg, #F3E5AB, #D4AF37, #AA7C11);
+  --success-color:     #10D98C;
   --warning-color:     #FFB800;
-  --error-color:       #FF6B6B;
-  --text-primary:      #F0F4FF;
-  --text-secondary:    #8892A4;
-  --border-color:      rgba(0, 212, 255, 0.15);
-  --border-glow:       rgba(0, 212, 255, 0.3);
+  --error-color:       #FF4757;
+  --text-primary:      #F5F5F7;
+  --text-secondary:    #8E8E93;
+  --border-color:      rgba(212, 175, 55, 0.15);
+  --border-glow:       rgba(212, 175, 55, 0.3);
 
   /* Premium Design Brand Colors & Utilities */
-  --violet:            #6c3fe8;
-  --violet-bright:     #8c5cff;
-  --gold:              #f5a623;
-  --gold-bright:       #ffca28;
+  --violet:            #D4AF37;
+  --violet-bright:     #F5D76E;
+  --gold:              #D4AF37;
+  --gold-bright:       #F5D76E;
   --success:           #10d98c;
   --danger:            #f0526a;
-  --info:              #00d4ff;
+  --info:              #D4AF37;
   --text-0:            #ffffff;
-  --text-1:            #f0f4ff;
-  --text-2:            #8892a4;
+  --text-1:            #f5f5f7;
+  --text-2:            #8e8e93;
 
-  --text-muted:        #5A6B7C;
+  --text-muted:        #555555;
 
   /* Spacing & Sizing */
   --radius-sm:         6px;
@@ -42,9 +42,9 @@
   --radius-xl:         24px;
 
   /* Shadows & Effects */
-  --shadow:            0 8px 32px rgba(0, 0, 0, 0.3);
-  --shadow-glow:       0 0 30px rgba(0, 212, 255, 0.2);
-  --shadow-lg:         0 20px 60px rgba(0, 0, 0, 0.4);
+  --shadow:            0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow:       0 0 30px rgba(212, 175, 55, 0.15);
+  --shadow-lg:         0 20px 60px rgba(0, 0, 0, 0.6);
 
   /* Transitions */
   --transition:        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
@@ -66,8 +66,8 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--primary-bg);
   background-image: 
-    radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(123, 47, 190, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(170, 124, 17, 0.04) 0%, transparent 50%);
   color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.6;
@@ -190,7 +190,7 @@ code {
   display: flex; 
   align-items: center; 
   gap: 6px;
-  background: linear-gradient(135deg, #00D4FF, #7B2FBE);
+  background: linear-gradient(135deg, #F3E5AB, #D4AF37, #AA7C11);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -198,7 +198,7 @@ code {
 }
 
 .navbar-logo span { 
-  background: linear-gradient(135deg, #7B2FBE, #00D4FF);
+  background: linear-gradient(135deg, #AA7C11, #D4AF37, #F3E5AB);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -206,22 +206,22 @@ code {
 
 @keyframes gradient-shift {
   0%, 100% { 
-    background: linear-gradient(135deg, #00D4FF, #7B2FBE);
+    background: linear-gradient(135deg, #F3E5AB, #D4AF37, #AA7C11);
     -webkit-background-clip: text;
   }
   50% { 
-    background: linear-gradient(135deg, #7B2FBE, #00D4FF);
+    background: linear-gradient(135deg, #AA7C11, #D4AF37, #F3E5AB);
     -webkit-background-clip: text;
   }
 }
 
 .navbar-tag { 
   font-size: 0.65rem; 
-  background: rgba(0, 212, 255, 0.15);
+  background: rgba(212, 175, 55, 0.15);
   color: var(--accent-primary); 
   padding: 4px 10px; 
   border-radius: 20px; 
-  border: 1px solid rgba(0, 212, 255, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.3);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1052,20 +1052,33 @@ tbody tr:hover {
     height: 60px;
     top: 12px;
     margin: 0 12px;
+    padding: 0 16px;
+  }
+
+  .navbar-tag {
+    display: none;
   }
 
   .page {
-    padding: 24px;
+    padding: 16px;
   }
 
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.5rem; }
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.3rem; }
+
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 12px;
+  }
 
   table {
     font-size: 0.8rem;
+    min-width: 600px; /* Ensure columns have adequate minimum width when scrolled */
   }
 
   th, td {
-    padding: 12px 10px;
+    padding: 10px 8px;
   }
 }

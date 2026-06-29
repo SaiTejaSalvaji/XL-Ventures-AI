@@ -52,15 +52,15 @@ export const AgentProgress: React.FC<AgentProgressProps> = ({ status, currentSte
   const getStatusColor = () => {
     if (status === 'done') return '#00FF88';
     if (status === 'error') return '#FF6B6B';
-    if (status === 'running') return '#00D4FF';
-    return '#8892A4';
+    if (status === 'running') return '#D4AF37';
+    return '#8E8E93';
   };
 
   return (
-    <div className="card card-glass flex flex-col gap-6">
+    <div className="card card-glass flex flex-col gap-6" style={{ background: 'linear-gradient(135deg, rgba(18, 18, 18, 0.85), rgba(8, 8, 8, 0.95))', border: '1px solid rgba(212, 175, 55, 0.15)' }}>
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-sm font-bold uppercase text-secondary tracking-wider" style={{ letterSpacing: '0.08em' }}>
+          <h3 className="text-sm font-bold uppercase text-secondary tracking-wider" style={{ letterSpacing: '0.08em', color: '#8E8E93' }}>
             🤖 AgentOS Pipeline Status
           </h3>
           <div style={{ fontSize: '1.1rem', fontWeight: 700, color: getStatusColor(), marginTop: '8px', textShadow: `0 0 12px ${getStatusColor()}` }}>
@@ -68,16 +68,16 @@ export const AgentProgress: React.FC<AgentProgressProps> = ({ status, currentSte
           </div>
         </div>
         <span
-          className="badge badge-info"
           style={{
-            background: `rgba(0, 212, 255, 0.15)`,
-            color: '#00D4FF',
-            border: '1px solid rgba(0, 212, 255, 0.3)',
+            background: `rgba(212, 175, 55, 0.12)`,
+            color: '#D4AF37',
+            border: '1px solid rgba(212, 175, 55, 0.25)',
             fontSize: '0.65rem',
             textTransform: 'uppercase',
             fontWeight: 700,
             letterSpacing: '0.08em',
             padding: '6px 14px',
+            borderRadius: '20px',
           }}
         >
           {status}
@@ -87,13 +87,13 @@ export const AgentProgress: React.FC<AgentProgressProps> = ({ status, currentSte
       {status === 'running' && currentStep && (
         <div style={{
           padding: '10px 14px',
-          background: 'rgba(0, 212, 255, 0.08)',
-          border: '1px solid rgba(0, 212, 255, 0.3)',
+          background: 'rgba(212, 175, 55, 0.05)',
+          border: '1px solid rgba(212, 175, 55, 0.2)',
           borderRadius: '8px',
           fontSize: '0.8rem',
-          color: '#00D4FF',
+          color: '#D4AF37',
         }}>
-          Active: <code style={{ color: '#00E6FF', fontWeight: 600 }}>{currentStep}</code>
+          Active: <code style={{ color: '#F5D76E', fontWeight: 600 }}>{currentStep}</code>
         </div>
       )}
 

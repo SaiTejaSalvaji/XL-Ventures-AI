@@ -3,6 +3,7 @@ import type { Company } from './types';
 import { Dashboard } from './pages/Dashboard';
 import { CompanyDetail } from './pages/CompanyDetail';
 import { checkHealth } from './api/client';
+import { Wifi, WifiOff } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
@@ -61,10 +62,42 @@ export const App: React.FC = () => {
           <div className="navbar-tag">Prototype</div>
           
           <div className="navbar-status">
-            <span className={`status-dot ${isBackendLive ? '' : 'offline'}`} />
-            <span style={{ color: isBackendLive ? 'var(--text-secondary)' : 'var(--error-color)', fontSize: '0.75rem', fontWeight: 600 }}>
-              {isBackendLive ? 'AgentOS Backend: Live' : 'AgentOS Backend: Offline'}
-            </span>
+            {isBackendLive ? (
+              <span style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                background: 'rgba(16, 217, 140, 0.08)', 
+                border: '1px solid rgba(16, 217, 140, 0.25)', 
+                color: '#10D98C', 
+                padding: '6px 14px', 
+                borderRadius: '20px', 
+                fontSize: '0.72rem', 
+                fontWeight: 700,
+                letterSpacing: '0.03em',
+                boxShadow: '0 0 15px rgba(16, 217, 140, 0.05)'
+              }}>
+                <Wifi size={14} />
+                AgentOS Live
+              </span>
+            ) : (
+              <span style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                background: 'rgba(255, 71, 87, 0.08)', 
+                border: '1px solid rgba(255, 71, 87, 0.25)', 
+                color: '#FF4757', 
+                padding: '6px 14px', 
+                borderRadius: '20px', 
+                fontSize: '0.72rem', 
+                fontWeight: 700,
+                letterSpacing: '0.03em'
+              }}>
+                <WifiOff size={14} />
+                AgentOS Offline
+              </span>
+            )}
           </div>
         </div>
       </header>
