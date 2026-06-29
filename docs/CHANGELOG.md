@@ -9,6 +9,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] — 2026-06-29
+
+### Added
+- **Cloud Deployment**: Full production deployment across Vercel (frontend), Render (backend), and cron-job.org (keep-alive).
+- **Vercel Frontend Hosting**: Static SPA served via Vercel CDN edge network at [xl-ventures-ai.vercel.app](https://xl-ventures-ai.vercel.app/).
+- **Render Backend Hosting**: FastAPI backend deployed as a free web service on Render.
+- **Keep-Alive Cron Job**: cron-job.org scheduled task pings `/health` every 14 minutes to prevent Render cold starts.
+- **Serverless Frontend Fallback**: Rich mock data pipeline in `client.ts` ensures the frontend works standalone when the backend is sleeping.
+- **CI/CD Pipeline**: GitHub Actions workflow for automated backend (pytest) and frontend (npm test) testing on push/PR.
+- **Deployment Documentation**: Comprehensive cloud deployment guides in README and `docs/setup_deployment.md`.
+- **Architecture Diagrams**: Mermaid deployment topology diagrams showing Vercel ↔ Render ↔ cron-job.org flow.
+
+### Changed
+- README restructured with Live Demo section, Cloud Deployment Details, and Quick Links table.
+- Docker setup renamed from "Recommended" to "Local" to distinguish from cloud deployment.
+- Architecture docs updated with both local and cloud deployment topologies.
+
+---
+
 ## [0.1.0] — 2026-06-28
 
 ### Added
@@ -49,6 +68,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - [ ] User authentication and multi-tenant support
 - [ ] Async agent execution with asyncio
 - [ ] Frontend test suite (React Testing Library)
-- [ ] CI/CD pipeline (GitHub Actions)
-- [ ] Docker containerization
+- [x] ~~CI/CD pipeline (GitHub Actions)~~ — Added in v0.2.0
+- [x] ~~Docker containerization~~ — Added in v0.1.0
 - [ ] Rate limit aware scheduling across LLM providers
+

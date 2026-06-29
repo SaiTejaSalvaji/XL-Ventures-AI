@@ -95,14 +95,15 @@ graph TB
 
 ## Deployment Topology
 
+### Local Development
+
 ```
 ┌─────────────────┐     HTTP      ┌──────────────────────────┐
 │  React (Vite)   │ ◄──────────► │  FastAPI (Uvicorn)       │
 │  :5173          │               │  :8000                   │
 │                 │               │  ├── /analyze            │
 │  Dashboard.tsx  │               │  ├── /results/{id}       │
-│  CompanyDetail  │               │  ├── /companies          │
-│                 │               │  ├── /approve/{id}       │
+│  CompanyDetail  │               │  ├── /approve/{id}       │
 └─────────────────┘               │  └── /health             │
                                   │                          │
                                   │  ┌─ Workflow Runner ───┐ │
@@ -122,9 +123,60 @@ graph TB
                               └─────────────────────────┘
 ```
 
+### Cloud Production Deployment
+
+The production deployment uses a **split-tier architecture** across three managed platforms:
+
+```mermaid
+flowchart TB
+    subgraph Internet["🌐 Internet"]
+        User["👤 User / Browser"]
+    end
+
+    subgraph Vercel["▲ Vercel — Frontend"]
+        FE["React + Vite Static SPA\nxl-ventures-ai.vercel.app\nCDN Edge Network"]
+    end
+
+    subgraph Render["🟢 Render — Backend"]
+        BE["FastAPI + Uvicorn\n11 AI Agents\nIn-Memory Store"]
+        Endpoints["/analyze\n/results/{id}\n/companies\n/health"]
+    end
+
+    subgraph CronJob["⏰ cron-job.org"]
+        Cron["Scheduled GET /health\nEvery 14 minutes\nPrevents cold starts"]
+    end
+
+    subgraph LLMProviders["🤖 LLM Layer"]
+        Groq["Groq — Llama 3.3 70B\n(Primary)"]
+        Gemini["Google Gemini 2.0 Flash\n(Fallback)"]
+        Mocks["Smart Mocks\n(Last Resort)"]
+    end
+
+    subgraph ExternalAPIs["🔌 External Data"]
+        GitHub["GitHub REST API"]
+        NewsAPI["NewsAPI.org"]
+        CSE["Google Custom Search"]
+    end
+
+    User -->|HTTPS| FE
+    FE -->|API Requests| BE
+    Cron -->|GET /health| Endpoints
+    BE --> Groq
+    Groq -.->|failover| Gemini
+    Gemini -.->|failover| Mocks
+    BE --> GitHub & NewsAPI & CSE
+```
+
+| Layer | Platform | URL | Notes |
+|-------|----------|-----|-------|
+| **Frontend** | Vercel | [xl-ventures-ai.vercel.app](https://xl-ventures-ai.vercel.app/) | Static SPA, CDN-distributed |
+| **Backend** | Render | Free Web Service | Auto-sleeps after 15 min inactivity |
+| **Keep-Alive** | cron-job.org | `GET /health` every 14 min | Prevents Render cold starts |
+
 ## Security Considerations
 
 - API keys are loaded from `.env` via `python-dotenv` and never committed (`.gitignore`).
-- CORS is set to allow all origins (`*`) for development — must be restricted for production.
+- CORS is set to allow all origins (`*`) for development — must be restricted in production.
 - No authentication layer is implemented in the prototype.
 - The in-memory store is ephemeral; no persistent data is stored.
+- Render environment variables are configured via the dashboard (never in source code).

@@ -105,6 +105,94 @@ The production bundle will be in `frontend/dist/`.
 
 ---
 
+## 6. Cloud Deployment (Production)
+
+VenturePilot AI is deployed as a **split-tier architecture** on free cloud platforms:
+
+### Frontend → Vercel
+
+1. **Connect repository** at [vercel.com/new](https://vercel.com/new)
+2. **Set Root Directory** to `frontend`
+3. **Framework Preset**: Vite (auto-detected)
+4. **Add Environment Variable**:
+   ```
+   VITE_API_BASE_URL = https://<your-render-service>.onrender.com
+   ```
+5. **Deploy** — Vercel builds and serves the static SPA
+6. **Custom Domain** (optional): Configure in Vercel → Settings → Domains
+
+**Live URL**: [xl-ventures-ai.vercel.app](https://xl-ventures-ai.vercel.app/)
+
+### Backend → Render
+
+1. **Create a New Web Service** at [dashboard.render.com](https://dashboard.render.com)
+2. **Connect your GitHub repo**
+3. Configure:
+   | Setting | Value |
+   |---------|-------|
+   | **Root Directory** | `backend` |
+   | **Runtime** | Python 3 |
+   | **Build Command** | `pip install -r requirements.txt` |
+   | **Start Command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+4. **Add Environment Variables** in the Render dashboard:
+   - `GROQ_API_KEY`
+   - `GEMINI_API_KEY`
+   - `GITHUB_TOKEN`
+   - `NEWSAPI_KEY`
+   - `GOOGLE_CSE_API_KEY`
+   - `GOOGLE_CSE_ID`
+5. **Deploy** — Render builds the Python environment and starts Uvicorn
+
+> ⚠️ **Free tier note**: Render free web services spin down after ~15 minutes of inactivity. First request after sleep takes ~30 seconds.
+
+### Keep-Alive → cron-job.org
+
+To prevent Render cold starts, set up a scheduled health ping:
+
+1. **Sign up** at [cron-job.org](https://cron-job.org)
+2. **Create a new cron job**:
+   | Field | Value |
+   |-------|-------|
+   | **URL** | `https://<your-render-service>.onrender.com/health` |
+   | **Schedule** | Every 14 minutes |
+   | **HTTP Method** | GET |
+   | **Expected Response** | HTTP 200 |
+3. **Enable** the job — Render will stay warm continuously
+
+### Deployment Topology
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    PRODUCTION DEPLOYMENT                       │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│   ┌─────────────────────┐      HTTPS     ┌──────────────────┐ │
+│   │  ▲ Vercel            │ ◄────────────► │  🟢 Render        │ │
+│   │  React SPA (Static)  │               │  FastAPI + Agents │ │
+│   │  CDN Edge Network    │               │  Python 3.11      │ │
+│   │                      │               │  Free Web Service │ │
+│   │  xl-ventures-ai      │               │                   │ │
+│   │  .vercel.app         │               │  /analyze         │ │
+│   └─────────────────────┘               │  /results/{id}    │ │
+│                                          │  /companies       │ │
+│   ┌─────────────────────┐  GET /health   │  /health          │ │
+│   │  ⏰ cron-job.org     │ ──────────────►│                   │ │
+│   │  Every 14 minutes    │               └──────────────────┘ │
+│   └─────────────────────┘                        │            │
+│                                                  ▼            │
+│                                      ┌──────────────────────┐ │
+│                                      │  External APIs        │ │
+│                                      │  • Groq (LLM)         │ │
+│                                      │  • Gemini (fallback)  │ │
+│                                      │  • GitHub API          │ │
+│                                      │  • NewsAPI             │ │
+│                                      │  • Google CSE          │ │
+│                                      └──────────────────────┘ │
+└────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## API Keys Guide
 
 ### Groq (Primary LLM) — Recommended

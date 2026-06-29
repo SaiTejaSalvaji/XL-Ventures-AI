@@ -8,6 +8,19 @@ Submit an Ideal Customer Profile (ICP) (e.g., *“AI Healthcare, Seed stage, Ind
 
 ---
 
+## 🌐 Live Demo
+
+| Layer | URL | Platform |
+|-------|-----|----------|
+| **Frontend** | [xl-ventures-ai.vercel.app](https://xl-ventures-ai.vercel.app/) | Vercel |
+| **Backend API** | Hosted on Render (auto-sleep free tier) | Render |
+| **Health Ping** | Scheduled `/health` wake-up via cron-job.org | cron-job.org |
+| **API Docs** | `/docs` on backend URL (Swagger UI) | FastAPI |
+
+> **Note:** The Render free tier sleeps after 15 minutes of inactivity. A cron job on [cron-job.org](https://cron-job.org) pings the `/health` endpoint every 14 minutes to keep the backend warm. The first request after a cold start may take ~30 seconds.
+
+---
+
 ## 📸 Platform Interface
 
 Below is a screenshot of the main VenturePilot AI dashboard showing the **Opportunities Pipeline** and live workflow tracking:
@@ -44,12 +57,54 @@ This diagram outlines the frontend, backend, agent pipeline, and external API se
 
 ![Architecture Diagram](docs/images/architecture.svg)
 
-### 2. Multi-Agent Timeline Sequence
+### 2. Cloud Deployment Architecture
+
+The production deployment spans three managed platforms with automatic keep-alive:
+
+```mermaid
+flowchart LR
+    subgraph User["👤 User"]
+        Browser[Browser]
+    end
+
+    subgraph Vercel["▲ Vercel (Frontend)"]
+        FE["React + Vite\nStatic SPA\nxl-ventures-ai.vercel.app"]
+    end
+
+    subgraph Render["🟢 Render (Backend)"]
+        BE["FastAPI + Uvicorn\n11 AI Agents\nFree Web Service"]
+        Health["/health endpoint"]
+    end
+
+    subgraph CronJob["⏰ cron-job.org"]
+        Cron["Scheduled HTTP GET\nevery 14 min"]
+    end
+
+    subgraph LLM["🤖 LLM Providers"]
+        Groq["Groq API\nLlama 3.3 70B"]
+        Gemini["Google Gemini\n2.0 Flash"]
+    end
+
+    subgraph APIs["🔌 External APIs"]
+        GH[GitHub API]
+        News[NewsAPI]
+        CSE[Google CSE]
+    end
+
+    Browser -->|HTTPS| FE
+    FE -->|API calls| BE
+    Cron -->|GET /health| Health
+    BE --> Groq
+    Groq -.->|fallback| Gemini
+    BE --> GH & News & CSE
+```
+
+### 3. Multi-Agent Timeline Sequence
 This timeline demonstrates how the React UI polls FastAPI while the background thread processes agents sequentially:
 
 ![Sequence Diagram](docs/images/sequence.svg)
 
-### 3. Provider Failover Mechanism (llm.py)
+### 4. Provider Failover Mechanism (llm.py)
 We run all agent calls through a unified gateway that automatically routes requests through **Groq (Llama 3.3)** primary first, then **Gemini (2.0)**, and finally **Smart Mocks**:
 
 ![LLM Failover Flowchart](docs/images/flowchart.svg)
@@ -85,7 +140,52 @@ To enable real company discovery (instead of mock data), configure Google Custom
 
 ---
 
-## 🐳 Docker Setup (Recommended)
+## ☁️ Cloud Deployment Details
+
+The project is deployed as a **split-tier architecture** across free hosting platforms:
+
+### Frontend → Vercel
+
+| Setting | Value |
+|---------|-------|
+| **Platform** | [Vercel](https://vercel.com) |
+| **URL** | [xl-ventures-ai.vercel.app](https://xl-ventures-ai.vercel.app/) |
+| **Framework** | Vite (auto-detected) |
+| **Build Command** | `npm run build` |
+| **Output Directory** | `frontend/dist` |
+| **Root Directory** | `frontend` |
+| **Environment Variable** | `VITE_API_BASE_URL` → Render backend URL |
+| **Deploy Trigger** | Git push to `main` branch |
+
+### Backend → Render
+
+| Setting | Value |
+|---------|-------|
+| **Platform** | [Render](https://render.com) |
+| **Service Type** | Free Web Service |
+| **Runtime** | Python 3.11 |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+| **Root Directory** | `backend` |
+| **Health Check** | `GET /health` |
+| **Auto-Sleep** | After 15 min inactivity (free tier) |
+| **Environment Variables** | `GROQ_API_KEY`, `GEMINI_API_KEY`, `GITHUB_TOKEN`, `NEWSAPI_KEY`, `GOOGLE_CSE_API_KEY` |
+
+### Keep-Alive → cron-job.org
+
+| Setting | Value |
+|---------|-------|
+| **Platform** | [cron-job.org](https://cron-job.org) |
+| **Purpose** | Prevent Render free tier cold starts |
+| **Schedule** | Every 14 minutes |
+| **Target** | `GET <render-backend-url>/health` |
+| **Expected Response** | `{"status": "ok", "service": "VenturePilot AI", "version": "1.0.0"}` |
+
+> **How it works:** Render free-tier web services spin down after ~15 minutes of no traffic. The cron job hits `/health` every 14 minutes, keeping the container alive so users never experience cold-start delays.
+
+---
+
+## 🐳 Docker Setup (Local)
 
 ```bash
 # Clone the repo
@@ -140,6 +240,19 @@ npm run dev
 cd backend
 python -m pytest tests/ -v
 ```
+
+---
+
+## 🔗 Quick Links
+
+| Resource | Link |
+|----------|------|
+| 🌐 **Live App** | [xl-ventures-ai.vercel.app](https://xl-ventures-ai.vercel.app/) |
+| 📦 **GitHub Repo** | [github.com/SaiTejaSalvaji/XL-Ventures-AI](https://github.com/SaiTejaSalvaji/XL-Ventures-AI) |
+| 📖 **Architecture Docs** | [docs/architecture.md](docs/architecture.md) |
+| 🔌 **API Reference** | [docs/api_reference.md](docs/api_reference.md) |
+| ⚙️ **Setup Guide** | [docs/setup_deployment.md](docs/setup_deployment.md) |
+| 🧪 **Test Suite** | [docs/testing.md](docs/testing.md) |
 
 ---
 
