@@ -5,7 +5,6 @@ import {
   TrendingUp, 
   MapPin, 
   Users, 
-  Zap, 
   ChevronRight, 
   Loader2,
   DollarSign,
@@ -37,60 +36,17 @@ interface ICPFormProps {
   isLoading: boolean;
 }
 
-const PRESETS = [
-  {
-    name: '🏥 AI Healthcare',
-    industry: 'AI Healthcare',
-    stage: 'Seed',
-    location: 'India',
-    keywords: 'machine learning, diagnostic screening, thermal imaging',
-    personas: 'CEO, CTO, Founder',
-    triggers: ['funding', 'github_activity'],
-    minScore: 75,
-  },
-  {
-    name: '🚀 SaaS DevTools',
-    industry: 'SaaS DevTools',
-    stage: 'Series A',
-    location: 'United States',
-    keywords: 'CI/CD, Kubernetes, cloud security, observability',
-    personas: 'CTO, VP Engineering, Head of Infrastructure',
-    triggers: ['github_activity', 'sentiment_positive'],
-    minScore: 80,
-  },
-  {
-    name: '💳 Fintech & Neo-banking',
-    industry: 'Fintech',
-    stage: 'Series B',
-    location: 'Singapore',
-    keywords: 'payment gateway, neo-banking, micro-lending, fraud detection',
-    personas: 'CEO, COO, Head of Product',
-    triggers: ['funding', 'product_launch'],
-    minScore: 70,
-  },
-  {
-    name: '📦 Logistics SaaS',
-    industry: 'Logistics SaaS',
-    stage: 'Series B',
-    location: 'Global',
-    keywords: 'route optimization, warehouse tracking, fleet management, IoT',
-    personas: 'COO, VP Operations, Supply Chain Lead',
-    triggers: ['funding', 'product_launch', 'sentiment_positive'],
-    minScore: 75,
-  }
-];
-
 export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
-  const [industry, setIndustry] = useState('AI Healthcare');
+  const [industry, setIndustry] = useState('');
   const [stage, setStage] = useState('Seed');
-  const [location, setLocation] = useState('India');
-  const [keywordChips, setKeywordChips] = useState<string[]>(['machine learning', 'diagnostic screening', 'thermal imaging']);
+  const [location, setLocation] = useState('');
+  const [keywordChips, setKeywordChips] = useState<string[]>([]);
   
   // Advanced options state
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [personas, setPersonas] = useState('CEO, CTO, Founder');
-  const [triggers, setTriggers] = useState<string[]>(['funding', 'github_activity']);
-  const [minScore, setMinScore] = useState(75);
+  const [personas, setPersonas] = useState('');
+  const [triggers, setTriggers] = useState<string[]>([]);
+  const [minScore, setMinScore] = useState(50);
   
   const [chipInput, setChipInput] = useState('');
 
@@ -139,17 +95,6 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
     }
   };
 
-  const getActivePresetName = () => {
-    const match = PRESETS.find(p => 
-      p.industry.toLowerCase() === industry.toLowerCase() &&
-      p.stage === stage &&
-      p.location.toLowerCase() === location.toLowerCase()
-    );
-    return match ? match.name : null;
-  };
-
-  const activePresetName = getActivePresetName();
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const tech_keywords = keywordChips.filter((k) => k.length > 0);
@@ -187,37 +132,6 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
           border-color: rgba(255, 255, 255, 0.1);
           box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(212, 175, 55, 0.05);
           transform: translateY(-2px);
-        }
-        .presets-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 12px;
-          margin-top: 12px;
-        }
-        @media (min-width: 640px) {
-          .presets-grid {
-            grid-template-columns: 1fr 1fr;
-          }
-        }
-        .preset-card {
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255, 255, 255, 0.04);
-          border-radius: 12px;
-          padding: 16px;
-          cursor: pointer;
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-          text-align: left;
-        }
-        .preset-card:hover {
-          background: rgba(255, 255, 255, 0.02);
-          border-color: rgba(255, 255, 255, 0.15);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        .preset-card.active {
-          background: rgba(212, 175, 55, 0.03);
-          border-color: #D4AF37;
-          box-shadow: 0 0 15px rgba(212, 175, 55, 0.08);
         }
         .fields-grid {
           display: grid;
@@ -451,42 +365,6 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
 
         <div className="divider" style={{ margin: 0, opacity: 0.06, borderBottom: '1px solid #fff' }} />
 
-        {/* ── Domain Templates Section ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <label className="form-label" style={{ fontSize: '0.8rem', color: '#8E8E93', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            <Zap size={14} style={{ color: '#D4AF37' }} /> Domain Templates
-          </label>
-          <div className="presets-grid">
-            {PRESETS.map((preset) => {
-              const isActive = activePresetName === preset.name;
-              return (
-                <div
-                  key={preset.name}
-                  onClick={() => {
-                    setIndustry(preset.industry);
-                    setStage(preset.stage);
-                    setLocation(preset.location);
-                    const chips = preset.keywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
-                    setKeywordChips(chips);
-                    setPersonas(preset.personas);
-                    setTriggers(preset.triggers);
-                    setMinScore(preset.minScore);
-                  }}
-                  className={`preset-card ${isActive ? 'active' : ''}`}
-                >
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff', marginBottom: '4px' }}>{preset.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#8E8E93', marginBottom: '8px' }}>Region: {preset.location} · {preset.stage}</div>
-                  <div style={{ fontSize: '0.72rem', color: '#8E8E93' }}>
-                    {preset.keywords.split(',').length} Keywords · {preset.personas.split(',').length} Personas
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="divider" style={{ margin: 0, opacity: 0.06, borderBottom: '1px solid #fff' }} />
-
         {/* ── Section 1: Basic Profile ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <h4 style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: '#8E8E93', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -506,7 +384,7 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value)}
                   className="icp-input"
-                  placeholder="Example: Fintech, HealthTech, AI Infrastructure"
+                  placeholder="ex: Fintech, HealthTech, AI Infrastructure"
                   required
                   disabled={isLoading}
                 />
@@ -547,7 +425,7 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   className="icp-input"
-                  placeholder="Example: India, United States, Europe, Global"
+                  placeholder="ex: India, United States, Europe, Global"
                   required
                   disabled={isLoading}
                 />
@@ -577,7 +455,7 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
                   value={chipInput}
                   onChange={e => setChipInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={keywordChips.length === 0 ? "Example: NLP, computer vision, payment API, observability" : "Type and press Enter..."}
+                  placeholder={keywordChips.length === 0 ? "ex: NLP, computer vision, payment API, observability" : "Type and press Enter..."}
                   style={{
                     flex: 1,
                     minWidth: '150px',
@@ -643,7 +521,7 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
                     value={personas}
                     onChange={(e) => setPersonas(e.target.value)}
                     className="icp-input"
-                    placeholder="Example: CEO, CTO, VP Engineering, Founder"
+                    placeholder="ex: CEO, CTO, VP Engineering, Founder"
                     disabled={isLoading}
                   />
                 </div>
