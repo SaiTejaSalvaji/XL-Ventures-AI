@@ -137,8 +137,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
 
         {/* Section 2: Scroll Reveal Effect Description */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 1.5rem', background: '#090d1a' }}>
-          <ScrollReveal baseOpacity={0.08} enableBlur={true} baseRotation={3} blurStrength={8}>
-            <p style={{
+          <ScrollReveal
+            baseOpacity={0.08}
+            enableBlur={true}
+            baseRotation={3}
+            blurStrength={8}
+            style={{
               fontSize: '1.3rem',
               fontWeight: 400,
               lineHeight: 1.7,
@@ -149,9 +153,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
-            }}>
-              VenturePilot AI is a cognitive multi-agent orchestration engine. It works day and night to scrape startup signals, validate metrics, index founding teams, cross-reference GitHub repositories, and construct comprehensive investment due diligence reports automatically.
-            </p>
+            }}
+          >
+            VenturePilot AI is a cognitive multi-agent orchestration engine. It works day and night to scrape startup signals, validate metrics, index founding teams, cross-reference GitHub repositories, and construct comprehensive investment due diligence reports automatically.
           </ScrollReveal>
         </div>
 {/* Section 1 — How It Works */}

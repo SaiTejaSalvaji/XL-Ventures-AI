@@ -18,6 +18,7 @@ interface ScrollRevealProps {
   textClassName?: string;
   rotationEnd?: string;
   wordAnimationEnd?: string;
+  style?: React.CSSProperties;
 }
 
 const ScrollReveal = ({
@@ -30,12 +31,26 @@ const ScrollReveal = ({
   containerClassName = '',
   textClassName = '',
   rotationEnd = 'bottom bottom',
-  wordAnimationEnd = 'bottom bottom'
+  wordAnimationEnd = 'bottom bottom',
+  style
 }: ScrollRevealProps) => {
   const containerRef = useRef<HTMLHeadingElement>(null);
 
   const splitText = useMemo(() => {
-    const text = typeof children === 'string' ? children : '';
+    let text = '';
+    if (typeof children === 'string') {
+      text = children;
+    } else if (typeof children === 'number') {
+      text = String(children);
+    } else if (children && typeof children === 'object') {
+      if ('props' in children && children.props && 'children' in children.props) {
+        const childProps = children.props as { children?: ReactNode };
+        if (typeof childProps.children === 'string') {
+          text = childProps.children;
+        }
+      }
+    }
+
     return text.split(/(\s+)/).map((word, index) => {
       if (word.match(/^\s+$/)) return word;
       return (
@@ -113,7 +128,7 @@ const ScrollReveal = ({
 
   return (
     <h2 ref={containerRef} className={`scroll-reveal ${containerClassName}`}>
-      <p className={`scroll-reveal-text ${textClassName}`}>{splitText}</p>
+      <p className={`scroll-reveal-text ${textClassName}`} style={style}>{splitText}</p>
     </h2>
   );
 };
