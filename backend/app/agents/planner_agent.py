@@ -8,9 +8,16 @@ from .base_agent import BaseAgent
 from ..llm import ask_json
 
 DEFAULT_PLAN = [
-    "discovery", "validation", "company_profile",
-    "founder_profile", "contact", "github", "news",
-    "market_analysis", "scoring", "report",
+    "discovery",
+    "validation",
+    "company_profile",
+    "founder_profile",
+    "contact",
+    "github",
+    "news",
+    "market_analysis",
+    "scoring",
+    "report",
 ]
 
 

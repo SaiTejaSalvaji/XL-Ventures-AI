@@ -30,6 +30,7 @@ app.add_middleware(
 
 # ── Request/Response Models ───────────────────────────────────────────────────
 
+
 class ICPRequest(BaseModel):
     industry: str = "AI Healthcare"
     stage: str = "Seed"
@@ -41,11 +42,12 @@ class ICPRequest(BaseModel):
 
 
 class ApprovalRequest(BaseModel):
-    decision: str   # "approve" | "reject" | "more_info"
+    decision: str  # "approve" | "reject" | "more_info"
     notes: str = ""
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
+
 
 @app.get("/health")
 async def health():

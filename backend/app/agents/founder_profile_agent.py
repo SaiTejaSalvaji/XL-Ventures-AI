@@ -4,8 +4,6 @@ Uses Gemini's knowledge to generate realistic founder profiles for demo.
 Optionally enriched via Google CSE search.
 """
 
-import os
-import requests
 from .base_agent import BaseAgent
 from ..llm import ask_json
 
@@ -47,14 +45,17 @@ Return ONLY a JSON array with 1-3 founders, each having these keys:
 ]
 """
         name_slug = name.lower().replace(" ", "-").replace(".", "")
-        result = ask_json(prompt, fallback=[
-            {
-                "name": f"{name} Founder",
-                "title": target_personas[0] if target_personas else "CEO",
-                "background": f"Serial entrepreneur with 10+ years in {industry}.",
-                "education": "IIT Delhi, B.Tech Computer Science",
-                "linkedin_url": f"https://linkedin.com/in/{name_slug}-founder",
-                "past_companies": ["Previous Startup", "Big Tech Co"],
-            }
-        ])
+        result = ask_json(
+            prompt,
+            fallback=[
+                {
+                    "name": f"{name} Founder",
+                    "title": target_personas[0] if target_personas else "CEO",
+                    "background": f"Serial entrepreneur with 10+ years in {industry}.",
+                    "education": "IIT Delhi, B.Tech Computer Science",
+                    "linkedin_url": f"https://linkedin.com/in/{name_slug}-founder",
+                    "past_companies": ["Previous Startup", "Big Tech Co"],
+                }
+            ],
+        )
         return result if isinstance(result, list) else [result]

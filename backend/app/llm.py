@@ -10,10 +10,8 @@ import json
 import os
 import re
 import logging
-import time
 
 from google import genai
-from google.genai import errors as gemini_errors
 from dotenv import load_dotenv
 
 # Try importing groq client
@@ -89,9 +87,7 @@ def _ask_gemini(prompt: str) -> str | None:
     if client is None:
         return None
     try:
-        response = client.models.generate_content(
-            model=_GEMINI_MODEL, contents=prompt
-        )
+        response = client.models.generate_content(model=_GEMINI_MODEL, contents=prompt)
         return response.text.strip() if response.text else None
     except Exception as e:
         logger.error(f"Gemini error: {e}")
@@ -151,7 +147,7 @@ def ask_json(prompt: str, fallback: dict | list | None = None) -> dict | list:
 def _mock_llm_ask(prompt: str, fallback: str) -> str:
     """Generate smart mock responses based on prompt keywords to simulate LLM behavior."""
     prompt_lower = prompt.lower()
-    
+
     # 1. Scoring Agent rationale
     if "investment rationale" in prompt_lower or "score:" in prompt_lower:
         match = re.search(r"rationale for ([^.\n]+)", prompt, re.IGNORECASE)
@@ -161,18 +157,18 @@ def _mock_llm_ask(prompt: str, fallback: str) -> str:
             f"business model. While competition is emerging and execution risks exist, the "
             f"founding team's background provides a strong capability index."
         )
-        
+
     # 2. Report Agent Markdown report
     if "due-diligence report in markdown" in prompt_lower or "executive summary" in prompt_lower:
         match = re.search(r"Company\*\*: ([^\n]+)", prompt)
         name = match.group(1).strip() if match else "Selected Startup"
-        
+
         match_ind = re.search(r"Industry\*\*: ([^\n|]+)", prompt)
         ind = match_ind.group(1).strip() if match_ind else "Technology"
-        
+
         match_stage = re.search(r"Stage\*\*: ([^\n|]+)", prompt)
         stage = match_stage.group(1).strip() if match_stage else "Seed"
-        
+
         return f"""# {name} — Due Diligence Report
 
 ## Executive Summary
@@ -209,15 +205,21 @@ Key risks include scaling customer acquisition channels and product delivery tim
 def _mock_llm_ask_json(prompt: str, fallback: dict | list) -> dict | list:
     """Generate smart mock JSON responses based on prompt structure."""
     prompt_lower = prompt.lower()
-    
+
     # 1. Planner Agent plan
     if "agent names to execute" in prompt_lower or "planner" in prompt_lower:
         return [
-            "discovery", "validation", "company_profile",
-            "founder_profile", "github", "news",
-            "market_analysis", "scoring", "report"
+            "discovery",
+            "validation",
+            "company_profile",
+            "founder_profile",
+            "github",
+            "news",
+            "market_analysis",
+            "scoring",
+            "report",
         ]
-        
+
     # 2. Discovery Agent companies
     if "startup discovery assistant" in prompt_lower or "ideal customer profile" in prompt_lower:
         return []
@@ -231,11 +233,14 @@ def _mock_llm_ask_json(prompt: str, fallback: dict | list) -> dict | list:
             "tech_stack": ["Python", "React", "AWS"],
             "employee_estimate": "11-50",
             "founded_year": 2022,
-            "business_model": "B2B"
+            "business_model": "B2B",
         }
 
     # 4. Founder Profile Agent founders
-    if "founder profiles based on your knowledge" in prompt_lower or "ceo | cto | coo" in prompt_lower:
+    if (
+        "founder profiles based on your knowledge" in prompt_lower
+        or "ceo | cto | coo" in prompt_lower
+    ):
         return [
             {
                 "name": "Arjun Mehta",
@@ -243,7 +248,7 @@ def _mock_llm_ask_json(prompt: str, fallback: dict | list) -> dict | list:
                 "background": "Ex-product manager at top tech firm. Serial entrepreneur.",
                 "education": "IIT Bombay, B.Tech Computer Science",
                 "linkedin_url": "https://linkedin.com/in/arjun-mehta",
-                "past_companies": ["Tech Giant", "First Startup"]
+                "past_companies": ["Tech Giant", "First Startup"],
             },
             {
                 "name": "Priya Nair",
@@ -251,33 +256,51 @@ def _mock_llm_ask_json(prompt: str, fallback: dict | list) -> dict | list:
                 "background": "Deep learning researcher. Software engineer.",
                 "education": "IISc Bangalore, M.Tech AI",
                 "linkedin_url": "https://linkedin.com/in/priya-nair",
-                "past_companies": ["Research Lab"]
-            }
+                "past_companies": ["Research Lab"],
+            },
         ]
 
     # 5. News Agent sentiment & mock news
     if "sentiment" in prompt_lower or "news headlines" in prompt_lower:
         return {
             "articles": [
-                {"title": "Raises Seed Round for Expansion", "url": "https://example.com/news1", "published_at": "2024-06-01", "source": "TechCrunch"},
-                {"title": "Launches New Product Suite", "url": "https://example.com/news2", "published_at": "2024-05-15", "source": "YourStory"}
+                {
+                    "title": "Raises Seed Round for Expansion",
+                    "url": "https://example.com/news1",
+                    "published_at": "2024-06-01",
+                    "source": "TechCrunch",
+                },
+                {
+                    "title": "Launches New Product Suite",
+                    "url": "https://example.com/news2",
+                    "published_at": "2024-05-15",
+                    "source": "YourStory",
+                },
             ],
             "sentiment": "positive",
             "momentum_signals": ["funding", "product launch"],
-            "summary": "The company shows solid growth momentum with recent funding and product launch announcements."
+            "summary": "The company shows solid growth momentum with recent funding and product launch announcements.",
         }
 
     # 6. Market Analysis Agent competitors & TAM
     if "market research analyst" in prompt_lower or "tam_estimate" in prompt_lower:
         return {
             "competitors": [
-                {"name": "Competitor X", "url": "https://example.com/x", "differentiator": "Established brand presence"},
-                {"name": "Competitor Y", "url": "https://example.com/y", "differentiator": "Lower pricing tier"}
+                {
+                    "name": "Competitor X",
+                    "url": "https://example.com/x",
+                    "differentiator": "Established brand presence",
+                },
+                {
+                    "name": "Competitor Y",
+                    "url": "https://example.com/y",
+                    "differentiator": "Lower pricing tier",
+                },
             ],
             "tam_estimate": "$3.5B by 2028",
             "market_growth_rate": "22% CAGR",
             "key_trends": ["AI-driven automation", "Cloud migration", "Data privacy compliance"],
-            "market_stage": "growing"
+            "market_stage": "growing",
         }
 
     return fallback

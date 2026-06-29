@@ -6,7 +6,7 @@ Falls back to Gemini-generated mock news when NewsAPI key is unavailable.
 
 import os
 from .base_agent import BaseAgent
-from ..llm import ask, ask_json
+from ..llm import ask_json
 from ..tools.news_tool import fetch_news
 
 
@@ -26,7 +26,9 @@ class NewsAgent(BaseAgent):
         else:
             sentiment_data = self._gemini_mock_news(name, company)
 
-        self.log_done(f"News: {len(articles)} articles, sentiment={sentiment_data.get('sentiment')}")
+        self.log_done(
+            f"News: {len(articles)} articles, sentiment={sentiment_data.get('sentiment')}"
+        )
         return sentiment_data
 
     def _fetch_news(self, company_name: str) -> list[dict]:
@@ -46,9 +48,10 @@ Return ONLY JSON:
   "summary": "1-sentence summary of recent news"
 }}
 """
-        result = ask_json(prompt, fallback={
-            "sentiment": "neutral", "momentum_signals": [], "summary": "No recent news."
-        })
+        result = ask_json(
+            prompt,
+            fallback={"sentiment": "neutral", "momentum_signals": [], "summary": "No recent news."},
+        )
         result["articles"] = articles
         return result
 
@@ -67,9 +70,12 @@ Return ONLY JSON:
   "summary": "1-sentence summary"
 }}
 """
-        return ask_json(prompt, fallback={
-            "articles": [],
-            "sentiment": "neutral",
-            "momentum_signals": ["active in market"],
-            "summary": f"{company_name} is an active startup in the {industry} space.",
-        })
+        return ask_json(
+            prompt,
+            fallback={
+                "articles": [],
+                "sentiment": "neutral",
+                "momentum_signals": ["active in market"],
+                "summary": f"{company_name} is an active startup in the {industry} space.",
+            },
+        )

@@ -11,7 +11,6 @@ import importlib
 import pkgutil
 import app.agents
 from app.agents.base_agent import AGENT_REGISTRY
-from app import memory as store_module
 from app.memory import store
 
 logger = logging.getLogger(__name__)
@@ -36,7 +35,10 @@ def _run_per_company_agent(company: dict, agent_name: str, icp: dict | None = No
     elif agent_name == "founder_profile":
         company["founders"] = agent.run(company=company, icp=icp)
     elif agent_name == "contact":
-        domain = company.get("url", "").replace("https://", "").replace("http://", "").split("/")[0] or "company.com"
+        domain = (
+            company.get("url", "").replace("https://", "").replace("http://", "").split("/")[0]
+            or "company.com"
+        )
         for founder in company.get("founders", []):
             contact_info = agent.run(founder=founder, domain=domain, icp=icp)
             founder.update(contact_info)
@@ -86,7 +88,9 @@ def run_workflow(job_id: str, icp: dict) -> None:
             # Shared Memory: check if we have this company already fully analyzed to avoid duplicate work
             existing = store.get_company(company["name"])
             if existing and existing.get("report") and existing.get("score") is not None:
-                logger.info(f"Avoid Duplicate Work: {company['name']} is already fully enriched. Skipping agents.")
+                logger.info(
+                    f"Avoid Duplicate Work: {company['name']} is already fully enriched. Skipping agents."
+                )
                 store.save_company(existing)  # Ensure it is recorded in the store
                 enriched.append(existing)
                 continue

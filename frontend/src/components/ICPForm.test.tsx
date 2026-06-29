@@ -16,41 +16,42 @@ describe('ICPForm', () => {
     const user = userEvent.setup()
     render(<ICPForm onSubmit={onSubmit} isLoading={false} />)
 
-    await user.click(screen.getByRole('button', { name: /trigger discovery/i }))
+    await user.click(screen.getByRole('button', { name: /start discovery/i }))
     expect(onSubmit).toHaveBeenCalledTimes(1)
     expect(onSubmit).toHaveBeenCalledWith({
       industry: 'AI Healthcare',
       stage: 'Seed',
       location: 'India',
       tech_keywords: ['machine learning', 'diagnostic screening', 'thermal imaging'],
+      target_personas: ['CEO', 'CTO', 'Founder'],
+      business_triggers: ['funding', 'github_activity'],
+      min_qualification_score: 75,
     })
   })
 
   it('disables inputs when loading', () => {
     render(<ICPForm onSubmit={vi.fn()} isLoading={true} />)
     expect(screen.getByDisplayValue('AI Healthcare')).toBeDisabled()
-    expect(screen.getByText('Analyzing...')).toBeInTheDocument()
+    expect(screen.getByText('Running Discovery...')).toBeInTheDocument()
   })
 
-  it('updates keyword chips on input', async () => {
+  it('adds keyword chip on Enter', async () => {
     const user = userEvent.setup()
     render(<ICPForm onSubmit={vi.fn()} isLoading={false} />)
 
-    const input = screen.getByDisplayValue('machine learning, diagnostic screening, thermal imaging')
-    await user.clear(input)
-    await user.type(input, 'AI, NLP')
+    const input = screen.getByPlaceholderText(/type and press enter/i)
+    await user.type(input, 'NLP{Enter}')
 
-    expect(screen.getByText('AI')).toBeInTheDocument()
     expect(screen.getByText('NLP')).toBeInTheDocument()
-    expect(screen.getByText((content) => content.startsWith('2'))).toBeInTheDocument()
   })
 
   it('removes keyword chip on click', async () => {
     const user = userEvent.setup()
     render(<ICPForm onSubmit={vi.fn()} isLoading={false} />)
 
-    const chips = screen.getAllByText('×')
-    await user.click(chips[0])
+    expect(screen.getByText('machine learning')).toBeInTheDocument()
+    const removeBtn = screen.getByText('machine learning').closest('span')?.querySelector('span')
+    if (removeBtn) await user.click(removeBtn)
 
     expect(screen.queryByText('machine learning')).not.toBeInTheDocument()
   })

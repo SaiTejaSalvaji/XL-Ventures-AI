@@ -28,6 +28,7 @@ class GitHubAgent(BaseAgent):
     def _fetch_github(self, company_name: str, token: str) -> dict:
         try:
             from github import Github, GithubException
+
             g = Github(token)
             # Try to find the org by searching
             query = company_name.lower().replace(" ", "-")
@@ -37,9 +38,7 @@ class GitHubAgent(BaseAgent):
                 stars = sum(r.stargazers_count for r in repos)
                 forks = sum(r.forks_count for r in repos)
                 languages = list({r.language for r in repos if r.language})[:5]
-                last_push = max(
-                    (r.pushed_at for r in repos if r.pushed_at), default=None
-                )
+                last_push = max((r.pushed_at for r in repos if r.pushed_at), default=None)
                 return {
                     "repo_count": len(repos),
                     "total_stars": stars,
@@ -57,6 +56,7 @@ class GitHubAgent(BaseAgent):
 
     def _mock_data(self, company: dict) -> dict:
         import random
+
         return {
             "repo_count": random.randint(2, 15),
             "total_stars": random.randint(50, 2000),

@@ -39,15 +39,30 @@ Return ONLY valid JSON:
   "market_stage": "emerging | growing | mature"
 }}
 """
-        result = ask_json(prompt, fallback={
-            "competitors": [
-                {"name": f"{industry} Alpha", "url": "https://example.com", "differentiator": "Market leader"},
-                {"name": f"{industry} Beta", "url": "https://example.com", "differentiator": "Niche focus"},
-            ],
-            "tam_estimate": "$2.5B by 2027",
-            "market_growth_rate": "28% CAGR",
-            "key_trends": [f"AI integration in {industry}", "Workflow automation", "Cloud scalability"],
-            "market_stage": "growing",
-        })
+        result = ask_json(
+            prompt,
+            fallback={
+                "competitors": [
+                    {
+                        "name": f"{industry} Alpha",
+                        "url": "https://example.com",
+                        "differentiator": "Market leader",
+                    },
+                    {
+                        "name": f"{industry} Beta",
+                        "url": "https://example.com",
+                        "differentiator": "Niche focus",
+                    },
+                ],
+                "tam_estimate": "$2.5B by 2027",
+                "market_growth_rate": "28% CAGR",
+                "key_trends": [
+                    f"AI integration in {industry}",
+                    "Workflow automation",
+                    "Cloud scalability",
+                ],
+                "market_stage": "growing",
+            },
+        )
         self.log_done(f"Market analysis complete for {name}")
         return result

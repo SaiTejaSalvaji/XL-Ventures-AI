@@ -48,13 +48,16 @@ Return ONLY valid JSON with these exact keys:
   "business_model": "B2B | B2C | B2B2C | marketplace"
 }}
 """
-        result = ask_json(prompt, fallback={
-            "tagline": existing_desc,
-            "product": "Technology solution",
-            "target_customers": "Enterprises",
-            "tech_stack": ["AI", "Machine Learning"],
-            "employee_estimate": "11-50",
-            "founded_year": None,
-            "business_model": "B2B",
-        })
+        result = ask_json(
+            prompt,
+            fallback={
+                "tagline": existing_desc,
+                "product": "Technology solution",
+                "target_customers": "Enterprises",
+                "tech_stack": ["AI", "Machine Learning"],
+                "employee_estimate": "11-50",
+                "founded_year": None,
+                "business_model": "B2B",
+            },
+        )
         return result

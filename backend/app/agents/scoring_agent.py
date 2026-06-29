@@ -22,11 +22,8 @@ class ScoringAgent(BaseAgent):
         min_score = icp.get("min_qualification_score", 70)
 
         breakdown = self._compute_breakdown(profile, icp)
-        score = round(sum(
-            breakdown[dim] * weight
-            for dim, weight in self.WEIGHTS.items()
-        ))
-        
+        score = round(sum(breakdown[dim] * weight for dim, weight in self.WEIGHTS.items()))
+
         # Calculate tier based on min_qualification_score
         if score >= min_score:
             tier = "High" if score >= min(100, min_score + 10) else "Medium"
@@ -51,14 +48,18 @@ class ScoringAgent(BaseAgent):
         target_personas = [pers.lower().strip() for pers in icp.get("target_personas", [])]
         if target_personas:
             found_titles = [f.get("title", "").lower() for f in founders]
-            matching_personas = [t for t in found_titles if any(p_name in t for p_name in target_personas)]
+            matching_personas = [
+                t for t in found_titles if any(p_name in t for p_name in target_personas)
+            ]
             if matching_personas:
                 team_score = min(100, team_score + 10)  # matching persona bonus
 
         # Tech score (GitHub signals)
         github = p.get("github", {})
         stars = github.get("total_stars", 0)
-        tech_score = min(100, 40 + min(stars // 10, 40) + (10 if github.get("repo_count", 0) > 3 else 0))
+        tech_score = min(
+            100, 40 + min(stars // 10, 40) + (10 if github.get("repo_count", 0) > 3 else 0)
+        )
 
         # Respect github activity trigger if selected
         triggers = icp.get("business_triggers", [])
@@ -103,4 +104,7 @@ Industry: {profile.get('industry', '')} | Stage: {profile.get('stage', '')}
 
 Be specific, professional, and mention both strengths and risks. Do NOT use markdown.
 """
-        return ask(prompt, fallback=f"{name} scores {score}/100 ({tier} priority) based on team, technology, traction, and market analysis.")
+        return ask(
+            prompt,
+            fallback=f"{name} scores {score}/100 ({tier} priority) based on team, technology, traction, and market analysis.",
+        )

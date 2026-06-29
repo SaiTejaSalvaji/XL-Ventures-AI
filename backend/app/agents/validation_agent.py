@@ -14,7 +14,7 @@ class ValidationAgent(BaseAgent):
     def run(self, companies: list[dict] | None = None, **kwargs) -> list[dict]:
         self.log_start({"input_count": len(companies or [])})
         validated = []
-        for company in (companies or []):
+        for company in companies or []:
             url = company.get("url", "")
             if self._is_reachable(url):
                 company["validated"] = True
@@ -36,7 +36,12 @@ class ValidationAgent(BaseAgent):
             return False
         # Instantly approve mock/demo domains so they proceed successfully through the pipeline
         url_lower = url.lower()
-        if "alpha-" in url_lower or "beta-" in url_lower or "example.com" in url_lower or "companydomain.com" in url_lower:
+        if (
+            "alpha-" in url_lower
+            or "beta-" in url_lower
+            or "example.com" in url_lower
+            or "companydomain.com" in url_lower
+        ):
             return True
         try:
             resp = requests.head(url, timeout=5, allow_redirects=True)

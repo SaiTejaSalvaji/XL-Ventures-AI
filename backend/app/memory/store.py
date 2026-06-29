@@ -12,14 +12,15 @@ from datetime import datetime, UTC
 
 # Global in-memory store
 _store: dict = {
-    "companies": {},   # name → company dict
-    "reports": {},     # name → markdown string
-    "decisions": {},   # company_id → {"decision": ..., "notes": ...}
-    "jobs": {},        # job_id → {"status": ..., "icp": ..., "result": ...}
+    "companies": {},  # name → company dict
+    "reports": {},  # name → markdown string
+    "decisions": {},  # company_id → {"decision": ..., "notes": ...}
+    "jobs": {},  # job_id → {"status": ..., "icp": ..., "result": ...}
 }
 
 
 # ── Company CRUD ─────────────────────────────────────────────────────────────
+
 
 def save_company(company: dict) -> None:
     """Save or update a company by name."""
@@ -56,6 +57,7 @@ def clear_all() -> None:
 
 # ── Reports ───────────────────────────────────────────────────────────────────
 
+
 def save_report(company_name: str, report: str) -> None:
     _store["reports"][company_name] = report
 
@@ -65,6 +67,7 @@ def get_report(company_name: str) -> str | None:
 
 
 # ── HITL Decisions ───────────────────────────────────────────────────────────
+
 
 def save_decision(company_id: str, decision: str, notes: str = "") -> None:
     _store["decisions"][company_id] = {
@@ -79,6 +82,7 @@ def get_decision(company_id: str) -> dict | None:
 
 
 # ── Jobs (async workflow tracking) ───────────────────────────────────────────
+
 
 def create_job(icp: dict) -> str:
     job_id = str(uuid.uuid4())
