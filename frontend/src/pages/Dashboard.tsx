@@ -41,7 +41,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
   const [errorMsg, setErrorMsg] = useState('');
   const [showLanding, setShowLanding] = useState(true);
   const [isFetching, setIsFetching] = useState(true);
-  const [viewState, setViewState] = useState<'form' | 'status' | 'results'>('form');
+
+  const formRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const pollIntervalRef = useRef<number | null>(null);
 
@@ -82,8 +85,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
       current_step: 'Initializing workflow',
       companies: [],
     });
-    setViewState('status');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      statusRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
 
     try {
       const { job_id } = await startAnalysis(icp);
@@ -99,23 +103,26 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
             setIsAnalyzing(false);
             setJobStatus(null);
             await fetchExistingCompanies(); // Reload company list
-            setViewState('results');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+              resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
           } else if (status.status === 'error') {
             if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
             setIsAnalyzing(false);
             setJobStatus(null);
             setErrorMsg(status.current_step || 'An error occurred during execution.');
-            setViewState('form');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+              formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
           }
         } catch (pollErr) {
           console.error('Polling error', pollErr);
           if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
           setIsAnalyzing(false);
           setErrorMsg('Lost connection to AgentOS.');
-          setViewState('form');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => {
+            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
         }
       }, 2000);
 
@@ -123,8 +130,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
       setIsAnalyzing(false);
       setJobStatus(null);
       setErrorMsg(err.response?.data?.detail || 'Failed to start AgentOS analysis.');
-      setViewState('form');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
   };
 
@@ -464,7 +472,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
               setJobStatus(null);
               setIsAnalyzing(false);
               setIsFetching(false);
-              setViewState('form');
             }}
             style={{ 
               fontSize: '0.8rem', 
@@ -504,73 +511,46 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
         </div>
       )}
 
-      {viewState === 'form' && (
-        <div style={{ width: '100%' }}>
-          <ICPForm onSubmit={handleStartAnalysis} isLoading={isAnalyzing} />
-        </div>
-      )}
+      {/* ── Form Section ── */}
+      <div ref={formRef} style={{ width: '100%' }}>
+        <ICPForm onSubmit={handleStartAnalysis} isLoading={isAnalyzing} />
+      </div>
 
-      {viewState === 'status' && jobStatus && (
-        <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+      {/* ── Status Section (Rendered when jobStatus exists) ── */}
+      {jobStatus && (
+        <div ref={statusRef} style={{ width: '100%', maxWidth: '800px', margin: '40px auto 0' }}>
           <AgentProgress status={jobStatus.status} currentStep={jobStatus.current_step} />
         </div>
       )}
 
-      {viewState === 'results' && (
-        <div className="flex flex-col gap-6 mt-2">
-          <div className="flex justify-between items-center" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
-            <div>
-              <h2 className="text-secondary font-bold uppercase tracking-wider" style={{ fontSize: '1rem', letterSpacing: '0.08em', margin: 0 }}>
-                ◈ Discovered Opportunities Pipeline
-              </h2>
-              <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#8E8E93' }}>
-                Targeting matches compiled by your 11 diligence agents.
-              </p>
-            </div>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              {companies.length > 0 && (
-                <div style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 800,
-                  fontFamily: "'Sora', sans-serif",
-                  background: 'var(--accent-gradient)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>
-                  {companies.length} Total
-                </div>
-              )}
-              
-              <button
-                className="btn"
-                onClick={() => setViewState('form')}
-                style={{
-                  padding: '10px 20px',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  borderRadius: '8px',
-                  background: 'rgba(212, 175, 55, 0.08)',
-                  border: '1px solid rgba(212, 175, 55, 0.25)',
-                  color: '#D4AF37',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.15)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.08)'}
-              >
-                ✎ Modify ICP
-              </button>
-            </div>
+      {/* ── Results Section ── */}
+      <div ref={resultsRef} className="flex flex-col gap-6 mt-8">
+        <div className="flex justify-between items-center" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
+          <div>
+            <h2 className="text-secondary font-bold uppercase tracking-wider" style={{ fontSize: '1rem', letterSpacing: '0.08em', margin: 0 }}>
+              ◈ Discovered Opportunities Pipeline
+            </h2>
+            <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#8E8E93' }}>
+              Targeting matches compiled by your 11 diligence agents.
+            </p>
           </div>
-          <CompanyTable companies={companies} onSelectCompany={onSelectCompany} isLoading={isFetching} />
+          
+          {companies.length > 0 && (
+            <div style={{
+              fontSize: '1.1rem',
+              fontWeight: 800,
+              fontFamily: "'Sora', sans-serif",
+              background: 'var(--accent-gradient)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
+              {companies.length} Total
+            </div>
+          )}
         </div>
-      )}
+        <CompanyTable companies={companies} onSelectCompany={onSelectCompany} isLoading={isFetching} />
+      </div>
     </div>
   );
 };
