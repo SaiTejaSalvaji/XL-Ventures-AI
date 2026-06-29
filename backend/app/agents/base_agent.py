@@ -21,6 +21,9 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+# Global registry for automated agent auto-discovery
+AGENT_REGISTRY: dict[str, type] = {}
+
 
 class BaseAgent(ABC):
     """
@@ -34,6 +37,11 @@ class BaseAgent(ABC):
 
     #: Unique string identifier for this agent (override in subclass)
     name: str = "base"
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if cls.name != "base":
+            AGENT_REGISTRY[cls.name] = cls
 
     #: Human-readable description shown in the UI and logs
     description: str = "Abstract base agent"

@@ -58,7 +58,6 @@ async def analyze(icp: ICPRequest):
     Trigger the full agent workflow for a given ICP.
     Returns a job_id immediately; poll /results/{job_id} for updates.
     """
-    store.clear_all()
     icp_dict = icp.model_dump()
     job_id = store.create_job(icp_dict)
     start_workflow_async(job_id, icp_dict)

@@ -7,35 +7,24 @@ Flow: Planner → Discovery → Validation → per-company (plan-driven order)
 
 import logging
 import threading
+import importlib
+import pkgutil
+import app.agents
+from app.agents.base_agent import AGENT_REGISTRY
 from app import memory as store_module
 from app.memory import store
-from app.agents.planner_agent import PlannerAgent
-from app.agents.discovery_agent import DiscoveryAgent
-from app.agents.validation_agent import ValidationAgent
-from app.agents.company_profile_agent import CompanyProfileAgent
-from app.agents.founder_profile_agent import FounderProfileAgent
-from app.agents.contact_agent import ContactAgent
-from app.agents.github_agent import GitHubAgent
-from app.agents.news_agent import NewsAgent
-from app.agents.market_analysis_agent import MarketAnalysisAgent
-from app.agents.scoring_agent import ScoringAgent
-from app.agents.report_agent import ReportAgent
 
 logger = logging.getLogger(__name__)
 
-_agents = {
-    "planner": PlannerAgent(),
-    "discovery": DiscoveryAgent(),
-    "validation": ValidationAgent(),
-    "company_profile": CompanyProfileAgent(),
-    "founder_profile": FounderProfileAgent(),
-    "contact": ContactAgent(),
-    "github": GitHubAgent(),
-    "news": NewsAgent(),
-    "market_analysis": MarketAnalysisAgent(),
-    "scoring": ScoringAgent(),
-    "report": ReportAgent(),
-}
+# Dynamically discover and import all agent modules to trigger auto-registration
+for _, module_name, _ in pkgutil.walk_packages(app.agents.__path__, app.agents.__name__ + "."):
+    try:
+        importlib.import_module(module_name)
+    except Exception as e:
+        logger.error(f"Failed to dynamically auto-discover agent {module_name}: {e}")
+
+# Automatically instantiate all registered agents (Extensible registry / plugin pattern)
+_agents = {name: cls() for name, cls in AGENT_REGISTRY.items()}
 
 BATCH_AGENTS = {"discovery", "validation"}
 
@@ -93,6 +82,14 @@ def run_workflow(job_id: str, icp: dict) -> None:
         for i, company in enumerate(companies):
             store.update_job(job_id, current_step=f"enriching:{company['name']}")
             logger.info(f"Job {job_id}: enriching {company['name']}")
+
+            # Shared Memory: check if we have this company already fully analyzed to avoid duplicate work
+            existing = store.get_company(company["name"])
+            if existing and existing.get("report") and existing.get("score") is not None:
+                logger.info(f"Avoid Duplicate Work: {company['name']} is already fully enriched. Skipping agents.")
+                store.save_company(existing)  # Ensure it is recorded in the store
+                enriched.append(existing)
+                continue
 
             for agent_name in per_company_agents:
                 if agent_name not in _agents:
