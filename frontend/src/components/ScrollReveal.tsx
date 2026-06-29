@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -42,12 +42,10 @@ const ScrollReveal = ({
       text = children;
     } else if (typeof children === 'number') {
       text = String(children);
-    } else if (children && typeof children === 'object') {
-      if ('props' in children && children.props && 'children' in children.props) {
-        const childProps = children.props as { children?: ReactNode };
-        if (typeof childProps.children === 'string') {
-          text = childProps.children;
-        }
+    } else if (isValidElement(children)) {
+      const childProps = children.props as { children?: ReactNode };
+      if (typeof childProps.children === 'string') {
+        text = childProps.children;
       }
     }
 
