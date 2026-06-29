@@ -18,23 +18,27 @@ class FounderProfileAgent(BaseAgent):
         company = company or {}
         self.log_start({"company": company.get("name")})
 
-        founders = self._gemini_founders(company)
+        icp = kwargs.get("icp") or {}
+        target_personas = icp.get("target_personas", ["CEO", "CTO", "Founder"])
+
+        founders = self._gemini_founders(company, target_personas)
         self.log_done(f"Found {len(founders)} founders for {company.get('name')}")
         return founders
 
-    def _gemini_founders(self, company: dict) -> list[dict]:
+    def _gemini_founders(self, company: dict, target_personas: list[str]) -> list[dict]:
         name = company.get("name", "")
         industry = company.get("industry", "technology")
+        personas_str = ", ".join(target_personas)
         prompt = f"""
-You are a startup research assistant. For the company "{name}" in the {industry} space (India),
-generate realistic founder profiles based on your knowledge. If you don't know the actual founders,
-create plausible profiles for a typical Indian {industry} startup.
+You are a startup research assistant. For the company "{name}" in the {industry} space,
+generate realistic founder profiles based on your knowledge. Focus on profiles matching these target roles/personas: {personas_str}.
+If you don't know the actual founders, create plausible profiles for a typical {industry} startup, ensuring they match some of these target roles.
 
 Return ONLY a JSON array with 1-3 founders, each having these keys:
 [
   {{
     "name": "Full Name",
-    "title": "CEO | CTO | COO",
+    "title": "One of: {personas_str}",
     "background": "2-sentence professional background",
     "education": "University, Degree",
     "linkedin_url": "use a realistic linkedin.com/in/name URL",
@@ -46,7 +50,7 @@ Return ONLY a JSON array with 1-3 founders, each having these keys:
         result = ask_json(prompt, fallback=[
             {
                 "name": f"{name} Founder",
-                "title": "CEO & Co-founder",
+                "title": target_personas[0] if target_personas else "CEO",
                 "background": f"Serial entrepreneur with 10+ years in {industry}.",
                 "education": "IIT Delhi, B.Tech Computer Science",
                 "linkedin_url": f"https://linkedin.com/in/{name_slug}-founder",

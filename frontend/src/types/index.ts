@@ -3,6 +3,9 @@ export interface ICP {
   stage: string;
   location: string;
   tech_keywords: string[];
+  target_personas?: string[];
+  business_triggers?: string[];
+  min_qualification_score?: number;
 }
 
 export interface Founder {
@@ -12,6 +15,9 @@ export interface Founder {
   education: string;
   linkedin_url: string;
   past_companies: string[];
+  email?: string;
+  phone?: string;
+  confidence_score?: number;
 }
 
 export interface GitHubData {

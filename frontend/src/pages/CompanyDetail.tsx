@@ -233,12 +233,56 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onBack, o
                   }}
                 >
                   <div className="flex justify-between items-center">
-                    <strong style={{ fontSize: '0.9rem', color: 'var(--text-0)' }}>{f.name}</strong>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <strong style={{ fontSize: '0.9rem', color: 'var(--text-0)' }}>{f.name}</strong>
+                      {f.linkedin_url && (
+                        <a
+                          href={formatUrl(f.linkedin_url)}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#00D4FF',
+                            textDecoration: 'none',
+                            fontWeight: 600,
+                          }}
+                          title="LinkedIn Profile"
+                        >
+                          🔗 LinkedIn
+                        </a>
+                      )}
+                    </div>
                     <span className="badge badge-info" style={{ fontSize: '0.65rem' }}>{f.title}</span>
                   </div>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-1)', margin: 0 }}>{f.background}</p>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-2)' }}>
-                    📚 {f.education} | 💼 {f.past_companies.join(', ')}
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-2)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div>📚 {f.education} | 💼 {f.past_companies.join(', ')}</div>
+                    {(f.email || f.phone) && (
+                      <div style={{
+                        marginTop: '4px',
+                        padding: '6px 10px',
+                        background: 'rgba(10, 13, 24, 0.4)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '12px',
+                        fontSize: '0.75rem',
+                        color: 'var(--text-1)',
+                      }}>
+                        {f.email && (
+                          <span>
+                            📧 <strong>Email:</strong> {f.email}{' '}
+                            {f.confidence_score && (
+                              <span style={{ color: f.confidence_score >= 70 ? 'var(--success)' : 'var(--gold)', fontWeight: 'bold' }}>
+                                ({f.confidence_score}% conf)
+                              </span>
+                            )}
+                          </span>
+                        )}
+                        {f.phone && <span>📱 <strong>Phone:</strong> {f.phone}</span>}
+                      </div>
+                    )}
                   </div>
                 </div>
               )) || <p style={{ fontSize: '0.85rem', color: 'var(--text-1)' }}>No leadership data.</p>}

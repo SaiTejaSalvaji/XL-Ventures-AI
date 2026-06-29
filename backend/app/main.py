@@ -35,6 +35,9 @@ class ICPRequest(BaseModel):
     stage: str = "Seed"
     location: str = "India"
     tech_keywords: list[str] = ["machine learning", "AI"]
+    target_personas: list[str] = ["CEO", "CTO", "Founder"]
+    business_triggers: list[str] = ["funding", "github_activity"]
+    min_qualification_score: int = 70
 
 
 class ApprovalRequest(BaseModel):

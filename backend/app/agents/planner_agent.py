@@ -9,7 +9,7 @@ from ..llm import ask_json
 
 DEFAULT_PLAN = [
     "discovery", "validation", "company_profile",
-    "founder_profile", "github", "news",
+    "founder_profile", "contact", "github", "news",
     "market_analysis", "scoring", "report",
 ]
 
@@ -26,13 +26,14 @@ Given this Ideal Customer Profile (ICP):
 {icp}
 
 Return a JSON array of agent names to execute IN ORDER from this list:
-["discovery", "validation", "company_profile", "founder_profile",
+["discovery", "validation", "company_profile", "founder_profile", "contact",
  "github", "news", "market_analysis", "scoring", "report"]
 
 Rules:
 - Always include: discovery, validation, scoring, report
-- Include github only if stage is Seed or early-stage
-- Include all agents for a thorough analysis
+- Always include "contact" right after "founder_profile" to enrich decision-maker contacts.
+- Include "github" only if stage is Seed/early-stage or if "github_activity" is in business_triggers.
+- Include "news" if "funding" or "sentiment_positive" is in business_triggers, or for sentiment checks.
 - Return ONLY the JSON array, no explanation.
 """
         result = ask_json(prompt, fallback=DEFAULT_PLAN)

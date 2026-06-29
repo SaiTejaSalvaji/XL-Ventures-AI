@@ -59,7 +59,10 @@ We recommend a **Strong Buy** at the Seed stage. Niramai offers a highly scalabl
         background: 'Former Lab Director at Xerox Research India, PhD in Computer Science from IISc.',
         education: 'Indian Institute of Science (IISc), PhD',
         linkedin_url: 'https://linkedin.com/in/geethamanjunath',
-        past_companies: ['Xerox Research', 'Hewlett-Packard']
+        past_companies: ['Xerox Research', 'Hewlett-Packard'],
+        email: 'geetha.manjunath@niramai.com',
+        phone: '+91 98450 12345',
+        confidence_score: 95
       }
     ],
     github: {
@@ -127,7 +130,10 @@ We recommend a **Buy** at Series A. Tricog has a proven SaaS revenue stream and 
         background: 'Interventional cardiologist with 15+ years of clinical practice.',
         education: 'Rajiv Gandhi University of Health Sciences, MD',
         linkedin_url: 'https://linkedin.com/in/charitbhograj',
-        past_companies: ['Columbia Asia', 'Fortis Healthcare']
+        past_companies: ['Columbia Asia', 'Fortis Healthcare'],
+        email: 'charit.bhograj@tricog.com',
+        phone: '+91 99000 54321',
+        confidence_score: 92
       }
     ],
     github: {
@@ -190,7 +196,10 @@ SigTuple replaces manual counting under traditional microscopes, reducing labora
         background: 'Ex-Principal Engineer at Yahoo!, expert in large-scale machine learning.',
         education: 'IIT Kharagpur, B.Tech',
         linkedin_url: 'https://linkedin.com/in/tathagato',
-        past_companies: ['Yahoo!', 'Xerox Research']
+        past_companies: ['Yahoo!', 'Xerox Research'],
+        email: 'tathagato.dastidar@sigtuple.com',
+        phone: '+91 98800 67890',
+        confidence_score: 88
       }
     ],
     github: {
@@ -252,7 +261,10 @@ ZetaCorp AI solves enterprise compliance bottlenecks. Their platform parses inte
         background: 'Former compliance officer at Goldman Sachs, MBA from Harvard.',
         education: 'Harvard Business School, MBA',
         linkedin_url: 'https://linkedin.com/in/sarahjenkins-zetacorp',
-        past_companies: ['Goldman Sachs', 'PwC']
+        past_companies: ['Goldman Sachs', 'PwC'],
+        email: 'sarah.jenkins@zetacorp.ai',
+        phone: '+1 (555) 019-2834',
+        confidence_score: 94
       }
     ],
     github: {
@@ -289,8 +301,10 @@ const AGENT_STEPS = [
   'discovery:Scanning web sources for matches',
   'validation:Verifying domain registers and WHOIS data',
   'company_profile:Scraping website, business model mapping',
+  'founder_profile:Searching executive profiles',
   'github:Querying repositories, counting stars/forks',
   'news:Scraping NewsAPI for funding and press announcements',
+  'contact:Resolving target contact details',
   'scoring:Evaluating financial fit and team rubric',
   'report:Drafting due diligence report with Gemini 1.5 Flash',
 ];

@@ -12,6 +12,12 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
   const [location, setLocation] = useState('India');
   const [keywords, setKeywords] = useState('machine learning, diagnostic screening, thermal imaging');
   const [keywordChips, setKeywordChips] = useState<string[]>(['machine learning', 'diagnostic screening', 'thermal imaging']);
+  
+  // Advanced options state
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [personas, setPersonas] = useState('CEO, CTO, Founder');
+  const [triggers, setTriggers] = useState<string[]>(['funding', 'github_activity']);
+  const [minScore, setMinScore] = useState(70);
 
   const handleKeywordsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -30,15 +36,30 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
     setKeywords(newChips.join(', '));
   };
 
+  const toggleTrigger = (triggerId: string) => {
+    if (triggers.includes(triggerId)) {
+      setTriggers(triggers.filter((t) => t !== triggerId));
+    } else {
+      setTriggers([...triggers, triggerId]);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const tech_keywords = keywordChips.filter((k) => k.length > 0);
+    const target_personas = personas
+      .split(',')
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
 
     onSubmit({
       industry,
       stage,
       location,
       tech_keywords,
+      target_personas,
+      business_triggers: triggers,
+      min_qualification_score: minScore,
     });
   };
 
@@ -200,6 +221,117 @@ export const ICPForm: React.FC<ICPFormProps> = ({ onSubmit, isLoading }) => {
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', opacity: 0.8 }}>
               {keywordChips.length} keyword{keywordChips.length !== 1 ? 's' : ''} added
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Advanced Configuration Toggle ── */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--violet-bright)',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontFamily: "'Sora', sans-serif",
+          }}
+        >
+          <span>{showAdvanced ? '▼' : '▶'}</span>
+          Advanced Targeting &amp; Qualification Rules
+        </button>
+        
+        {showAdvanced && (
+          <div
+            style={{
+              marginTop: '16px',
+              padding: '16px',
+              background: 'rgba(10, 13, 24, 0.4)',
+              border: '1px solid rgba(108, 63, 232, 0.2)',
+              borderRadius: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+            }}
+          >
+            {/* Personas Input */}
+            <div className="form-group">
+              <label className="form-label" style={{ fontSize: '0.75rem' }}>🎯 Target Personas (comma separated)</label>
+              <input
+                type="text"
+                value={personas}
+                onChange={(e) => setPersonas(e.target.value)}
+                className="form-input"
+                style={{ fontSize: '0.8rem', padding: '8px 12px' }}
+                placeholder="e.g. CEO, CTO, VP Engineering"
+                disabled={isLoading}
+              />
+            </div>
+
+            {/* Triggers Selection */}
+            <div className="form-group">
+              <label className="form-label" style={{ fontSize: '0.75rem' }}>⏰ Business Triggers to Monitor</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
+                {[
+                  { id: 'funding', label: '💰 Funding Announcements' },
+                  { id: 'github_activity', label: '🐙 GitHub Repository Activity' },
+                  { id: 'product_launch', label: '🚀 Product Launch Events' },
+                  { id: 'sentiment_positive', label: '📈 Positive sentiment momentum' },
+                ].map((trig) => (
+                  <label
+                    key={trig.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      fontSize: '0.8rem',
+                      color: 'var(--text-1)',
+                      cursor: isLoading ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={triggers.includes(trig.id)}
+                      onChange={() => !isLoading && toggleTrigger(trig.id)}
+                      disabled={isLoading}
+                      style={{
+                        accentColor: 'var(--violet-bright)',
+                      }}
+                    />
+                    {trig.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Qualification Criteria */}
+            <div className="form-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" style={{ fontSize: '0.75rem', margin: 0 }}>🛡️ Min Qualification Score</label>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--violet-bright)' }}>{minScore} / 100</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={minScore}
+                onChange={(e) => setMinScore(parseInt(e.target.value))}
+                disabled={isLoading}
+                style={{
+                  width: '100%',
+                  marginTop: '8px',
+                  accentColor: 'var(--violet-bright)',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                }}
+              />
             </div>
           </div>
         )}

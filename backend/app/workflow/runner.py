@@ -14,6 +14,7 @@ from app.agents.discovery_agent import DiscoveryAgent
 from app.agents.validation_agent import ValidationAgent
 from app.agents.company_profile_agent import CompanyProfileAgent
 from app.agents.founder_profile_agent import FounderProfileAgent
+from app.agents.contact_agent import ContactAgent
 from app.agents.github_agent import GitHubAgent
 from app.agents.news_agent import NewsAgent
 from app.agents.market_analysis_agent import MarketAnalysisAgent
@@ -28,6 +29,7 @@ _agents = {
     "validation": ValidationAgent(),
     "company_profile": CompanyProfileAgent(),
     "founder_profile": FounderProfileAgent(),
+    "contact": ContactAgent(),
     "github": GitHubAgent(),
     "news": NewsAgent(),
     "market_analysis": MarketAnalysisAgent(),
@@ -38,26 +40,31 @@ _agents = {
 BATCH_AGENTS = {"discovery", "validation"}
 
 
-def _run_per_company_agent(company: dict, agent_name: str) -> dict:
+def _run_per_company_agent(company: dict, agent_name: str, icp: dict | None = None) -> dict:
     agent = _agents[agent_name]
     if agent_name == "company_profile":
-        company.update(agent.run(company=company))
+        company.update(agent.run(company=company, icp=icp))
     elif agent_name == "founder_profile":
-        company["founders"] = agent.run(company=company)
+        company["founders"] = agent.run(company=company, icp=icp)
+    elif agent_name == "contact":
+        domain = company.get("url", "").replace("https://", "").replace("http://", "").split("/")[0] or "company.com"
+        for founder in company.get("founders", []):
+            contact_info = agent.run(founder=founder, domain=domain, icp=icp)
+            founder.update(contact_info)
     elif agent_name == "github":
-        company["github"] = agent.run(company=company)
+        company["github"] = agent.run(company=company, icp=icp)
     elif agent_name == "news":
-        company["news"] = agent.run(company=company)
+        company["news"] = agent.run(company=company, icp=icp)
     elif agent_name == "market_analysis":
-        company["market"] = agent.run(company=company)
+        company["market"] = agent.run(company=company, icp=icp)
     elif agent_name == "scoring":
-        result = agent.run(profile=company)
+        result = agent.run(profile=company, icp=icp)
         company["score"] = result.get("score", 0)
         company["tier"] = result.get("tier", "Low")
         company["score_breakdown"] = result.get("breakdown", {})
         company["rationale"] = result.get("rationale", "")
     elif agent_name == "report":
-        company["report"] = agent.run(profile=company)
+        company["report"] = agent.run(profile=company, icp=icp)
     return company
 
 
@@ -91,7 +98,7 @@ def run_workflow(job_id: str, icp: dict) -> None:
                 if agent_name not in _agents:
                     continue
                 store.update_job(job_id, current_step=f"{agent_name}:{company['name']}")
-                company = _run_per_company_agent(company, agent_name)
+                company = _run_per_company_agent(company, agent_name, icp)
 
             store.save_company(company)
             enriched.append(company)
