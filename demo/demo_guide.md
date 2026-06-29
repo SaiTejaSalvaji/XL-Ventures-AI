@@ -1,6 +1,5 @@
 # VenturePilot AI (AgentOS) — Demo Execution & Pitch Guide
 
-This guide describes how to run a flawless 5-minute demo and outlines the architectural talking points that will impress evaluators during an interview.
 
 ---
 
@@ -22,16 +21,16 @@ This guide describes how to run a flawless 5-minute demo and outlines the archit
 
 ---
 
-## 🎬 Demo Walkthrough Script (5 Minutes)
+## 🎬 Demo Walkthrough Script 
 
-### 1. The Hook (0:00 - 0:45)
+### 1. The Hook 
 - **Action**: Show the landing page with the clean, premium dark-mode interface. Point out the live connection indicator in the top right ("AgentOS Backend: Live").
 - **Voiceover**: 
   > "Today, B2B sales teams, VCs, and partnership managers spend hours manually scraping directories, websites, and news feeds to find ideal target opportunities. VenturePilot AI—or AgentOS—is an autonomous, multi-agent platform designed to automate this entire pipeline. We're going to demonstrate it using an Enterprise AI Startup Discovery case study."
 
 ---
 
-### 2. Triggering the Workflow (0:45 - 1:45)
+### 2. Triggering the Workflow
 - **Action**: Point to the "Opportunity Parameters (ICP)" card. The fields are pre-filled with:
   - Industry: `AI Healthcare`
   - Funding Stage: `Seed`
@@ -46,7 +45,7 @@ This guide describes how to run a flawless 5-minute demo and outlines the archit
 
 ---
 
-### 3. Reviewing Scored Candidates (1:45 - 3:00)
+### 3. Reviewing Scored Candidates 
 - **Action**: Once the progress bar lights up green and shows **"done"**, scroll down to the "Discovered Opportunities Pipeline" table.
 - **Action**: Sort by the **Score** column to show the high-scoring companies at the top.
 - **Voiceover**:
@@ -54,7 +53,7 @@ This guide describes how to run a flawless 5-minute demo and outlines the archit
 
 ---
 
-### 4. Due Diligence Drill-down (3:00 - 4:15)
+### 4. Due Diligence Drill-down 
 - **Action**: Click on the top-ranked company (e.g. **Niramai Health Analytix**).
 - **Visuals**: The page transitions smoothly into the drill-down view showing:
   - Big visual score ring.
@@ -68,7 +67,7 @@ This guide describes how to run a flawless 5-minute demo and outlines the archit
 
 ---
 
-### 5. Human-in-the-Loop Action (4:15 - 5:00)
+### 5. Human-in-the-Loop Action 
 - **Action**: Scroll to the "Reviewer Notes" text box. Type a quick comment: *"Strong founder background, high open-source activity. Moving to partner call."*
 - **Action**: Click the green **"Approve Pipeline"** button.
 - **Visuals**: A green alert banner pops up indicating that the decision was saved. Click "Back to Pipeline".
