@@ -41,6 +41,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
   const [errorMsg, setErrorMsg] = useState('');
   const [showLanding, setShowLanding] = useState(true);
   const [isFetching, setIsFetching] = useState(true);
+  const [hasFetchedResults, setHasFetchedResults] = useState(false);
 
   const formRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLDivElement>(null);
@@ -79,6 +80,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
     setIsAnalyzing(true);
     setErrorMsg('');
     setCompanies([]); // Clear old companies instantly so they don't see previous results!
+    setHasFetchedResults(false);
     setJobStatus({
       job_id: '',
       status: 'queued',
@@ -103,6 +105,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
             setIsAnalyzing(false);
             setJobStatus(null);
             await fetchExistingCompanies(); // Reload company list
+            setHasFetchedResults(true);
             setTimeout(() => {
               resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -472,6 +475,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
               setJobStatus(null);
               setIsAnalyzing(false);
               setIsFetching(false);
+              setHasFetchedResults(false);
             }}
             style={{ 
               fontSize: '0.8rem', 
@@ -524,33 +528,35 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectCompany }) => {
       )}
 
       {/* ── Results Section ── */}
-      <div ref={resultsRef} className="flex flex-col gap-6 mt-8">
-        <div className="flex justify-between items-center" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
-          <div>
-            <h2 className="text-secondary font-bold uppercase tracking-wider" style={{ fontSize: '1rem', letterSpacing: '0.08em', margin: 0 }}>
-              ◈ Discovered Opportunities Pipeline
-            </h2>
-            <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#8E8E93' }}>
-              Targeting matches compiled by your 11 diligence agents.
-            </p>
-          </div>
-          
-          {companies.length > 0 && (
-            <div style={{
-              fontSize: '1.1rem',
-              fontWeight: 800,
-              fontFamily: "'Sora', sans-serif",
-              background: 'var(--accent-gradient)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
-              {companies.length} Total
+      {hasFetchedResults && (
+        <div ref={resultsRef} className="flex flex-col gap-6 mt-8">
+          <div className="flex justify-between items-center" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
+            <div>
+              <h2 className="text-secondary font-bold uppercase tracking-wider" style={{ fontSize: '1rem', letterSpacing: '0.08em', margin: 0 }}>
+                ◈ Discovered Opportunities Pipeline
+              </h2>
+              <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#8E8E93' }}>
+                Targeting matches compiled by your 11 diligence agents.
+              </p>
             </div>
-          )}
+            
+            {companies.length > 0 && (
+              <div style={{
+                fontSize: '1.1rem',
+                fontWeight: 800,
+                fontFamily: "'Sora', sans-serif",
+                background: 'var(--accent-gradient)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>
+                {companies.length} Total
+              </div>
+            )}
+          </div>
+          <CompanyTable companies={companies} onSelectCompany={onSelectCompany} isLoading={isFetching} />
         </div>
-        <CompanyTable companies={companies} onSelectCompany={onSelectCompany} isLoading={isFetching} />
-      </div>
+      )}
     </div>
   );
 };
